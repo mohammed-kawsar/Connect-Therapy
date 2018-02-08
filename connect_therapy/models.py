@@ -13,6 +13,10 @@ class Patient(models.Model):
     mobile = models.CharField(max_length=20)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        """Return the Patient's full name"""
+        return "{} {}".format(self.user.first_name, self.user.last_name)
+
 
 class Practitioner(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -21,6 +25,10 @@ class Practitioner(models.Model):
     postcode = models.CharField(max_length=10)
     mobile = models.CharField(max_length=20)
     bio = models.TextField()
+
+    def __str__(self):
+        """Return the Practitioner's full name"""
+        return "{} {}".format(self.user.first_name, self.user.last_name)
 
 
 class Appointment(models.Model):
@@ -45,3 +53,9 @@ class Appointment(models.Model):
     """These are notes left before the appointment by the patient,
     for the benefit of the practitioner
     """
+
+    def __str__(self):
+        """Return a string representation of Appointment"""
+        return "{} - {} for {}".format(str(self.practitioner),
+                                       str(self.start_date_and_time),
+                                       str(self.length))
