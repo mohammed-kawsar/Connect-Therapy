@@ -24,6 +24,7 @@ class Practitioner(models.Model):
     address_line_2 = models.CharField(max_length=100, blank=True, null=True)
     postcode = models.CharField(max_length=10)
     mobile = models.CharField(max_length=20)
+    is_approved = models.BooleanField(default=False)
     bio = models.TextField()
 
     def __str__(self):
