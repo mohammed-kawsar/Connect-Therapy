@@ -17,7 +17,7 @@ class Patient(models.Model):
 class Practitioner(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address_line_1 = models.CharField(max_length=100)
-    address_line_2 = models.CharField(max_length=100)
+    address_line_2 = models.CharField(max_length=100, blank=True, null=True)
     postcode = models.CharField(max_length=10)
     mobile = models.CharField(max_length=20)
     bio = models.TextField()
