@@ -4,7 +4,12 @@ from django.contrib.auth.models import User
 
 class Patient(models.Model):
     date_of_birth = models.DateField()
-    gender = models.CharField(max_length=1)
+    gender_choices = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('X', 'Other')
+    )
+    gender = models.CharField(max_length=1, choices=gender_choices)
     mobile = models.CharField(max_length=20)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
