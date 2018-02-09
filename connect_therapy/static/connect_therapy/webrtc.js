@@ -15,15 +15,39 @@ webrtc.on('readyToCall', function() {
 });
 
 function sendMessage() {
-    var messageToSend = prompt("Message to send:");
-    webrtc.sendToAll("chat", {
-        message: messageToSend
-    });
-    alert("Clicked send");
+    var messageToSend = document.getElementById("message-field").value;
+    if (messageToSend.length > 0) {
+        // messageToAdd, tableToAddTo, sent or received?
+        addMessageToTable(messageToSend, document.getElementById("message-table"), true);
+
+         webrtc.sendToAll("chat", {
+             message: messageToSend
+         });
+
+         document.getElementById("message-field").value = "";
+    }
+}
+
+function addMessageToTable(message,table,sent) {
+    var row = table.insertRow(-1);
+
+    var sender = row.insertCell(0);
+    var messageText = row.insertCell(1);
+    var timeStamp = row.insertCell(2);
+
+    if (sent == true) {
+        sender.innerHTML = "<i>You</i>";
+    } else {
+        sender.innerHTML = "<i>Them</i>"
+    }
+
+    messageText.innerHTML = message;
+    timeStamp.innerHTML = "";
 }
 
 webrtc.connection.on("message", function(data) {
     if (data.type === "chat") {
-        document.getElementById("latest-message").innerHTML = data.payload.message;
+        // message, table, sent or received?
+        addMessageToTable(data.payload.message, document.getElementById("message-table"), false);
     }
 });

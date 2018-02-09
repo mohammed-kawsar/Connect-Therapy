@@ -5,12 +5,30 @@
     <script src="https://simplewebrtc.com/latest-v2.js"></script>
     {% load static %}
     <script src="{% static 'connect_therapy/webrtc.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'connect_therapy/webrtc.css' %}" type="text/css">
+
 </head>
+
 <body>
-    <h1>Web chat page</h1>
-    <p onclick="sendMessage()">Hello and welcome</p>
-    <p id ="latest-message"></p>
+<h1>Web chat page</h1>
+<div class="video-chat">
     <video height="300" id="localVideo"></video>
     <div id="remotesVideos"></div>
+</div>
+
+
+<div class="text-chat">
+    <table id="message-table">
+        <thead>
+        <tr>
+            <th>Messages</th>
+        </tr>
+        </thead>
+    </table>
+    <textarea id="message-field"></textarea>
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+
 </body>
 </html>
