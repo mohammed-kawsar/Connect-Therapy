@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from django.contrib.auth import authenticate, login
+from django.contrib.auth import views as auth_views
 
 from connect_therapy.forms import PatientSignUpForm
 from connect_therapy.models import Patient
@@ -26,3 +27,11 @@ class PatientSignUpView(FormView):
                             )
         login(request=self.request, user=user)
         return super().form_valid(form)
+
+
+class PatientLoginView(auth_views.LoginView):
+    template_name = 'connect_therapy/patient/login.html'
+    authentication_form = PatientLoginForm
+
+    def get_success_url(self):
+        return reverse_lazy('connect_therapy:patient-login-success')
