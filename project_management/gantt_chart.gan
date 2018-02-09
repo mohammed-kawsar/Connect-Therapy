@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2018-01-05" view-index="1" gantt-divider-location="449" resource-divider-location="300" version="2.8.5" locale="en_GB">
+    <description/>
+    <view zooming-state="default:2" id="gantt-chart">
+        <field id="tpd3" name="Name" width="232" order="0"/>
+        <field id="tpd4" name="Begin date" width="107" order="1"/>
+        <field id="tpd5" name="End date" width="106" order="2"/>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="210" order="0"/>
+        <field id="1" name="Default role" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="true"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" name="Issue 5" color="#8cb6ce" meeting="false" start="2018-02-08" duration="1" complete="0" expand="true">
+            <notes><![CDATA[Implement Models]]></notes>
+            <depend id="22" type="2" difference="0" hardness="Strong"/>
+            <depend id="35" type="2" difference="0" hardness="Strong"/>
+            <depend id="43" type="2" difference="0" hardness="Strong"/>
+            <depend id="51" type="2" difference="0" hardness="Strong"/>
+            <depend id="75" type="2" difference="0" hardness="Strong"/>
+            <depend id="84" type="2" difference="0" hardness="Strong"/>
+            <depend id="87" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="3" name="Issue 7" color="#8cb6ce" meeting="false" start="2018-02-05" duration="4" complete="0" expand="true">
+            <notes><![CDATA[Small report detailing user's lifetime in the system]]></notes>
+        </task>
+        <task id="5" name="Issue 4" color="#8cb6ce" meeting="false" start="2018-02-05" duration="3" complete="0" expand="true">
+            <notes><![CDATA[Model Design]]></notes>
+            <depend id="0" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="12" name="Issue 2" color="#8cb6ce" meeting="false" start="2018-02-05" duration="6" complete="0" expand="true">
+            <notes><![CDATA[Initial Visual Design]]></notes>
+        </task>
+        <task id="19" name="Issue 35" color="#8cb6ce" meeting="false" start="2018-02-05" duration="5" complete="0" expand="true">
+            <notes><![CDATA[Report on Administrator Functionality]]></notes>
+        </task>
+        <task id="22" name="Issue 16" color="#8cb6ce" meeting="false" start="2018-02-09" duration="1" complete="0" expand="true">
+            <notes><![CDATA[Patient login functionality]]></notes>
+            <depend id="51" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="16" name="Issue 6" color="#8cb6ce" meeting="false" start="2018-02-05" duration="5" complete="0" expand="true">
+            <notes><![CDATA[Report on video chat packages]]></notes>
+        </task>
+        <task id="35" name="Issue 43" color="#8cb6ce" meeting="false" start="2018-02-10" duration="1" complete="0" thirdDate="2018-02-10" thirdDate-constraint="1" expand="true">
+            <notes><![CDATA[Clinician Login Functionality]]></notes>
+            <depend id="59" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="43" name="Issue 33" color="#8cb6ce" meeting="false" start="2018-02-12" duration="14" complete="0" thirdDate="2018-02-12" thirdDate-constraint="1" expand="true">
+            <notes><![CDATA[Implement Video Chat]]></notes>
+        </task>
+        <task id="48" name="Issue 3" color="#8cb6ce" meeting="false" start="2018-02-12" duration="4" complete="0" expand="true">
+            <notes><![CDATA[Implement global design]]></notes>
+            <depend id="51" type="2" difference="0" hardness="Strong"/>
+            <depend id="59" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="51" name="Issue 48" color="#8cb6ce" meeting="false" start="2018-02-16" duration="1" complete="0" expand="true">
+            <notes><![CDATA[Integrate patient login functionality]]></notes>
+        </task>
+        <task id="59" name="Issue 49" color="#8cb6ce" meeting="false" start="2018-02-16" duration="1" complete="0" expand="true">
+            <notes><![CDATA[Integrate Practitioner login]]></notes>
+        </task>
+        <task id="75" name="Issue 24" color="#8cb6ce" meeting="false" start="2018-02-12" duration="7" complete="0" thirdDate="2018-02-12" thirdDate-constraint="1" expand="true">
+            <notes><![CDATA[Allow Clinicians to see booked appointments]]></notes>
+            <depend id="80" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="78" name="Issue 25" color="#8cb6ce" meeting="false" start="2018-02-12" duration="7" complete="0" thirdDate="2018-02-12" thirdDate-constraint="1" expand="true">
+            <notes><![CDATA[Patient see booked appointments
+]]></notes>
+        </task>
+        <task id="80" name="Issue 24" color="#8cb6ce" meeting="false" start="2018-02-19" duration="7" complete="0" expand="true"/>
+        <task id="84" name="Issue 30" color="#8cb6ce" meeting="false" start="2018-02-17" duration="9" complete="0" thirdDate="2018-02-17" thirdDate-constraint="1" expand="true">
+            <notes><![CDATA[Clinician -> Review Notes]]></notes>
+        </task>
+        <task id="87" name="Issue 34" color="#8cb6ce" meeting="false" start="2018-02-17" duration="9" complete="0" thirdDate="2018-02-17" thirdDate-constraint="1" expand="true"/>
+    </tasks>
+    <resources>
+        <resource id="0" name="Robert Greener" function="Default:1" contacts="" phone=""/>
+        <resource id="1" name="Habib Hasan" function="Default:0" contacts="" phone=""/>
+        <resource id="2" name="Baha-Al-Din Aboukoura" function="Default:0" contacts="" phone=""/>
+        <resource id="3" name="Samuel Singh" function="Default:0" contacts="" phone=""/>
+        <resource id="4" name="Sakeen Zaman" function="Default:0" contacts="" phone=""/>
+        <resource id="5" name="Jaman Salique" function="Default:0" contacts="" phone=""/>
+        <resource id="6" name="Aflal Asker" function="Default:0" contacts="" phone=""/>
+        <resource id="7" name="Mohammed Kawsar" function="Default:0" contacts="" phone=""/>
+    </resources>
+    <allocations>
+        <allocation task-id="0" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="22" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="35" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="3" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="43" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="16" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="16" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="75" resource-id="3" function="Default:0" responsible="true" load="50.0"/>
+        <allocation task-id="78" resource-id="3" function="Default:0" responsible="true" load="50.0"/>
+        <allocation task-id="12" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="48" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="51" resource-id="4" function="Default:0" responsible="true" load="50.0"/>
+        <allocation task-id="59" resource-id="4" function="Default:0" responsible="true" load="50.0"/>
+        <allocation task-id="84" resource-id="4" function="Default:0" responsible="true" load="50.0"/>
+        <allocation task-id="87" resource-id="4" function="Default:0" responsible="true" load="50.0"/>
+        <allocation task-id="12" resource-id="5" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="5" resource-id="6" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="43" resource-id="6" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="19" resource-id="7" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="80" resource-id="7" function="Default:0" responsible="true" load="100.0"/>
+    </allocations>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
