@@ -56,3 +56,36 @@ class PatientLoginForm(AuthenticationForm):
                 code='not-patient'
             )
         super().confirm_login_allowed(user)
+
+
+class PractitionerSignUpForm(UserCreationForm):
+    address_line_1 = forms.CharField(max_length=100)
+    address_line_2 = forms.CharField(max_length=100, required=False)
+    postcode = forms.CharField(max_length=10)
+    mobile = forms.CharField(max_length=20)
+    bio = forms.CharField(widget=forms.Textarea)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(username=email).exists():
+            raise forms.ValidationError("You've already signed up!",
+                                        code='exists'
+                                        )
+        return email
+
+    class Meta:
+        model = User
+        fields = ('first_name',
+                  'last_name',
+                  'email',
+                  'mobile',
+                  'address_line_1',
+                  'address_line_2',
+                  'postcode',
+                  'bio',
+                  'password1',
+                  'password2')
+
+        widgets = {
+            'email': forms.TextInput(attrs={'size': 35})
+        }

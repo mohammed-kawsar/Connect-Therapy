@@ -1,0 +1,4 @@
+<h1>Congratulations you are signed up</h1>
+{% if user.is_authenticated and user.practitioner %}
+    <p>Your name is {{ user.first_name }} {{ user.last_name }}</p>
+{% endif %}
