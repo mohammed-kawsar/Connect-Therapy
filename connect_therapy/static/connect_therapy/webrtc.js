@@ -17,7 +17,7 @@ webrtc.on('readyToCall', function() {
 function sendMessage() {
     var messageToSend = document.getElementById("message-field").value;
     if (messageToSend.length > 0) {
-        // messageToAdd, tableToAddTo, sent or received?
+        // messageToAdd, tableToAddTo, sent?
         addMessageToTable(messageToSend, document.getElementById("message-table"), true);
 
          webrtc.sendToAll("chat", {
@@ -47,7 +47,7 @@ function addMessageToTable(message,table,sent) {
 
 webrtc.connection.on("message", function(data) {
     if (data.type === "chat") {
-        // message, table, sent or received?
+        // message, table, sent?
         addMessageToTable(data.payload.message, document.getElementById("message-table"), false);
     }
 });
