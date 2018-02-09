@@ -259,3 +259,65 @@ class PractitionerSignUpFormTests(TestCase):
         })
         self.assertTrue(form.is_valid())
 
+
+class PractitionerLoginFormTests(TestCase):
+    def test_when_practitioner_exists_and_valid(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12'
+                                        )
+        practitioner = Practitioner(user=user,
+                               mobile="+44848482732",
+                               bio="ABC",
+                               address_line_1="XXX",
+                               address_line_2="XXXXX"
+                               )
+        practitioner.save()
+        form = PractitionerLoginForm(data= {
+            'username': 'test@example.com',
+            'password': 'woofwoof12'
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_when_practitioner_does_not_exist(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12'
+                                        )
+        form = PractitionerLoginForm(data={
+            'username': 'test@example.com',
+            'password': 'woofwoof12'
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_when_password_invalid(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12'
+                                        )
+        practitioner = Practitioner(user=user,
+                                    mobile="+44848482732",
+                                    bio="ABC",
+                                    address_line_1="XXX",
+                                    address_line_2="XXXXX"
+                                    )
+        practitioner.save()
+        form = PatientLoginForm(data={
+            'username': 'test@example.com',
+            'password': 'woofwoof11'
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_when_username_invalid(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12'
+                                        )
+        practitioner = Practitioner(user=user,
+                                    mobile="+44848482732",
+                                    bio="ABC",
+                                    address_line_1="XXX",
+                                    address_line_2="XXXXX"
+                                    )
+        practitioner.save()
+        form = PatientLoginForm(data={
+            'username': 'test@demo.com',
+            'password': 'woofwoof12'
+        })
+        self.assertFalse(form.is_valid())
