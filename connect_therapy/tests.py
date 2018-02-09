@@ -266,17 +266,36 @@ class PractitionerLoginFormTests(TestCase):
                                         password='woofwoof12'
                                         )
         practitioner = Practitioner(user=user,
-                               mobile="+44848482732",
-                               bio="ABC",
-                               address_line_1="XXX",
-                               address_line_2="XXXXX"
-                               )
+                                    mobile="+44848482732",
+                                    bio="ABC",
+                                    address_line_1="XXX",
+                                    address_line_2="XXXXX",
+                                    is_approved=True
+                                    )
         practitioner.save()
         form = PractitionerLoginForm(data= {
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
         self.assertTrue(form.is_valid())
+
+    def test_when_practitioner_exists_and_valid_but_not_approved(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12'
+                                        )
+        practitioner = Practitioner(user=user,
+                                    mobile="+44848482732",
+                                    bio="ABC",
+                                    address_line_1="XXX",
+                                    address_line_2="XXXXX",
+                                    is_approved=False
+                                    )
+        practitioner.save()
+        form = PractitionerLoginForm(data= {
+            'username': 'test@example.com',
+            'password': 'woofwoof12'
+        })
+        self.assertFalse(form.is_valid())
 
     def test_when_practitioner_does_not_exist(self):
         user = User.objects.create_user(username='test@example.com',
@@ -296,7 +315,8 @@ class PractitionerLoginFormTests(TestCase):
                                     mobile="+44848482732",
                                     bio="ABC",
                                     address_line_1="XXX",
-                                    address_line_2="XXXXX"
+                                    address_line_2="XXXXX",
+                                    is_approved=True
                                     )
         practitioner.save()
         form = PatientLoginForm(data={
@@ -313,7 +333,8 @@ class PractitionerLoginFormTests(TestCase):
                                     mobile="+44848482732",
                                     bio="ABC",
                                     address_line_1="XXX",
-                                    address_line_2="XXXXX"
+                                    address_line_2="XXXXX",
+                                    is_approved=True
                                     )
         practitioner.save()
         form = PatientLoginForm(data={

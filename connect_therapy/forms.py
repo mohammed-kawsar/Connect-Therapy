@@ -109,5 +109,11 @@ class PractitionerLoginForm(AuthenticationForm):
                 "You are not a practitioner",
                 code='not-practitioner'
             )
+
+        if not user.practitioner.is_approved:
+            raise forms.ValidationError(
+                "You have not been approved",
+                code='not-approved'
+            )
         super().confirm_login_allowed(user)
 
