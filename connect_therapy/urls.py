@@ -60,4 +60,18 @@ urlpatterns = [
          ),
          name='practitioner-login-success'
          ),
+    path('practitioner/logout',
+         auth_views.logout,
+         {
+             'next_page':
+                 reverse_lazy('connect_therapy:practitioner-logout-success'),
+         },
+         name='practitioner-logout'
+         ),
+    path('practitioner/logout/success',
+         TemplateView.as_view(
+             template_name='connect_therapy/practitioner/logout-success.html'
+         ),
+         name='practitioner-logout-success'
+         ),
 ]
