@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm,\
     UsernameField
 from django.contrib.auth.models import User
-from connect_therapy.models import Patient
+from connect_therapy.models import Patient, Practitioner
 
 
 class PatientSignUpForm(UserCreationForm):
@@ -89,3 +89,25 @@ class PractitionerSignUpForm(UserCreationForm):
         widgets = {
             'email': forms.TextInput(attrs={'size': 35})
         }
+
+
+class PractitionerLoginForm(AuthenticationForm):
+    username = UsernameField(
+        max_length=254,
+        widget=forms.TextInput(attrs={
+            'autofocus': True,
+            'size': 35,
+        },),
+        label="Email"
+    )
+
+    def confirm_login_allowed(self, user):
+        try:
+            user.practitioner
+        except Practitioner.DoesNotExist:
+            raise forms.ValidationError(
+                "You are not a practitioner",
+                code='not-practitioner'
+            )
+        super().confirm_login_allowed(user)
+

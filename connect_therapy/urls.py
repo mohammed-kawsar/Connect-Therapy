@@ -2,7 +2,7 @@ from django.urls import path, reverse_lazy
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
-from connect_therapy.views import PatientSignUpView, PatientLoginView, PractitionerSignUpView
+from connect_therapy.views import *
 
 app_name = 'connect_therapy'
 urlpatterns = [
@@ -49,5 +49,15 @@ urlpatterns = [
              template_name='connect_therapy/practitioner/signup-success.html'
          ),
          name='practitioner-signup-success'
-         )
+         ),
+    path('practitioner/login',
+         PractitionerLoginView.as_view(),
+         name='practitioner-login'
+         ),
+    path('practitioner/login/success',
+         TemplateView.as_view(
+             template_name='connect_therapy/practitioner/login-success.html'
+         ),
+         name='practitioner-login-success'
+         ),
 ]

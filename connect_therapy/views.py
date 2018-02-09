@@ -3,8 +3,7 @@ from django.views.generic import FormView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
-from connect_therapy.forms import PatientSignUpForm, PatientLoginForm, \
-    PractitionerSignUpForm
+from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner
 
 
@@ -61,3 +60,11 @@ class PractitionerSignUpView(FormView):
                             )
         login(request=self.request, user=user)
         return super().form_valid(form)
+
+
+class PractitionerLoginView(auth_views.LoginView):
+    template_name = 'connect_therapy/practitioner/login.html'
+    authentication_form = PractitionerLoginForm
+
+    def get_success_url(self):
+        return reverse_lazy('connect_therapy:practitioner-login-success')
