@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from connect_therapy.models import Patient, Practitioner, Appointment
-from connect_therapy.forms import PatientSignUpForm, PatientLoginForm
+from connect_therapy.models import *
+from connect_therapy.forms import *
 from datetime import date, datetime, time
 import pytz
 
@@ -184,4 +184,78 @@ class PatientLoginFormTests(TestCase):
             'password': 'woofwoof12'
         })
         self.assertFalse(form.is_valid())
+
+
+class PractitionerSignUpFormTests(TestCase):
+    def test_when_already_exists(self):
+        user = User(username="test@example.com", password="woofwoof12")
+        user.save()
+        form = PractitionerSignUpForm(data={
+            'first_name': 'Dave',
+            'last_name': 'Daverson',
+            'address_line_1': 'M',
+            'postcode': 'XXXXX',
+            'mobile': '+447075593323',
+            'email': 'test@example.com',
+            'bio': 'ABC',
+            'password1': 'meowmeow1',
+            'password2': 'meowmeow1'
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_when_password_does_not_match(self):
+        form = PractitionerSignUpForm(data={
+            'first_name': 'Dave',
+            'last_name': 'Daverson',
+            'address_line_1': 'M',
+            'postcode': 'XXXXX',
+            'mobile': '+447075593323',
+            'email': 'test@example.com',
+            'bio': 'ABC',
+            'password1': 'meowmeow1',
+            'password2': 'meowmeow2'
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_when_email_is_not_valid(self):
+        form = PractitionerSignUpForm(data={
+            'first_name': 'Dave',
+            'last_name': 'Daverson',
+            'address_line_1': 'M',
+            'postcode': 'XXXXX',
+            'mobile': '+447075593323',
+            'email': 'testexample.com',
+            'bio': 'ABC',
+            'password1': 'meowmeow1',
+            'password2': 'meowmeow1'
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_when_mobile_is_too_long(self):
+        form = PractitionerSignUpForm(data={
+            'first_name': 'Dave',
+            'last_name': 'Daverson',
+            'address_line_1': 'M',
+            'postcode': 'XXXXX',
+            'mobile': '+447075593328282838983233',
+            'email': 'test@example.com',
+            'bio': 'ABC',
+            'password1': 'meowmeow1',
+            'password2': 'meowmeow1'
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_when_valid(self):
+        form = PractitionerSignUpForm(data={
+            'first_name': 'Dave',
+            'last_name': 'Daverson',
+            'address_line_1': 'M',
+            'postcode': 'XXXXX',
+            'mobile': '+447075593323',
+            'email': 'test@example.com',
+            'bio': 'ABC',
+            'password1': 'meowmeow1',
+            'password2': 'meowmeow1'
+        })
+        self.assertTrue(form.is_valid())
 
