@@ -3,7 +3,7 @@ from django.views.generic import FormView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
-from connect_therapy.forms import PatientSignUpForm
+from connect_therapy.forms import PatientSignUpForm, PatientLoginForm
 from connect_therapy.models import Patient
 
 
