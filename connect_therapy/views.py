@@ -4,6 +4,9 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.views import View
 from django.shortcuts import render
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from connect_therapy.forms import PatientSignUpForm, PatientLoginForm
 from connect_therapy.models import Patient
 
@@ -38,6 +41,7 @@ class PatientLoginView(auth_views.LoginView):
         return reverse_lazy('connect_therapy:patient-login-success')
 
 
-class ChatView(View):
+class ChatView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('connect_therapy:patient-login')
     def get(self, request):
         return render(request, 'connect_therapy/patient/chat.html')
