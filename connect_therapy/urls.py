@@ -34,7 +34,7 @@ urlpatterns = [
          },
          name='patient-logout'
          ),
-    path('patient/logout-success',
+    path('patient/logout/success',
          TemplateView.as_view(
              template_name='connect_therapy/patient/logout-success.html'
          ),
