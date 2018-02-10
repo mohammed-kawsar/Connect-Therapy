@@ -1,11 +1,3 @@
-#localVideo {
-    float: left;
-}
-
-#remotesVideos {
-    float: right;
-}
-
 video {
     width: 100%;
     height: auto;
