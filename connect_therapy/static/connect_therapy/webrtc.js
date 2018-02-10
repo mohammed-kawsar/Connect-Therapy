@@ -1,3 +1,4 @@
+
 var webrtc = new SimpleWebRTC({
     // the id/element dom element that will hold "our" video
     localVideoEl: 'localVideo',
@@ -10,7 +11,7 @@ var webrtc = new SimpleWebRTC({
 // we have to wait until it's ready
 webrtc.on('readyToCall', function() {
     // you can name it anything
-    webrtc.joinRoom('50nxJYe'); // tempname
+    webrtc.joinRoom('eKeYlF1DR6AtVkeFZK9vEIHSZT8e0jqZ'); // tempname
 
 });
 
@@ -24,8 +25,11 @@ function sendMessage() {
              message: messageToSend
          });
 
+
+         alert(sessionId);
          document.getElementById("message-field").value = "";
     }
+
 }
 
 function addMessageToTable(message,table,sent) {

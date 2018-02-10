@@ -44,4 +44,5 @@ class PatientLoginView(auth_views.LoginView):
 class ChatView(LoginRequiredMixin, View):
     login_url = reverse_lazy('connect_therapy:patient-login')
     def get(self, request):
-        return render(request, 'connect_therapy/patient/chat.html')
+        session_id = "eKeYlF1DR6AtVkeFZK9vEIHSZT8e0jqZ"
+        return render(request, 'connect_therapy/patient/chat.html', {'session_id': session_id})
