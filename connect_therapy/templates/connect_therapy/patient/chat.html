@@ -1,35 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Chat{% endblock %}
+
+{% block header %}
     <script src="https://simplewebrtc.com/latest-v2.js"></script>
     {% load static %}
     <script src="{% static 'connect_therapy/webrtc.js' %}"></script>
     <link rel="stylesheet" href="{% static 'connect_therapy/webrtc.css' %}" type="text/css">
+{% endblock %}
 
-</head>
+{% block content %}
 
-<body>
+    <h1>Web chat page. Session id: {{ session_id }}</h1>
+    <div class="container-fluid">
+        <div class="video-chat">
+            <div class="col-md-10">
+                <div id="remotesVideos"></div>
+            </div>
+            <div class="col-md-2">
+                <video height="300" id="localVideo"></video>
+            </div>
+        </div>
+    </div>
 
-<h1>Web chat page. Session id: {{ session_id }}</h1>
-<div class="video-chat">
-    <video height="300" id="localVideo"></video>
-    <div id="remotesVideos"></div>
-</div>
+    <div class="text-chat">
+        <table id="message-table">
+            <thead>
+            <tr>
+                <th>Messages</th>
+            </tr>
+            </thead>
+        </table>
+        <textarea id="message-field"></textarea>
+        <button onclick="sendMessage()">Send</button>
+    </div>
 
 
-<div class="text-chat">
-    <table id="message-table">
-        <thead>
-        <tr>
-            <th>Messages</th>
-        </tr>
-        </thead>
-    </table>
-    <textarea id="message-field"></textarea>
-    <button onclick="sendMessage()">Send</button>
-</div>
-
-
-</body>
-</html>
+{% endblock %}

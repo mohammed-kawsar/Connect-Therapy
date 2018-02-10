@@ -1,4 +1,3 @@
-
 var webrtc = new SimpleWebRTC({
     // the id/element dom element that will hold "our" video
     localVideoEl: 'localVideo',
@@ -24,12 +23,8 @@ function sendMessage() {
          webrtc.sendToAll("chat", {
              message: messageToSend
          });
-
-
-         alert(sessionId);
-         document.getElementById("message-field").value = "";
     }
-
+    document.getElementById("message-field").value = '';
 }
 
 function addMessageToTable(message,table,sent) {
