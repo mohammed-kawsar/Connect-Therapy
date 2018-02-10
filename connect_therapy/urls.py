@@ -2,7 +2,7 @@ from django.urls import path, reverse_lazy
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
-from connect_therapy.views import PatientSignUpView, PatientLoginView, ChatView
+from connect_therapy.views import *
 
 app_name = 'connect_therapy'
 urlpatterns = [
@@ -34,7 +34,7 @@ urlpatterns = [
          },
          name='patient-logout'
          ),
-    path('patient/logout-success',
+    path('patient/logout/success',
          TemplateView.as_view(
              template_name='connect_therapy/patient/logout-success.html'
          ),

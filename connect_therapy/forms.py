@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm,\
     UsernameField
 from django.contrib.auth.models import User
-from connect_therapy.models import Patient
+from connect_therapy.models import Patient, Practitioner
 
 
 class PatientSignUpForm(UserCreationForm):

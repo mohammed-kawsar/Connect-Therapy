@@ -7,8 +7,8 @@ from django.shortcuts import render
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from connect_therapy.forms import PatientSignUpForm, PatientLoginForm
-from connect_therapy.models import Patient
+from connect_therapy.forms import *
+from connect_therapy.models import Patient, Practitioner
 
 
 class PatientSignUpView(FormView):

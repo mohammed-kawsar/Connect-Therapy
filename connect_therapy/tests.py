@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from connect_therapy.models import Patient, Practitioner, Appointment
-from connect_therapy.forms import PatientSignUpForm, PatientLoginForm
+from connect_therapy.models import *
+from connect_therapy.forms import *
 from datetime import date, datetime, time
 import pytz
 
