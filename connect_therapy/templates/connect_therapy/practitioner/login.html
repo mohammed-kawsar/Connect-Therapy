@@ -1,5 +1,10 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Practitioner Login{% endblock %}
+
+{% block content %}
 <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Login" />
 </form>
+{% endblock %}
