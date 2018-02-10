@@ -43,4 +43,39 @@ urlpatterns = [
     path('patient/chat/',
          ChatView.as_view(),
          name="patient-chat"),
+
+    path('practitioner/signup',
+         PractitionerSignUpView.as_view(),
+         name='practitioner-signup'
+         ),
+    path('practitioner/signup/success',
+         TemplateView.as_view(
+             template_name='connect_therapy/practitioner/signup-success.html'
+         ),
+         name='practitioner-signup-success'
+         ),
+    path('practitioner/login',
+         PractitionerLoginView.as_view(),
+         name='practitioner-login'
+         ),
+    path('practitioner/login/success',
+         TemplateView.as_view(
+             template_name='connect_therapy/practitioner/login-success.html'
+         ),
+         name='practitioner-login-success'
+         ),
+    path('practitioner/logout',
+         auth_views.logout,
+         {
+             'next_page':
+                 reverse_lazy('connect_therapy:practitioner-logout-success'),
+         },
+         name='practitioner-logout'
+         ),
+    path('practitioner/logout/success',
+         TemplateView.as_view(
+             template_name='connect_therapy/practitioner/logout-success.html'
+         ),
+         name='practitioner-logout-success'
+         ),
 ]
