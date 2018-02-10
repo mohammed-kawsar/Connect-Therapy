@@ -2,3 +2,25 @@ video {
     width: 100%;
     height: auto;
 }
+
+#main {
+    padding-bottom: 10px;
+}
+
+#send textarea{
+    padding: 5px;
+}
+
+#message-field {
+    padding-bottom: 20px;
+}
+
+.messages {
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+#message-table-div {
+    height: 300px;
+    overflow: auto;
+}

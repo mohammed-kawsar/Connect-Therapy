@@ -1,5 +1,5 @@
 {% extends 'connect_therapy/base.html' %}
-{% block title %}Chat{% endblock %}
+{% comment %}{% block title %}Chat{% endblock %}{% endcomment %}
 
 {% block header %}
     <script src="https://simplewebrtc.com/latest-v2.js"></script>
@@ -14,7 +14,7 @@
         <h1>Web chat page. Session id: {{ session_id }}</h1>
     </div>
 
-    <div class="container-fluid">
+    <div class="container-fluid" id="main">
         <div class="grid">
             <div class="row">
                 <div class="col-md-4">
@@ -25,17 +25,32 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <table id="message-table">
-                        <thead>
-                        <tr>
-                            <th>Messages</th>
-                        </tr>
-                        </thead>
-                    </table>
-                    <textarea id="message-field"></textarea>
-                    <button onclick="sendMessage()">Send</button>
+
+            <div class="messages">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="message-table-div">
+                            <table id="message-table" class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Messages</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div class="grid">
+                            <div class="row">
+                                <div class="col-md-11">
+                                    <textarea class="form-control" rows="1" id="message-field"></textarea>
+                                </div>
+                                <div class="col-md-1">
+                                    <button onclick="sendMessage()" type="button" class="btn btn-light" id="send">Send
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -32,16 +32,13 @@ function addMessageToTable(message,table,sent) {
 
     var sender = row.insertCell(0);
     var messageText = row.insertCell(1);
-    var timeStamp = row.insertCell(2);
 
     if (sent == true) {
         sender.innerHTML = "<i>You</i>";
     } else {
         sender.innerHTML = "<i>Them</i>"
     }
-
     messageText.innerHTML = message;
-    timeStamp.innerHTML = "";
 }
 
 webrtc.connection.on("message", function(data) {
