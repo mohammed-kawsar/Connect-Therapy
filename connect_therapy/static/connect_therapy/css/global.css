@@ -1,0 +1,43 @@
+.container-fluid {
+
+    background: #FFFFFF;
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.20);
+    font-family: Cuprum-Bold;
+    font-size: 30px;
+    color: #432424;
+    margin-left: auto;
+
+}
+
+.navbar-collapse {
+
+    font-family: Cuprum-Regular;
+    font-size: 16px;
+    color: #432424;
+    margin-right: -15px;
+    margin-left: -15px;
+
+}
+
+.navbar-brand ul {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+p {
+    color: black;
+}
+
+.navbar-brand img {
+    max-width: 20px;
+    max-height: 20px;
+    margin-left: -1em;
+}
+
+.navbar-header img {
+    margin-left: 140px;
+    position: relative;
+    max-height: 20px;
+    max-width: 20px;
+
+}
