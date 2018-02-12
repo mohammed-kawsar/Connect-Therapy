@@ -4,6 +4,7 @@
 {% block header %}
     <script src="https://simplewebrtc.com/latest-v2.js"></script>
     {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <script src="{% static 'connect_therapy/webrtc.js' %}"></script>
     <link rel="stylesheet" href="{% static 'connect_therapy/webrtc.css' %}" type="text/css">
 {% endblock %}
@@ -11,25 +12,60 @@
 {% block content %}
 
     <div class="jumbotron">
-        <h1>Web chat page. Session id: {{ session_id }}</h1>
+        <h1>Web chat page. </h1>
+    </div>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <div id="remove-vid-wrapper">
+                    <div id="remotesVideos"></div>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="container">
+                    <div class="row" id="local-video">
+                        <video height="300" id="localVideo"></video>
+                    </div>
+                    <div class="message">
+                        <div class="row">
+                            <div id="message-table-div">
+                                <table id="message-table" class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Messages</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-11">
+                                <textarea class="form-control" rows="1" id="message-field"></textarea>
+                            </div>
+                            <div class="col-md-1">
+                                <button onclick="sendMessage()" class="btn btn-light" type="button" id="send">Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+
+            </div>
+        </div>
     </div>
 
     <div class="container-fluid" id="main">
         <div class="grid">
-            <div class="row">
-                <div class="col-md-4">
-                    <video height="300" id="localVideo"></video>
-                </div>
-                <div class="col-md-8">
-                    <div id="remotesVideos"></div>
-                </div>
-            </div>
-
 
             <div class="messages">
                 <div class="row">
                     <div class="col-md-12">
-                        <div id="message-table-div">
+                        {% comment %}<div id="message-table-div">
                             <table id="message-table" class="table table-striped">
                                 <thead>
                                 <tr>
@@ -38,17 +74,17 @@
                                 </tr>
                                 </thead>
                             </table>
-                        </div>
+                        </div>{% endcomment %}
                         <div class="grid">
-                            <div class="row">
-                                <div class="col-md-11">
-                                    <textarea class="form-control" rows="1" id="message-field"></textarea>
-                                </div>
-                                <div class="col-md-1">
-                                    <button onclick="sendMessage()" type="button" class="btn btn-light" id="send">Send
-                                    </button>
-                                </div>
-                            </div>
+                            {#                            <div class="row">#}
+                            {#                                <div class="col-md-11">#}
+                            {#                                    <textarea class="form-control" rows="1" id="message-field"></textarea>#}
+                            {#                                </div>#}
+                            {#                                <div class="col-md-1">#}
+                            {#                                    <button onclick="sendMessage()" type="button" class="btn btn-light" id="send">Send#}
+                            {#                                    </button>#}
+                            {#                                </div>#}
+                            {#                            </div>#}
                         </div>
                     </div>
                 </div>
