@@ -5,20 +5,6 @@ from django.contrib.auth.admin import UserAdmin as UserAdminParent
 from connect_therapy.models import Practitioner
 
 
-def mark_approved(modeladmin, request, queryset):
-    queryset.update(is_approved=True)
-
-
-mark_approved.short_description = "Mark as approved"
-
-
-def mark_not_approved(modeladmin, request, queryset):
-    queryset.update(is_approved=False)
-
-
-mark_not_approved.short_description = "Mark as not approved"
-
-
 @admin.register(Practitioner)
 class PractitionerAdmin(admin.ModelAdmin):
     def get_user_first_name(practitioner):
@@ -30,9 +16,17 @@ class PractitionerAdmin(admin.ModelAdmin):
     def get_user_email(practitioner):
         return practitioner.user.email
 
+    def mark_approved(modeladmin, request, queryset):
+        queryset.update(is_approved=True)
+
+    def mark_not_approved(modeladmin, request, queryset):
+        queryset.update(is_approved=False)
+
     get_user_first_name.short_description = "First Name"
     get_user_last_name.short_description = "Last Name"
     get_user_email.short_description = "Email"
+    mark_approved.short_description = "Mark as approved"
+    mark_not_approved.short_description = "Mark as not approved"
     list_display = (get_user_first_name,
                     get_user_last_name,
                     get_user_email, 'is_approved'

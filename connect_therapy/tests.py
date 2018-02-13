@@ -384,8 +384,6 @@ class testPractitionerAdmin(TestCase):
         self.assertEqual(PractitionerAdmin.get_user_email(practitioner),
                          'test@example.com')
 
-
-class testAdminFunctions(TestCase):
     def test_mark_approved(self):
         u = User(first_name="John", last_name="Smith")
         u.save()
@@ -395,7 +393,7 @@ class testAdminFunctions(TestCase):
                                     mobile="+447577293232",
                                     bio="Hello")
         practitioner.save()
-        mark_approved(None, None, Practitioner.objects.all())
+        PractitionerAdmin.mark_approved(None, None, Practitioner.objects.all())
         self.assertEqual(len(Practitioner.objects.filter(is_approved=False)),0)
 
         self.assertEqual(len(Practitioner.objects.filter(is_approved=True)),1)
@@ -410,7 +408,9 @@ class testAdminFunctions(TestCase):
                                     bio="Hello",
                                     is_approved=True)
         practitioner.save()
-        mark_not_approved(None, None, Practitioner.objects.all())
+        PractitionerAdmin.mark_not_approved(None,
+                                            None,
+                                            Practitioner.objects.all())
         self.assertEqual(len(Practitioner.objects.filter(is_approved=False)),
                          1
                          )
