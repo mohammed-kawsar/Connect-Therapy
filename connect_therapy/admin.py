@@ -21,13 +21,22 @@ mark_not_approved.short_description = "Mark as not approved"
 
 @admin.register(Practitioner)
 class PractitionerAdmin(admin.ModelAdmin):
-    first_name = lambda x: x.user.first_name
-    first_name.short_description = "First Name"
-    last_name = lambda x: x.user.last_name
-    last_name.short_description = "Last Name"
-    email = lambda x: x.user.email
-    email.short_description = "Email"
-    list_display = (first_name, last_name, email, 'is_approved')
+    def get_user_first_name(self, user):
+        return user.first_name
+
+    def get_user_last_name(self, user):
+        return user.last_name
+
+    def get_user_email(self, user):
+        return user.email
+
+    get_user_first_name.short_description = "First Name"
+    get_user_last_name.short_description = "Last Name"
+    get_user_email.short_description = "Email"
+    list_display = (get_user_first_name,
+                    get_user_last_name,
+                    get_user_email, 'is_approved'
+                    )
     list_filter = ('is_approved',)
     actions = (mark_approved, mark_not_approved)
     search_fields = ('user__first_name', 'user__last_name', 'user__email')
