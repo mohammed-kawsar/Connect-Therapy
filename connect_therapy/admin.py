@@ -13,6 +13,7 @@ class PractitionerAdmin(admin.ModelAdmin):
     email = lambda x: x.user.email
     email.short_description = "Email"
     list_display = (first_name, last_name, email, 'is_approved')
+    list_filter = ('is_approved',)
 
 
 admin.site.unregister(Group)
