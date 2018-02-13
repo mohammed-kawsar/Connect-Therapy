@@ -29,6 +29,7 @@ class PractitionerAdmin(admin.ModelAdmin):
     list_display = (first_name, last_name, email, 'is_approved')
     list_filter = ('is_approved',)
     actions = (mark_approved, mark_not_approved)
+    search_fields = ('user__first_name', 'user__last_name', 'user__email')
 
 
 admin.site.unregister(Group)
