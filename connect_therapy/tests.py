@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from connect_therapy.models import *
 from connect_therapy.forms import *
+from connect_therapy.admin import *
 from datetime import date, datetime, time
 import pytz
 
@@ -342,3 +343,54 @@ class PractitionerLoginFormTests(TestCase):
             'password': 'woofwoof12'
         })
         self.assertFalse(form.is_valid())
+
+
+class testPractitionerAdmin(TestCase):
+    def test_get_user_first_name(self):
+        p = PractitionerAdmin(Practitioner, None)
+        u = User(first_name='Robert')
+        self.assertEqual(p.get_user_first_name(u), 'Robert')
+
+    def test_get_user_last_name(self):
+        p = PractitionerAdmin(Practitioner, None)
+        u = User(last_name='Greener')
+        self.assertEqual(p.get_user_last_name(u), 'Greener')
+
+    def test_get_user_email(self):
+        p = PractitionerAdmin(Practitioner, None)
+        u = User(email='test@example.com')
+        self.assertEqual(p.get_user_email(u), 'test@example.com')
+
+
+class testAdminFunctions(TestCase):
+    def test_mark_approved(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+        mark_approved(None, None, Practitioner.objects.all())
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=False)),0)
+
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=True)),1)
+
+    def test_not_mark_approved(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello",
+                                    is_approved=True)
+        practitioner.save()
+        mark_not_approved(None, None, Practitioner.objects.all())
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=False)),
+                         1
+                         )
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=True)),
+                         0
+                         )
