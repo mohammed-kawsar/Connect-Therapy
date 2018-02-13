@@ -73,21 +73,6 @@
     text-decoration:none;
 }
 
-/*.paragraph h3{
-    padding-left: 70px;
-    padding-top: 70px;
-}
-
-.paragraph p{
-    padding-left: 70px;
-    padding-top: 20px;
-
-}
-
-.bottom-left{
-    padding-top: 20px;
-    padding-right: 70px;
-}*/
 .image {
     float: right;
 }
@@ -100,4 +85,13 @@
 .text {
     padding-left: 50px;
     padding-top: 50px;
+}
+
+.text p{
+    padding-top: 10px;
+}
+
+.title{
+    color: #f7a72e;
+    font-family:Cuprum-Bold;
 }
