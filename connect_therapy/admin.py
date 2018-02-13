@@ -21,14 +21,14 @@ mark_not_approved.short_description = "Mark as not approved"
 
 @admin.register(Practitioner)
 class PractitionerAdmin(admin.ModelAdmin):
-    def get_user_first_name(self, user):
-        return user.first_name
+    def get_user_first_name(practitioner):
+        return practitioner.user.first_name
 
-    def get_user_last_name(self, user):
-        return user.last_name
+    def get_user_last_name(practitioner):
+        return practitioner.user.last_name
 
-    def get_user_email(self, user):
-        return user.email
+    def get_user_email(practitioner):
+        return practitioner.user.email
 
     get_user_first_name.short_description = "First Name"
     get_user_last_name.short_description = "Last Name"

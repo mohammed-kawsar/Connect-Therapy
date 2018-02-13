@@ -347,19 +347,42 @@ class PractitionerLoginFormTests(TestCase):
 
 class testPractitionerAdmin(TestCase):
     def test_get_user_first_name(self):
-        p = PractitionerAdmin(Practitioner, None)
-        u = User(first_name='Robert')
-        self.assertEqual(p.get_user_first_name(u), 'Robert')
+        user = User(first_name="John", last_name="Smith")
+        user.save()
+        practitioner = Practitioner(user=user,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        self.assertEqual(PractitionerAdmin.get_user_first_name(practitioner),
+                         'John'
+                         )
 
     def test_get_user_last_name(self):
-        p = PractitionerAdmin(Practitioner, None)
-        u = User(last_name='Greener')
-        self.assertEqual(p.get_user_last_name(u), 'Greener')
+        user = User(first_name="John", last_name="Smith")
+        user.save()
+        practitioner = Practitioner(user=user,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        self.assertEqual(PractitionerAdmin.get_user_last_name(practitioner),
+                         'Smith'
+                         )
 
     def test_get_user_email(self):
-        p = PractitionerAdmin(Practitioner, None)
-        u = User(email='test@example.com')
-        self.assertEqual(p.get_user_email(u), 'test@example.com')
+        user = User(first_name="John",
+                    last_name="Smith",
+                    email='test@example.com'
+                    )
+        user.save()
+        practitioner = Practitioner(user=user,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        self.assertEqual(PractitionerAdmin.get_user_email(practitioner),
+                         'test@example.com')
 
 
 class testAdminFunctions(TestCase):
