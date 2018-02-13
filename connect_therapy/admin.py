@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
+from django.contrib.auth.admin import UserAdmin as UserAdminParent
 
 from connect_therapy.models import Practitioner
 
@@ -33,3 +34,11 @@ class PractitionerAdmin(admin.ModelAdmin):
 
 
 admin.site.unregister(Group)
+admin.site.unregister(User)
+
+
+@admin.register(User)
+class UserAdmin(UserAdminParent):
+    def has_module_permission(self, request):
+        """This stops the UserAdmin appearing on the home page"""
+        return False
