@@ -12,7 +12,7 @@ var webrtc = new SimpleWebRTC({
 // we have to wait until it's ready
 webrtc.on('readyToCall', function () {
     // you can name it anything
-    webrtc.joinRoom('eKeYlF1DR6AtVkeFZK9vEIHSZT8e0jqZ'); // tempname
+    webrtc.joinRoom(session_id); // tempname
     document.getElementById("controls").style.visibility = "visible";
     document.getElementById("loading").style.display = "none";
 });
