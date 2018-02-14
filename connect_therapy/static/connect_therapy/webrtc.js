@@ -15,7 +15,6 @@ webrtc.on('readyToCall', function () {
     webrtc.joinRoom('eKeYlF1DR6AtVkeFZK9vEIHSZT8e0jqZ'); // tempname
     document.getElementById("controls").style.visibility = "visible";
     document.getElementById("loading").style.display = "none";
-
 });
 
 webrtc.connection.on("message", function (data) {

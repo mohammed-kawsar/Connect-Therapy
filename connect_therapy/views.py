@@ -45,7 +45,7 @@ class PatientLoginView(auth_views.LoginView):
 class ChatView(LoginRequiredMixin, View):
     login_url = reverse_lazy('connect_therapy:patient-login')
     def get(self, request):
-        session_id = "eKeYlF1DR6AtVkeFZK9vEIHSZT8e0jqZ" # this is here for testing only
+        session_id = "eKeYlF1DR6AtVkeFZK9vEIHSZT8e0jqZ" # would get session ID from db here
         return render(request, 'connect_therapy/patient/chat.html', {'session_id': session_id})
 
 class PractitionerSignUpView(FormView):
