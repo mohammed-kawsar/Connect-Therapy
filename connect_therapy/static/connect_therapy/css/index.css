@@ -22,11 +22,10 @@
 .carousel-item{
     width: 100%;
     height: 100%;
-    padding-left: 50px;
-    padding-right: 50px;
+
 }
 
-.caption{
+.caption h3{
     position: absolute;
     top: 30%;
     left: 50%;
@@ -34,11 +33,13 @@
     color: #FFFFFF;
     text-decoration: underline;
     text-decoration-color: red;
+    font-family: "DIN Condensed";
+    font-size: 50px;
 }
 
 .caption2{
     position: absolute;
-    top: 50%;
+    top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: #FFFFFF;
@@ -62,36 +63,38 @@
 }
 
 .find-more a{
-    font-family:Cuprum-Regular;
+    font-family:DIN Condensed;
     position: absolute;
     transform: translate(-50%, -50%);
     display:block;
     width:150px;
-    height:30px;
+    height:40px;
     background-color:red;
     border:1px solid #ff0000;
     text-align: center;
-    top: 70%;
+    top: 75%;
     left: 60%;
-    line-height: 27px;
+    line-height: 45px;
     text-decoration:none;
+    font-size: 25px;
 
 }
 
 .sign-up a{
-    font-family:Cuprum-Regular;
+    font-family:DIN Condensed;
     position: absolute;
     transform: translate(-50%, -50%);
     display:block;
     width:150px;
-    height:30px;
+    height:40px;
     background-color:red;
     border:1px solid #ff0000;
     text-align: center;
-    top: 70%;
+    top: 75%;
     left: 40%;
-    line-height: 27px;
+    line-height: 45px;
     text-decoration:none;
+    font-size: 25px;
 
 }
 
@@ -100,7 +103,7 @@
 }
 .image img {
     padding-top: 50px;
-    padding-right: 50px;
+
     padding-bottom: 50px;
 }
 
