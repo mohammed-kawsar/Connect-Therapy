@@ -1,4 +1,7 @@
+{% extends 'connect_therapy/base.html' %}
 {% load static %}
+{% block title %}Home{% endblock %}
+{% block content %}
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -21,14 +24,14 @@
             <div class="find-more"><a href="#" style="color: #fff">FIND OUT MORE</a></div>
         </div>
         <div class="item2 carousel-item">
-            <img class="black-back" src="{% static '/connect_therapy/images/cup.png' %}" alt="Second slide">
+            <img class="black-back" src="{% static '/connect_therapy/images/notes2.jpg' %}" alt="Second slide">
             <div class="clinic">
                 <img class="clinician" src="{% static '/connect_therapy/images/clinician.png' %}" alt="Second slide" align="middle">
             </div>
     <h2 class="clinician-quote">"This web application is amazing, it allows patients to get treatment wherever they are and whenever they want"</h2>
         </div>
         <div class="item3 carousel-item">
-            <img class="d-block w-100" src="{% static '/connect_therapy/images/3rdback.jpg' %}" alt="Third slide">
+            <img class="d-block" src="{% static '/connect_therapy/images/3rdback.jpg' %}" alt="Third slide">
              <div class="patient-block">
                 <img class="patient" src="{% static '/connect_therapy/images/clinician.png' %}" alt="Third slide" align="middle">
             </div>
@@ -93,3 +96,4 @@ $('#myCarousel').carousel({
 ﻿
 <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
 </body>
+{% endblock %}

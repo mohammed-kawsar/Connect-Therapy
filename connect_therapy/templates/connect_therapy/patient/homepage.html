@@ -1,6 +1,7 @@
-
+{% extends 'connect_therapy/base.html' %}
 {% load static %}
-
+{% block title %}Patient Home{% endblock %}
+{% block content %}
 <link href="{% static '/connect_therapy/css/patient-homepage.css' %}" rel="stylesheet">
 <div class="g">
     <img class="img" src="{% static '/connect_therapy/images/Website-Design-Background.png' %}" alt="First slide">
@@ -8,3 +9,4 @@
     <div class="caption2">Welcome, book an appointment</div>
     <div class="find-more"><a href="#" style="color: #fff">FIND OUT MORE</a></div>
 </div>
+{% endblock %}
