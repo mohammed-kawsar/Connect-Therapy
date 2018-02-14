@@ -81,4 +81,11 @@ urlpatterns = [
          ),
          name='index'
          ),
+    path('patient',
+         TemplateView.as_view(
+             template_name='connect_therapy/patient/homepage.html'
+         ),
+         name='patient-homepage'
+         ),
+
 ]

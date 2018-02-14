@@ -1,0 +1,47 @@
+
+
+.g img{
+    width: 100%;
+    height: 100%
+}
+
+.caption{
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #FFFFFF;
+    text-decoration: underline;
+    text-decoration-color: red;
+    font-family: "DIN Condensed";
+    font-size: 25px;
+}
+
+.caption2{
+    font-family: Cuprum-Regular;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #FFFFFF;
+    font-size: 310%;
+}
+
+.find-more a{
+    font-family:DIN Condensed;
+    font-size: 20px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display:block;
+    width:150px;
+    height:30px;
+    background-color:red;
+    border:1px solid #ff0000;
+    text-align: center;
+    vertical-align: center;
+    top: 70%;
+    left: 50%;
+    line-height: 27px;
+    text-decoration:none;
+
+}
