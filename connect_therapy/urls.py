@@ -78,4 +78,7 @@ urlpatterns = [
          ),
          name='practitioner-logout-success'
          ),
+    path('practitioner/my-appointments',
+         views.MyAppointmentsView.as_view(),
+         name='practitioner-my-appointments'),
 ]
