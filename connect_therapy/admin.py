@@ -38,6 +38,8 @@ class PractitionerAdmin(admin.ModelAdmin):
 
 admin.site.unregister(Group)
 admin.site.unregister(User)
+admin.site.site_header = 'Connect Therapy Administration'
+admin.site.site_title = 'Connect Therapy - Admin'
 
 
 @admin.register(User)
