@@ -1,0 +1,43 @@
+.caption {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #FFFFFF;
+    font-size: 310%;
+    text-align: center;
+
+}
+
+.image {
+    float: right;
+}
+
+.image img {
+    padding-top: 50px;
+    padding-right: 50px;
+    padding-bottom: 50px;
+}
+
+.text {
+    padding-left: 50px;
+    padding-top: 50px;
+}
+
+.text p {
+    padding-top: 10px;
+}
+
+.caption2 p {
+    font-family: Cuprum-Regular;
+    position: absolute;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+
+}
+
+.title {
+    color: #30419A;
+    font-family: Cuprum-Bold;
+}
