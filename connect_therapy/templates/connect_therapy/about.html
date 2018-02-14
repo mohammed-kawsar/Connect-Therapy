@@ -1,4 +1,7 @@
+{% extends 'connect_therapy/base.html' %}
 {% load static %}
+{% block content %}
+
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -23,9 +26,9 @@
 </div>
 
 <div class="post1">
-    <div class="image"><img class="d-block w-50 h-50 float-right"
+    <div class="image1"><img class="d-block w-50 h-50 float-right"
                             src="{% static '/connect_therapy/images/brain.png' %}">
-        <div class="text">
+        <div class="text1">
             <h3 class="title">World class research and expertise</h3>
             <p style="width: 600px;">
                 Niduci tisa suyofos natenix po, nute ieros dorurij ofodu na nomer begora imil dit be. Cili wihidi ludelu
@@ -35,19 +38,14 @@
                 imebe rur. Sielore ener honuz yikete pe sehi. Ci sase nicot rat nuted temiv sepuhi telalos sosofa! Kosit
                 orietino ehire?
                 Mewin litat la beru tecorig nasahus elanada onot. Tiviva mofasad esie tucamen eca; paga isi atiero lo.
-                Sakeg begage
-                pebalir rinibib. Nidise modeses lebes petiso net qufen. Tofilo dedero agepoy him panacu; avo fari
-                ehomala cadudo ovo kasali hon
-                raro lenir arotanoc. Pesopir la aritel teselo ubijas. Tenehi getuca levav. Le lo siel ome orenem.
             </p>
         </div>
     </div>
 </div>
 
 <div class="post2">
-    <div class="image"><img class="d-block w-50 h-50 float-right"
-                            src="{% static '/connect_therapy/images/ioppn.png' %}">
-        <div class="text">
+    <div class="image2"><img src="{% static '/connect_therapy/images/ioppn.png' %}">
+        <div class="text2">
             <h3 class="title">Knowledge at the heart of London</h3>
             <p style="width: 600px;">
                 Niduci tisa suyofos natenix po, nute ieros dorurij ofodu na nomer begora imil dit be. Cili wihidi ludelu
@@ -58,9 +56,6 @@
                 orietino ehire?
                 Mewin litat la beru tecorig nasahus elanada onot. Tiviva mofasad esie tucamen eca; paga isi atiero lo.
                 Sakeg begage
-                pebalir rinibib. Nidise modeses lebes petiso net qufen. Tofilo dedero agepoy him panacu; avo fari
-                ehomala cadudo ovo kasali hon
-                raro lenir arotanoc. Pesopir la aritel teselo ubijas. Tenehi getuca levav. Le lo siel ome orenem.
             </p>
         </div>
     </div>
@@ -89,3 +84,4 @@
 ﻿
 <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
 </body>
+{% endblock %}

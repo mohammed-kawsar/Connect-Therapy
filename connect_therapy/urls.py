@@ -74,4 +74,6 @@ urlpatterns = [
          ),
          name='practitioner-logout-success'
          ),
+    path('about', TemplateView.as_view(
+             template_name='connect_therapy/about.html'),name='about'),
 ]
