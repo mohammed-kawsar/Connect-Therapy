@@ -1,0 +1,25 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}My appointments{% endblock %}
+
+{% block content %}
+<h1>Your Appointments</h1></br>
+    <h2>Current Bookings</h2>
+    {% for appointment in future_appointments %}
+        <ol style="list-style-type:none">
+            <li>{{ appointment }}
+            <a href="">Cancel Appointment</a></li>
+        {% empty %}
+        <li>No upcoming appointments yet.</li>
+    {%  endfor %}
+     </ol>
+
+    <h2>Previous Bookings</h2>
+    {% for appointment in past_appointments %}
+        <ol>
+            <li>{{ appointment }}
+            <a href="">View Notes</a></li>
+        {% empty %}
+        <li>No previous appointments.</li>
+        </ol>
+    {% endfor %}
+{% endblock %}

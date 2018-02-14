@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
 from connect_therapy.views import *
+from . import views
 
 app_name = 'connect_therapy'
 urlpatterns = [
@@ -40,6 +41,9 @@ urlpatterns = [
          ),
          name='patient-logout-success'
          ),
+    path('patient/my-appointments',
+         views.MyAppointmentsView.as_view(),
+         name='patient-my-appointments'),
     path('practitioner/signup',
          PractitionerSignUpView.as_view(),
          name='practitioner-signup'
