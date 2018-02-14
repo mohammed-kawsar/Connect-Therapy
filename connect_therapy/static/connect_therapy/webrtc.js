@@ -1,7 +1,4 @@
-window.onload = function () {
-    // hide video controls
-    document.getElementById("controls").style.visibility = "hidden";
-}
+// this js file is used to create a webrtc video and text chat session
 
 var webrtc = new SimpleWebRTC({
     // the id/element dom element that will hold "our" video
@@ -18,6 +15,13 @@ webrtc.on('readyToCall', function () {
     webrtc.joinRoom('eKeYlF1DR6AtVkeFZK9vEIHSZT8e0jqZ'); // tempname
     document.getElementById("controls").style.visibility = "visible";
 
+});
+
+webrtc.connection.on("message", function (data) {
+    if (data.type === "chat") {
+        // message, table, sent?
+        addMessageToTable(data.payload.message, document.getElementById("message-table"), false);
+    }
 });
 
 function sendMessage() {
@@ -47,9 +51,3 @@ function addMessageToTable(message, table, sent) {
     messageText.innerHTML = message;
 }
 
-webrtc.connection.on("message", function (data) {
-    if (data.type === "chat") {
-        // message, table, sent?
-        addMessageToTable(data.payload.message, document.getElementById("message-table"), false);
-    }
-});
