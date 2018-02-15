@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy
-from django.views.generic import FormView
+from django.views.generic import FormView, DetailView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.utils import timezone
@@ -106,3 +106,10 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).order_by('-start_date_and_time')
         return context
+
+
+class PatientCancelAppointmentView(DetailView):
+
+    model = Appointment
+    template_name = 'connect_therapy/patient/cancel-appointment.html'
+
