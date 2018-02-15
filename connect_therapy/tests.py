@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.urls import reverse
+from django.utils import timezone
 from connect_therapy.models import *
 from connect_therapy.forms import *
 from datetime import date, datetime, time
@@ -137,7 +139,7 @@ class PatientLoginFormTests(TestCase):
                           mobile='+447476565333'
                           )
         patient.save()
-        form = PatientLoginForm(data= {
+        form = PatientLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -273,7 +275,7 @@ class PractitionerLoginFormTests(TestCase):
                                     is_approved=True
                                     )
         practitioner.save()
-        form = PractitionerLoginForm(data= {
+        form = PractitionerLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -291,7 +293,7 @@ class PractitionerLoginFormTests(TestCase):
                                     is_approved=False
                                     )
         practitioner.save()
-        form = PractitionerLoginForm(data= {
+        form = PractitionerLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -342,3 +344,62 @@ class PractitionerLoginFormTests(TestCase):
             'password': 'woofwoof12'
         })
         self.assertFalse(form.is_valid())
+
+
+class MyAppointmentsTests(TestCase):
+    def create_appointment(self, year):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+
+        appointment = Appointment(
+            practitioner=practitioner,
+            start_date_and_time=datetime(year=year,
+                                         month=3,
+                                         day=2,
+                                         hour=15,
+                                         minute=10,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1)
+        )
+        appointment.save()
+
+        return appointment
+
+    def test_no_current_bookings(self):
+        response = \
+            self.client.get(reverse('connect_therapy:patient-my-appointments'))
+        self.assertContains(response, "No upcoming appointments yet.")
+        self.assertContains(response, "No previous appointments.")
+        self.assertQuerysetEqual(response.context['future_appointments'], [])
+
+    def test_future_appointment(self):
+        year = timezone.now().year + 1
+        self.create_appointment(year)
+        response = \
+            self.client.get(reverse('connect_therapy:patient-my-appointments'))
+        self.assertNotContains(response, "No upcoming appointments yet.")
+        self.assertContains(response,
+                            "John Smith - " + str(year)
+                            + "-03-02 15:10:00+00:00 for 01:00:00")
+        self.assertContains(response, "No previous appointments.")
+        self.assertQuerysetEqual(response.context['future_appointments'],
+                                 ['<Appointment: John Smith - ' + str(year)
+                                  + '-03-02 '
+                                    '15:10:00+00:00 for 01:00:00>'])
+
+    def test_past_appointment(self):
+        self.create_appointment(2018)
+        response = \
+            self.client.get(reverse('connect_therapy:patient-my-appointments'))
+        # self.assertNotContains(response, "No previous appointments.")
+        # self.assertContains(response, "No upcoming appointments yet.")
+        self.assertQuerysetEqual(response.context['future_appointments'],
+                                 ['<Appointment: John Smith - 2017-03-02 '
+                                  '15:10:00+00:00 for 01:00:00>'])
+    # TODO Tests so that users cannot view others users appointments.

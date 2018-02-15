@@ -5,21 +5,22 @@
 <h1>Your Appointments</h1></br>
     <h2>Current Bookings</h2>
     {% for appointment in future_appointments %}
-        <ol style="list-style-type:none">
-            <li>{{ appointment }}
-            <a href="">Cancel Appointment</a></li>
+        <tr class="current">
+            <td> {{ appointment }} </td>
+            <td><a href="">Cancel Appointment</a></td>
+        </tr>
         {% empty %}
-        <li>No upcoming appointments yet.</li>
+        <p> No upcoming appointments yet. </p>
     {%  endfor %}
-     </ol>
+
 
     <h2>Previous Bookings</h2>
     {% for appointment in past_appointments %}
-        <ol>
-            <li>{{ appointment }}
-            <a href="">View Notes</a></li>
+        <tr class="previous">
+            <td> {{ appointment }} </td>
+            <td> <a href="">View Notes</a> </td>
+        </tr>
         {% empty %}
-        <li>No previous appointments.</li>
-        </ol>
+        <p> No previous appointments. </p>
     {% endfor %}
 {% endblock %}

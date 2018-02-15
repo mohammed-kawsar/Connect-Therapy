@@ -39,6 +39,23 @@ class PatientLoginView(auth_views.LoginView):
         return reverse_lazy('connect_therapy:patient-login-success')
 
 
+class PatientMyAppointmentsView(generic.ListView):
+    template_name = 'connect_therapy/patient/my-appointments.html'
+
+    model = Appointment
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # TODO Need to filter appointments by patient logged in.
+        context['future_appointments'] = Appointment.objects.filter(
+            start_date_and_time__gte=
+            timezone.now()).order_by('-start_date_and_time')
+        context['past_appointments'] = Appointment.objects.filter(
+            start_date_and_time__lt=
+            timezone.now()).order_by('-start_date_and_time')
+        return context
+
+
 class PractitionerSignUpView(FormView):
     form_class = PractitionerSignUpForm
     template_name = 'connect_therapy/practitioner/signup.html'
@@ -72,15 +89,19 @@ class PractitionerLoginView(auth_views.LoginView):
         return reverse_lazy('connect_therapy:practitioner-login-success')
 
 
-class MyAppointmentsView(generic.ListView):
-    template_name = 'connect_therapy/patient/my-appointments.html'
+class PractitionerMyAppointmentsView(generic.ListView):
+    template_name = 'connect_therapy/practitioner/my-appointments.html'
 
     model = Appointment
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Context for current and previous bookings.
+        # TODO Need to filter appointments by practitioner logged in.
         context['future_appointments'] = Appointment.objects.filter(
-            start_date_and_time__gte=timezone.now()).order_by('-start_date_and_time')
+            start_date_and_time__gte=
+            timezone.now()).order_by('-start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
-            start_date_and_time__lt=timezone.now()).order_by('-start_date_and_time')
+            start_date_and_time__lt=
+            timezone.now()).order_by('-start_date_and_time')
         return context

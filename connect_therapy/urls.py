@@ -42,7 +42,7 @@ urlpatterns = [
          name='patient-logout-success'
          ),
     path('patient/my-appointments',
-         views.MyAppointmentsView.as_view(),
+         views.PatientMyAppointmentsView.as_view(),
          name='patient-my-appointments'),
     path('practitioner/signup',
          PractitionerSignUpView.as_view(),
@@ -79,6 +79,6 @@ urlpatterns = [
          name='practitioner-logout-success'
          ),
     path('practitioner/my-appointments',
-         views.MyAppointmentsView.as_view(),
+         views.PractitionerMyAppointmentsView.as_view(),
          name='practitioner-my-appointments'),
 ]
