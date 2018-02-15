@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy
-from django.views.generic import FormView, ListView
+from django.views.generic import FormView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.utils import timezone
