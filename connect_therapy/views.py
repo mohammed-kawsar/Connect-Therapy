@@ -39,7 +39,7 @@ class PatientLoginView(auth_views.LoginView):
         return reverse_lazy('connect_therapy:patient-login-success')
 
 
-class PatientMyAppointmentsView(generic.ListView):
+class PatientMyAppointmentsView(generic.TemplateView):
     template_name = 'connect_therapy/patient/my-appointments.html'
 
     model = Appointment
@@ -49,7 +49,7 @@ class PatientMyAppointmentsView(generic.ListView):
         context['future_appointments'] = Appointment.objects.filter(
             start_date_and_time__gte=timezone.now(),
             patient=self.request.user.patient
-        ).order_by('-start_date_and_time'),
+        ).order_by('-start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
             patient=self.request.user.patient
@@ -90,7 +90,7 @@ class PractitionerLoginView(auth_views.LoginView):
         return reverse_lazy('connect_therapy:practitioner-login-success')
 
 
-class PractitionerMyAppointmentsView(generic.ListView):
+class PractitionerMyAppointmentsView(generic.TemplateView):
     template_name = 'connect_therapy/practitioner/my-appointments.html'
 
     model = Appointment
@@ -100,7 +100,7 @@ class PractitionerMyAppointmentsView(generic.ListView):
         context['future_appointments'] = Appointment.objects.filter(
             start_date_and_time__gte=timezone.now(),
             practitioner=self.request.user.practitioner
-        ).order_by('-start_date_and_time'),
+        ).order_by('-start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
             practitioner=self.request.user.practitioner
