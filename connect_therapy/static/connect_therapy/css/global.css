@@ -6,7 +6,7 @@
     font-size: 30px;
     color: #432424;
     margin-left: auto;
-    margin-bottom: 25px;
+    margin-bottom: 13px;
     margin-right: auto;
 
 }
@@ -18,9 +18,9 @@
     font-family: Cuprum-Bold;
     color: #432424;
 
-    margin-top: 10px;
+    margin-top: 13px;
     margin-bottom: auto;
-    position: absolute;
+    position: relative;
   right: 0;
   bottom: 0;
   left: 0;
@@ -46,6 +46,7 @@
     margin-right: auto;
     margin-left:0px;
     padding-top: 1px;
+    position: relative;
 
 }
 
@@ -71,7 +72,6 @@ p {
     max-height: 20px;
     max-width: 20px;
 
-
 }
 
 .copyright {
@@ -92,5 +92,10 @@ padding-bottom: 10px;
 }
 .c{
     margin-top: -10px;
+}
+
+.content{
+    margin-right: 13px;
+     margin-left: 13px;
 }
 

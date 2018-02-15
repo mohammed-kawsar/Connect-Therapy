@@ -1,9 +1,4 @@
 
-.post1 {
-    padding-right: 50px;
-    padding-left: 50px;
-}
-
 .post1 img {
     padding-top: 50px;
     padding-left: 200px;
@@ -54,7 +49,7 @@
     height: 70%;
 }
 
-.caption {
+.caption h3{
     position: absolute;
     font-family: Cuprum-Regular;
 
@@ -62,30 +57,30 @@
     left: 50%;
     transform: translate(-50%, -50%);
     color: #FFFFFF;
-    font-size: 1000px;
+    font-size: 400%;
     text-align: center;
 
 }
 
 .caption2 p {
-    top: 30%;
+    top: 35%;
     font-family: Cuprum-Regular;
     position: absolute;
     display: block;
     text-align: center;
     text-decoration: none;
     color: #FFFFFF;
-    padding-left: 20%;
-    padding-right: 20%;
-    font-size: 20px;
+    padding-left: 10%;
+    padding-right: 10%;
+    font-size: 30px;
 }
 
-.main-image {
 
-    padding-left: 50px;
-    padding-right: 50px;
-
-}
 .image2 img{
     padding-top: 50px;
+}
+
+.main-image img{
+    width: 100%;
+    height: 500px;
 }
