@@ -6,18 +6,21 @@
     <h2>Current Bookings</h2>
     {% for appointment in future_appointments %}
         <tr class="current">
-            <td> {{ appointment }} </td>
+            <td> {{ appointment.start_date_and_time }} </td>
+            <td>Duration: {{ appointment.length }}</td>
+            <td>Patient: {{ appointment.patient }}</td>
             <td><a href="">Cancel Appointment</a></td>
         </tr>
         {% empty %}
         <p> No upcoming appointments yet. </p>
     {%  endfor %}
 
-
     <h2>Previous Bookings</h2>
     {% for appointment in past_appointments %}
         <tr class="previous">
-            <td> {{ appointment }} </td>
+            <td> {{ appointment.start_date_and_time }} </td>
+            <td>Duration: {{ appointment.length }}</td>
+            <td>Patient: {{ appointment.patient }}</td>
             <td> <a href="">View Notes</a> </td>
         </tr>
         {% empty %}
