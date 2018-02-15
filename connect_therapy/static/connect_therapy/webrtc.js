@@ -24,6 +24,7 @@ webrtc.connection.on("message", function (data) {
     }
 });
 
+
 function sendMessage() {
     var messageToSend = document.getElementById("message-field").value;
     if (messageToSend.length > 0) {
