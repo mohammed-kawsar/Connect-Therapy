@@ -1,0 +1,77 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Chat{% endblock %}
+
+{% block header %}
+    <script src="https://simplewebrtc.com/latest-v2.js"></script>
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="{% static 'connect_therapy/webrtc.js' %}"></script>
+    <script src="{% static 'connect_therapy/webrtc-controls.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'connect_therapy/webrtc.css' %}" type="text/css">
+{% endblock %}
+
+{% block content %}
+
+    <script>
+        var session_id = "{{ session_id }}";
+    </script>
+
+    <div class="jumbotron">
+        <h1>Web chat page. </h1>
+    </div>
+
+    <div id="loading">
+        <div class="loader"></div>
+        <p id="wait-text">Please wait for the other participant to join the chat</p>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <div id="remove-vid-wrapper">
+                    <div id="remotesVideos"></div>
+                    <div id="controls">
+                        <button type="button" class="btn btn-danger btn-circle btn-lg " id="pause" onclick="pause()">
+                            <span class="emoji" id="paused">⏸</span></button>
+                        <button type="button" class="btn btn-info btn-circle btn-lg " id="mute" onclick="mute()"><span
+                                class="emoji" id="muted">🔊</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md">
+                <div class="container">
+                    <div class="row" id="local-video">
+                        <video height="300" id="localVideo"></video>
+                    </div>
+                    <div class="message">
+                        <div class="row">
+                            <div id="message-table-div">
+                                <h5 id="message-heading">Messages</h5>
+                                <table id="message-table" class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-11">
+                                <textarea class="form-control" rows="1" id="message-field" onkeypress="buttonPress(event)"></textarea>
+                            </div>
+                            <div class="col-md-1">
+                                <button onclick="sendMessage()" class="btn btn-light" type="button" id="send"><span
+                                        class="emoji">✉</span> Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

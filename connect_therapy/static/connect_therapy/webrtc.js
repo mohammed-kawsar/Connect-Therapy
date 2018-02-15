@@ -26,7 +26,8 @@ webrtc.connection.on("message", function (data) {
 
 
 function sendMessage() {
-    var messageToSend = document.getElementById("message-field").value;
+    var messageField = document.getElementById("message-field");
+    var messageToSend = messageField.value;
     if (messageToSend.length > 0) {
         // messageToAdd, tableToAddTo, sent?
         addMessageToTable(messageToSend, document.getElementById("message-table"), true);
@@ -35,7 +36,7 @@ function sendMessage() {
             message: messageToSend
         });
     }
-    document.getElementById("message-field").value = '';
+    messageField.value = '';
 }
 
 function addMessageToTable(message, table, sent) {

@@ -40,9 +40,9 @@ urlpatterns = [
          ),
          name='patient-logout-success'
          ),
-    path('patient/chat/',
+    path('chat/',
          ChatView.as_view(),
-         name="patient-chat"),
+         name="chat"),
 
     path('practitioner/signup',
          PractitionerSignUpView.as_view(),

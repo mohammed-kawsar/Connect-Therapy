@@ -26,11 +26,18 @@ function mute() {
     if (muted) {
         muted = false;
         webrtc.unmute();
-        muteButton.innerHTML = "🔇";
+        muteButton.innerHTML = "🔊";
     } else {
         muted = true;
         webrtc.mute();
-        muteButton.innerHTML = "🔊";
+        muteButton.innerHTML = "🔇";
+    }
+}
+
+function buttonPress(e) {
+    if (e.keyCode == 13) {
+        sendMessage();
+        document.getElementById("message-field").value = "";
     }
 }
 
