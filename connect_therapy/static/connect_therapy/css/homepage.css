@@ -16,7 +16,7 @@
 }
 
 .altcaption{
-    font-family: Cuprum-Regular;
+    font-family: Cuprum-Bold;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -27,7 +27,7 @@
 
 .manage a{
     font-family:DIN Condensed;
-    font-size: 20px;
+    font-size: 15px;
     position: absolute;
     transform: translate(-50%, -50%);
     display:block;
