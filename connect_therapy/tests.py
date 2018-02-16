@@ -56,6 +56,68 @@ class AppointmentModelTests(TestCase):
         self.assertEqual(str(appointment),
                          'John Smith - 2018-03-02 15:16:00+00:00 for 01:00:00')
 
+    def test_session_salt_generation(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        patient = Patient(user=u,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+
+        patient.save()
+
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+
+        appointment = Appointment(
+            practitioner=practitioner,
+            patient=patient,
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=15,
+                                         minute=16,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1)
+        )
+        appointment.save()
+        self.assertTrue(len(appointment.session_salt) == 10)
+
+    def test_session_id_generation(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        patient = Patient(user=u,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+
+        patient.save()
+
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+
+        appointment = Appointment(
+            practitioner=practitioner,
+            patient=patient,
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=15,
+                                         minute=16,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1)
+        )
+        appointment.save()
+        self.assertTrue(len(appointment.session_id) > 0)
+
 
 class PatientSignUpFormTests(TestCase):
     def test_when_already_exists(self):
@@ -137,7 +199,7 @@ class PatientLoginFormTests(TestCase):
                           mobile='+447476565333'
                           )
         patient.save()
-        form = PatientLoginForm(data= {
+        form = PatientLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -273,7 +335,7 @@ class PractitionerLoginFormTests(TestCase):
                                     is_approved=True
                                     )
         practitioner.save()
-        form = PractitionerLoginForm(data= {
+        form = PractitionerLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -291,7 +353,7 @@ class PractitionerLoginFormTests(TestCase):
                                     is_approved=False
                                     )
         practitioner.save()
-        form = PractitionerLoginForm(data= {
+        form = PractitionerLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
