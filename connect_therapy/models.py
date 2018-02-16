@@ -37,7 +37,6 @@ def generate_session_id(salt, practitioner, patient, date_time):
     byte_string = str.encode(str(salt) + str(practitioner) + str(patient) + str(date_time))
     to_hash = hashlib.sha3_256(byte_string)
     hash_digest = to_hash.hexdigest()
-    print(hash_digest)
     return hash_digest
 
 
@@ -70,10 +69,11 @@ class Appointment(models.Model):
     """This is used to associate an appointment to a specific chat session.
     This id can then be used to join that chat session
     """
-    session_id = models.CharField(max_length=255, default=generate_session_id(salt=session_salt,
-                                                                              practitioner=practitioner.__str__(),
-                                                                              patient=patient.__str__(),
-                                                                              date_time=start_date_and_time)
+    session_id = models.CharField(max_length=255,
+                                  default=generate_session_id(salt=session_salt,
+                                                              practitioner=practitioner.__str__(),
+                                                              patient=patient.__str__(),
+                                                              date_time=start_date_and_time)
                                   , editable=False);
 
     def __str__(self):
