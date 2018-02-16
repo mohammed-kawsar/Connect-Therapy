@@ -103,8 +103,6 @@ class PractitionerLoginView(auth_views.LoginView):
     def get_success_url(self):
         return reverse_lazy('connect_therapy:practitioner-login-success')
 
-<< << << < HEAD
-== == == =
 
 class PractitionerMyAppointmentsView(generic.TemplateView):
     template_name = 'connect_therapy/practitioner/my-appointments.html'
@@ -122,6 +120,3 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).order_by('-start_date_and_time')
         return context
-
->> >> >> > 41337
-ab5c0cdd8649cc1c76e18c4d52de4c108e8
