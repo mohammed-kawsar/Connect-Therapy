@@ -1,0 +1,8 @@
+Dear {{ patient.user.first_name }} {{ patient.user.last_name }},
+
+Thanks for signing up with Connect Therapy, just a quick thing before you get started.
+
+Please confirm your email address here:
+{{ link }}
+
+If you was not expecting this email, feel free to disregard it.
