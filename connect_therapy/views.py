@@ -9,7 +9,6 @@ from django.contrib.auth import views as auth_views
 from django.utils import timezone
 from django.views import generic
 
-
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
 
@@ -53,7 +52,7 @@ class ChatView(UserPassesTestMixin, DetailView):
         return (self.request.user.id == self.get_object().patient.id) \
                or (self.request.user.id == self.get_object().practitioner.id)
 
-      
+
 class PatientMyAppointmentsView(generic.TemplateView):
     template_name = 'connect_therapy/patient/my-appointments.html'
 
@@ -103,9 +102,9 @@ class PractitionerLoginView(auth_views.LoginView):
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:practitioner-login-success')
-<<<<<<< HEAD
-=======
 
+<< << << < HEAD
+== == == =
 
 class PractitionerMyAppointmentsView(generic.TemplateView):
     template_name = 'connect_therapy/practitioner/my-appointments.html'
@@ -123,4 +122,6 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).order_by('-start_date_and_time')
         return context
->>>>>>> 41337ab5c0cdd8649cc1c76e18c4d52de4c108e8
+
+>> >> >> > 41337
+ab5c0cdd8649cc1c76e18c4d52de4c108e8

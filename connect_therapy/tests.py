@@ -458,9 +458,9 @@ class testPractitionerAdmin(TestCase):
                                     bio="Hello")
         practitioner.save()
         PractitionerAdmin.mark_approved(None, None, Practitioner.objects.all())
-        self.assertEqual(len(Practitioner.objects.filter(is_approved=False)),0)
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=False)), 0)
 
-        self.assertEqual(len(Practitioner.objects.filter(is_approved=True)),1)
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=True)), 1)
 
     def test_not_mark_approved(self):
         u = User(first_name="John", last_name="Smith")
