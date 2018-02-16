@@ -74,4 +74,8 @@ urlpatterns = [
          ),
          name='practitioner-logout-success'
          ),
+    path('practitioner/notes/<int:appointment_id>',
+         PractitionerNotesView.as_view(),
+         name='practitioner-notes'
+         ),
 ]
