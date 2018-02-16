@@ -7,8 +7,12 @@ from django.shortcuts import render
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from django.utils import timezone
+from django.views import generic
+
+
 from connect_therapy.forms import *
-from connect_therapy.models import Patient, Practitioner
+from connect_therapy.models import Patient, Practitioner, Appointment
 
 
 class PatientSignUpView(FormView):
@@ -45,6 +49,24 @@ class ChatView(View):
     def get(self, request):
         return render(request, 'connect_therapy/chat.html')
 
+      
+class PatientMyAppointmentsView(generic.TemplateView):
+    template_name = 'connect_therapy/patient/my-appointments.html'
+
+    model = Appointment
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['future_appointments'] = Appointment.objects.filter(
+            start_date_and_time__gte=timezone.now(),
+            patient=self.request.user.patient
+        ).order_by('-start_date_and_time')
+        context['past_appointments'] = Appointment.objects.filter(
+            start_date_and_time__lt=timezone.now(),
+            patient=self.request.user.patient
+        ).order_by('-start_date_and_time')
+        return context
+
 
 class PractitionerSignUpView(FormView):
     form_class = PractitionerSignUpForm
@@ -77,3 +99,21 @@ class PractitionerLoginView(auth_views.LoginView):
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:practitioner-login-success')
+
+
+class PractitionerMyAppointmentsView(generic.TemplateView):
+    template_name = 'connect_therapy/practitioner/my-appointments.html'
+
+    model = Appointment
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['future_appointments'] = Appointment.objects.filter(
+            start_date_and_time__gte=timezone.now(),
+            practitioner=self.request.user.practitioner
+        ).order_by('-start_date_and_time')
+        context['past_appointments'] = Appointment.objects.filter(
+            start_date_and_time__lt=timezone.now(),
+            practitioner=self.request.user.practitioner
+        ).order_by('-start_date_and_time')
+        return context
