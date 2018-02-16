@@ -1,0 +1,4 @@
+Dear {{ patient.user.first_name }} {{ patient.user.last_name }},
+
+Your email is confirmed, thanks for signing up! Feel free to log on to
+the site and book some appointments.
