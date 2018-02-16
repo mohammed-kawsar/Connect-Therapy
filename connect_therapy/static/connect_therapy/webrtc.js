@@ -57,4 +57,3 @@ function addMessageToTable(message, table, sent) {
     }
     messageText.innerHTML = message;
 }
-
