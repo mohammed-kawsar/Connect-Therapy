@@ -1,0 +1,8 @@
+Dear {{ patient.user.first_name }} {{ patient.user.last_name }},
+
+We're extremely sorry, Dr. {{ practitioner.user.first_name }} {{ practitioner.user.last_name }} has had to cancel your
+appointment for {{ appointment.start_date_and_time }}. You will receive a full refund in 3-5 working days.
+{% if message %}
+
+  {{ message }}
+{% endif %}
