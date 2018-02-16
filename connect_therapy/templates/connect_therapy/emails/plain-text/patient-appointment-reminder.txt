@@ -1,0 +1,4 @@
+Dear {{ patient.user.first_name }} {{ patient.user.last_name }},
+
+Just to remind you, you have an appointment with Dr. {{ appointment.practitioner.user.first_name }} {{ appointment.practitioner.user.last_name}}
+starting on {{ appointment.start_date_and_time }} for {{ appointment.length }}.
