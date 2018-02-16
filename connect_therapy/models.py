@@ -66,14 +66,15 @@ class Appointment(models.Model):
     """session salt is used to ensure that the session id is less likely to collide.
     make_random_password is considered 'cryptographically secure' by Django
     """
-    session_salt = models.CharField(max_length=255, default=User.objects.make_random_password(10))
+    session_salt = models.CharField(max_length=255, default=User.objects.make_random_password(10), editable=False)
     """This is used to associate an appointment to a specific chat session.
     This id can then be used to join that chat session
     """
     session_id = models.CharField(max_length=255, default=generate_session_id(salt=session_salt,
                                                                               practitioner=practitioner.__str__(),
                                                                               patient=patient.__str__(),
-                                                                              date_time=start_date_and_time));
+                                                                              date_time=start_date_and_time)
+                                  , editable=False);
 
     def __str__(self):
         """Return a string representation of Appointment"""

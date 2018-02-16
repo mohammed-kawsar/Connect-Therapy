@@ -1,14 +1,13 @@
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import FormView
+from django.views.generic.detail import DetailView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.views import View
-from django.shortcuts import render
-
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from connect_therapy.forms import *
-from connect_therapy.models import Patient, Practitioner
+from connect_therapy.models import Patient, Practitioner, Appointment
 
 
 class PatientSignUpView(FormView):
@@ -41,9 +40,14 @@ class PatientLoginView(auth_views.LoginView):
         return reverse_lazy('connect_therapy:patient-login-success')
 
 
-class ChatView(View):
-    def get(self, request):
-        return render(request, 'connect_therapy/chat.html')
+class ChatView(UserPassesTestMixin, DetailView):
+    model = Appointment
+    template_name = 'connect_therapy/chat.html';
+    login_url = reverse_lazy('connect_therapy:patient-login')
+
+    def test_func(self):
+        return (self.request.user.id == self.get_object().patient.id) \
+               or (self.request.user.id == self.get_object().practitioner.id)
 
 
 class PractitionerSignUpView(FormView):

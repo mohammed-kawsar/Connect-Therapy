@@ -13,7 +13,7 @@
 {% block content %}
 
     <script>
-        var session_id = "{{ session_id }}";
+        var session_id = "{{ object.session_id }}";
     </script>
 
     <div class="jumbotron">
@@ -22,7 +22,8 @@
 
     <div id="loading">
         <div class="loader"></div>
-        <p id="wait-text">Please wait for the other participant to join the chat</p>
+        <p id="wait-to-join-room">Connecting to the chat room</p>
+        <p id="wait-for-peer-to-connect">Waiting for the other person to join</p>
     </div>
 
     <div class="container">

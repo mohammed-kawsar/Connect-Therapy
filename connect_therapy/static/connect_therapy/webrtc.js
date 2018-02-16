@@ -12,8 +12,13 @@ var webrtc = new SimpleWebRTC({
 // we have to wait until it's ready
 webrtc.on('readyToCall', function () {
     // you can name it anything
-    webrtc.joinRoom(session_id); // tempname
+    webrtc.joinRoom(session_id);
     document.getElementById("controls").style.visibility = "visible";
+    document.getElementById("wait-to-join-room").style.display = "none";
+    document.getElementById("wait-for-peer-to-connect").style.visibility = "visible";
+});
+
+webrtc.on('videoAdded', function() {
     document.getElementById("loading").style.display = "none";
 });
 
