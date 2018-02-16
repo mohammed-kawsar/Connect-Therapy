@@ -2,16 +2,10 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin as UserAdminParent
 
-<<<<<<< HEAD
-# Register your models here.
 from connect_therapy.models import Appointment, Practitioner, Patient
 
 admin.site.register(Appointment)  # added for testing of video chat feature
 admin.site.register(Patient)
-admin.site.register(Practitioner)
-=======
-from connect_therapy.models import Practitioner
-
 
 @admin.register(Practitioner)
 class PractitionerAdmin(admin.ModelAdmin):
@@ -55,4 +49,3 @@ class UserAdmin(UserAdminParent):
     def has_module_permission(self, request):
         """This stops the UserAdmin appearing on the home page"""
         return False
->>>>>>> 41337ab5c0cdd8649cc1c76e18c4d52de4c108e8
