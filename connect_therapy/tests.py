@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.urls import reverse
+from django.utils import timezone
 from connect_therapy.models import *
 from connect_therapy.forms import *
 from connect_therapy.admin import *
@@ -139,7 +141,7 @@ class PatientLoginFormTests(TestCase):
                           mobile='+447476565333'
                           )
         patient.save()
-        form = PatientLoginForm(data= {
+        form = PatientLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -275,7 +277,7 @@ class PractitionerLoginFormTests(TestCase):
                                     is_approved=True
                                     )
         practitioner.save()
-        form = PractitionerLoginForm(data= {
+        form = PractitionerLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -293,7 +295,7 @@ class PractitionerLoginFormTests(TestCase):
                                     is_approved=False
                                     )
         practitioner.save()
-        form = PractitionerLoginForm(data= {
+        form = PractitionerLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })

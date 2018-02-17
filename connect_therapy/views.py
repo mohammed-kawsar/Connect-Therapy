@@ -3,6 +3,8 @@ from django.views.generic import FormView, DetailView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from django.views import generic
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -38,6 +40,24 @@ class PatientLoginView(auth_views.LoginView):
         return reverse_lazy('connect_therapy:patient-login-success')
 
 
+class PatientMyAppointmentsView(generic.TemplateView):
+    template_name = 'connect_therapy/patient/my-appointments.html'
+
+    model = Appointment
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['future_appointments'] = Appointment.objects.filter(
+            start_date_and_time__gte=timezone.now(),
+            patient=self.request.user.patient
+        ).order_by('-start_date_and_time')
+        context['past_appointments'] = Appointment.objects.filter(
+            start_date_and_time__lt=timezone.now(),
+            patient=self.request.user.patient
+        ).order_by('-start_date_and_time')
+        return context
+
+
 class PractitionerSignUpView(FormView):
     form_class = PractitionerSignUpForm
     template_name = 'connect_therapy/practitioner/signup.html'
@@ -54,7 +74,7 @@ class PractitionerSignUpView(FormView):
             postcode=form.cleaned_data['postcode'],
             mobile=form.cleaned_data['mobile'],
             bio=form.cleaned_data['bio']
-            )
+        )
         practitioner.save()
         user = authenticate(username=form.cleaned_data['email'],
                             password=form.cleaned_data['password1']
@@ -89,3 +109,21 @@ class PractitionerNotesView(FormView):
     def post(self, request, appointment_id):
         self.appointment = get_object_or_404(Appointment, pk=appointment_id)
         return super().post(request)
+
+
+class PractitionerMyAppointmentsView(generic.TemplateView):
+    template_name = 'connect_therapy/practitioner/my-appointments.html'
+
+    model = Appointment
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['future_appointments'] = Appointment.objects.filter(
+            start_date_and_time__gte=timezone.now(),
+            practitioner=self.request.user.practitioner
+        ).order_by('-start_date_and_time')
+        context['past_appointments'] = Appointment.objects.filter(
+            start_date_and_time__lt=timezone.now(),
+            practitioner=self.request.user.practitioner
+        ).order_by('-start_date_and_time')
+        return context

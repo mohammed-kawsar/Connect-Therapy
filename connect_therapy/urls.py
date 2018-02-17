@@ -40,6 +40,9 @@ urlpatterns = [
          ),
          name='patient-logout-success'
          ),
+    path('patient/my-appointments',
+         PatientMyAppointmentsView.as_view(),
+         name='patient-my-appointments'),
     path('practitioner/signup',
          PractitionerSignUpView.as_view(),
          name='practitioner-signup'
@@ -77,5 +80,9 @@ urlpatterns = [
     path('practitioner/notes/<int:appointment_id>',
          PractitionerNotesView.as_view(),
          name='practitioner-notes'
+         ),
+    path('practitioner/my-appointments',
+         PractitionerMyAppointmentsView.as_view(),
+         name='practitioner-my-appointments'
          ),
 ]
