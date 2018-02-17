@@ -77,8 +77,8 @@ class PractitionerNotesView(FormView):
     success_url = reverse_lazy('connect_therapy:practitioner-login-success')
 
     def form_valid(self, form):
-        self.appointment.practitioner_notes=form.cleaned_data['practitioner_notes']
-        self.appointment.patient_notes_by_practitioner=form.cleaned_data['patient_notes_by_practitioner']
+        self.appointment.practitioner_notes = form.cleaned_data['practitioner_notes']
+        self.appointment.patient_notes_by_practitioner = form.cleaned_data['patient_notes_by_practitioner']
         self.appointment.save()
         return super().form_valid(form)
 
