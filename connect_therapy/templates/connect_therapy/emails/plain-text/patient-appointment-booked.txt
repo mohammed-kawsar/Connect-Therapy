@@ -3,3 +3,6 @@ Dear {{ patient.user.first_name }} {{ patient.user.last_name }},
 This is a confirmation that you have booked an appointment with Dr. {{ appointment.practitioner.user.first_name }} {{ appointment.practitioner.user.last_name}}
 starting on {{ appointment.start_date_and_time }} for {{ appointment.length }}.
 If this was in error, you can cancel the appointment free of charge, up to 24 hours before, from our website.
+
+Thanks,
+Connect Therapy Admin Team on behalf of Dr. {{ appointment.practitioner.user.first_name }} {{ appointment.practitioner.user.last_name}}

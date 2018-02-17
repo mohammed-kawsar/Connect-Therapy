@@ -6,3 +6,6 @@ appointment for {{ appointment.start_date_and_time }}. You will receive a full r
 
   {{ message }}
 {% endif %}
+
+Thanks,
+Connect Therapy Admin Team

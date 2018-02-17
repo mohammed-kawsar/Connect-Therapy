@@ -6,3 +6,6 @@ Please confirm your email address here:
 {{ link }}
 
 If you was not expecting this email, feel free to disregard it.
+
+Thanks,
+Connect Therapy Admin Team

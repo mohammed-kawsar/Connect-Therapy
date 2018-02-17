@@ -2,3 +2,6 @@ Dear {{ patient.user.first_name }} {{ patient.user.last_name }},
 
 This is a confirmation that you have cancelled your appointment starting {{ appointment.start_date_and_time }}.
 In line with our Terms and Conditions, as you have cancelled with over 24 hours notice, you will not be charged.
+
+Thanks,
+Connect Therapy Admin Team
