@@ -7,6 +7,7 @@ from connect_therapy.forms import *
 from connect_therapy.admin import *
 from datetime import date, datetime, time
 import pytz
+from connect_therapy.views import *
 
 
 class PatientModelTests(TestCase):
@@ -419,3 +420,34 @@ class testPractitionerAdmin(TestCase):
         self.assertEqual(len(Practitioner.objects.filter(is_approved=True)),
                          0
                          )
+
+
+class TestPractitionerNotes(TestCase):
+    def test_practitioner_notes_form(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello",
+                                    is_approved=True)
+        practitioner.save()
+        appointment = Appointment(practitioner=practitioner,
+                                  start_date_and_time=datetime(year=2018,
+                                                               month=4,
+                                                               day=17,
+                                                               hour=15,
+                                                               minute=10,
+                                                               tzinfo=pytz.utc),
+                                  length=time(hour=1))
+        appointment.save()
+        pnv = PractitionerNotesView()
+        pnv.appointment = appointment
+        form = PractitionerNotesForm(data={'practitioner_notes': 'test',
+                                           'patient_notes_by_practitioner': 'text'})
+        form.is_valid()
+        pnv.form_valid(form)
+        self.assertEqual(pnv.appointment.practitioner_notes, 'test')
+        self.assertEqual(pnv.appointment.patient_notes_by_practitioner, 'text')
+
