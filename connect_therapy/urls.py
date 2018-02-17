@@ -80,4 +80,7 @@ urlpatterns = [
     path('practitioner/my-appointments',
          PractitionerMyAppointmentsView.as_view(),
          name='practitioner-my-appointments'),
+    path('patient/<int:pk>/cancel-appointment',
+         PatientCancelAppointmentView.as_view(),
+         name='patient-cancel-appointment'),
 ]

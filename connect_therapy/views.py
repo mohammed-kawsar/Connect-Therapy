@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.utils import timezone
 from django.views import generic
+from django.views.generic.edit import FormMixin
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -108,8 +109,39 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class PatientCancelAppointmentView(DetailView):
+class CancelForm(forms.Form):
+
+
+    '''class PatientCancelAppointmentView(DetailView):
 
     model = Appointment
     template_name = 'connect_therapy/patient/cancel-appointment.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PatientCancelAppointmentView, self).get_context_data(**kwargs)
+        context['form'] = MyFormClass
+        return context'''
+
+
+class PatientCancelAppointmentView(FormMixin, DetailView):
+    model = Appointment
+    form_class = CancelForm
+
+    def get_success_url(self):
+        return ""
+
+    def get_context_data(self, **kwargs):
+        context = super(PatientCancelAppointmentView, self).get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        return context
+
+    def form_valid(self, form):
+        # Here, we would record the user's interest using the message
+        # passed in form.cleaned_data['message']
+        appointment = form.save(commit=False)
+        appointment.patient = None
+        appointment.save()
+
+        return super(PatientCancelAppointmentView, self).form_valid(form)
+
 

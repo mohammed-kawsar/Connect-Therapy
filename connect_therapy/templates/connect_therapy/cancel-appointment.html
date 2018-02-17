@@ -8,5 +8,11 @@
     <h3>IF YOU ARE CANCELLING YOUR APPOINTMENT WITHIN 24HRS YOU WILL STILL BE CHARGED OTHERWISE YOU WILL BE REFUNDED</h3>
     <br>
     <a href="">Go back</a>
- <button type="button" name="confirm" class="btn btn-primary pull-right">Confirm</button>
+    <a href="" onclick="return confirm('Are you sure you want to cancel you still may be charged')">Confirm</a>
+
+    <form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Cancel" />
+</form>
 {% endblock %}
