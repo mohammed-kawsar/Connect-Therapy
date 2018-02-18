@@ -1,3 +1,5 @@
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView
 from django.contrib.auth import authenticate, login
@@ -38,6 +40,16 @@ class PatientLoginView(auth_views.LoginView):
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-login-success')
+
+
+class ChatView(UserPassesTestMixin, DetailView):
+    model = Appointment
+    template_name = 'connect_therapy/chat.html'
+    login_url = reverse_lazy('connect_therapy:patient-login')
+
+    def test_func(self):
+        return (self.request.user.id == self.get_object().patient.user.id) \
+               or (self.request.user.id == self.get_object().practitioner.user.id)
 
 
 class PatientMyAppointmentsView(generic.TemplateView):
