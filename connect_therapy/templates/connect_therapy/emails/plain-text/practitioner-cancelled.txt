@@ -4,5 +4,5 @@ This is a confirmation that you have cancelled your appointment with
 {{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }} starting on {{ appointment.start_date_and_time }}.
 
 They will not be charged, however please remember that cancelling too often, could result in having your access
-to the service removed.
+to the service being removed.
 {% endblock %}
