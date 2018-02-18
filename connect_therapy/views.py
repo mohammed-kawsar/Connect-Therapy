@@ -44,7 +44,7 @@ class PatientLoginView(auth_views.LoginView):
 
 class ChatView(UserPassesTestMixin, DetailView):
     model = Appointment
-    template_name = 'connect_therapy/chat.html';
+    template_name = 'connect_therapy/chat.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
 
     def test_func(self):
