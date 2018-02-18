@@ -1,8 +1,6 @@
-Dear {{ patient.user.first_name }} {{ patient.user.last_name }},
-
+{% extends 'connect_therapy/emails/plain-text/base.txt' %}
+{% block body %}
 This is a confirmation that you have cancelled your appointment starting {{ appointment.start_date_and_time }}.
 In line with our Terms and Conditions, as this was cancelled within 24 hours of the appointment,
 you will still be charged the full amount.
-
-Thanks,
-Connect Therapy Admin Team
+{% endblock %}

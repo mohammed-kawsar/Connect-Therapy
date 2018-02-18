@@ -1,7 +1,6 @@
-Dear {{ patient.user.first_name }} {{ patient.user.last_name }},
+{% extends 'connect_therapy/emails/plain-text/base.txt' %}
+{% block body %}{% block body %}
 
 Your email is confirmed, thanks for signing up! Feel free to log on to
 the site and book some appointments.
-
-Thanks,
-Connect Therapy Admin Team
+{% endblock %}

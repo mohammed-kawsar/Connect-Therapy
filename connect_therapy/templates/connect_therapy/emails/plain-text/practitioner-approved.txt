@@ -1,7 +1,5 @@
-Dear {{ practitioner.user.first_name }} {{ practitioner.user.last_name }},
-
+{% extends 'connect_therapy/emails/plain-text/base.txt' %}
+{% block body %}
 You've been approved! Thanks for joining the team.
 When you're ready, log on to the site to set up some appointments, and get started.
-
-Thanks,
-Connect Therapy Admin Team
+{% endblock %}
