@@ -72,7 +72,8 @@ class Appointment(models.Model):
     This id can then be used to join that chat session
     """
     session_id = models.CharField(max_length=255,
-                                  default=partial(generate_session_id, salt=session_salt,
+                                  default=partial(generate_session_id,
+                                                  salt=session_salt,
                                                   practitioner=practitioner,
                                                   patient=patient,
                                                   date_time=start_date_and_time)
