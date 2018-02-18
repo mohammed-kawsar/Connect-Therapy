@@ -67,16 +67,16 @@ class Appointment(models.Model):
     make_random_password is considered 'cryptographically secure' by Django
     """
     session_salt = models.CharField(max_length=255,
-                                    default=partial(User.objects.make_random_password(10), editable=False))
+                                    default=partial(User.objects.make_random_password, 10), editable=False)
     """This is used to associate an appointment to a specific chat session.
     This id can then be used to join that chat session
     """
     session_id = models.CharField(max_length=255,
-                                  default=partial(generate_session_id(salt=session_salt,
-                                                                      practitioner=practitioner,
-                                                                      patient=patient,
-                                                                      date_time=start_date_and_time))
-                                  , editable=False);
+                                  default=partial(generate_session_id, salt=session_salt,
+                                                  practitioner=practitioner,
+                                                  patient=patient,
+                                                  date_time=start_date_and_time)
+                                  , editable=False)
 
     def __str__(self):
         """Return a string representation of Appointment"""
