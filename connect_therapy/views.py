@@ -49,8 +49,8 @@ class ChatView(UserPassesTestMixin, DetailView):
     login_url = reverse_lazy('connect_therapy:patient-login')
 
     def test_func(self):
-        return (self.request.user.id == self.get_object().patient.id) \
-               or (self.request.user.id == self.get_object().practitioner.id)
+        return (self.request.user.id == self.get_object().patient.user.id) \
+               or (self.request.user.id == self.get_object().practitioner.user.id)
 
 
 class PatientMyAppointmentsView(generic.TemplateView):
