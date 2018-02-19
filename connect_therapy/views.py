@@ -128,7 +128,7 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
     form_class = CancelForm
 
     def get_success_url(self):
-        return ""
+        return reverse_lazy('connect_therapy:patient-my-appointments')
 
     def get_context_data(self, **kwargs):
         context = super(PatientCancelAppointmentView, self).get_context_data(**kwargs)
@@ -138,10 +138,16 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
     def form_valid(self, form):
         # Here, we would record the user's interest using the message
         # passed in form.cleaned_data['message']
-        appointment = form.save(commit=False)
-        appointment.patient = None
-        appointment.save()
+        self.object.patient = None
+        self.object.save()
 
         return super(PatientCancelAppointmentView, self).form_valid(form)
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
