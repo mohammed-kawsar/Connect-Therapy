@@ -1,5 +1,5 @@
 from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, ListView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect, get_object_or_404
@@ -127,3 +127,13 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).order_by('-start_date_and_time')
         return context
+
+class BookAppointmentListView(ListView):
+    template_name = 'connect_therapy/patient/book_appointment.html'
+    
+    def get_queryset(self):
+        return Appointment.objects.all()
+
+class BookAppointmentDetailView(DetailView):
+    model = Appointment
+    template_name = 'connect_therapy.patient/book_appointment_details.html'

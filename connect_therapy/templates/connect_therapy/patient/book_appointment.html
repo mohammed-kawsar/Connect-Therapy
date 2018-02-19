@@ -1,0 +1,70 @@
+{% extends "connect_therapy/base.html" %}
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+{% load staticfiles %}
+
+<div class = "self" style="position:relative; left:25%; right:25%">
+  <div class = "container .col-lg-12">
+    <div class="carousel">
+      <div class="carousel-inner">
+        {% for appointment in object_list %}
+          {% if forloop.first %}
+            <div class="active carousel-item">
+          {% else %}
+            <div class="carousel-item">
+          {% endif %}
+            <blockquote>
+              <h3>{{ appointment.practitioner.user }}</h3>
+                <br>
+                <div class = "practitioner-image">
+                  <img src="{% static "connect_therapy/images/profile_pic_placeholder.jpg" %}" style="border-radius: 50%"/>
+                </div>
+                <br>
+                <br>
+              <p>{{ appointment.practitioner.bio }}</p>
+              <br>
+              <br>
+            </div>
+
+        {% endfor %}
+
+              <a class="carousel-control-prev" href=".carousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="carousel-control-next" href=".carousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+              </a>
+            </div>
+      </div>
+    </div>
+
+      {% for appointment in object_list %}
+        <button class="btn btn-danger .col-lg-2" id="danger" name="button" style="right:20%"> {{ appointment.start_date_and_time | date:"h:i A" }} </button>
+      {% endfor %}
+
+    </div>
+    <br>
+    <br>
+      <div class="confirm-btn">
+        <button class="btn btn-danger .col-lg-3" name="button" style="background-color:blue; border:blue; left:90%; position:relative">Confirm</button>
+      </div>
+</div>
+{% endblock %}
+
+<script>
+  $(document).ready(function(){
+    $(".carousel").carousel({interval: 5000, 'pause' });
+</script>
+
+<script>
+  $(".carousel-control-next").click(function(){
+    $(".carousel").carousel("pause");
+</script>
+
+<script>
+  $(".carousel-control-prev").click(function(){
+    $(".carousel").carousel("pause");
+</script>
