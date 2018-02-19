@@ -93,3 +93,4 @@ urlpatterns = [
     path('patient/cancel-appointment/<int:pk>',
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'),
+]
