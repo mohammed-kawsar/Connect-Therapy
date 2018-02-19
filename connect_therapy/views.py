@@ -139,3 +139,13 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).order_by('-start_date_and_time')
         return context
+
+
+class ClinicianAppointmentNotes(generic.DetailView):
+    model = Appointment
+    template_name = 'connect_therapy/practitioner/my-appointments.html'
+
+
+class PatientAppointmentNotes(generic.DetailView):
+    model = Appointment
+    template_name = 'connect_therapy/practitioner/my-appointments.html'
