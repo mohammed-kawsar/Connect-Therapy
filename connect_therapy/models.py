@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from functools import partial
+import hashlib
 
 
 class Patient(models.Model):
@@ -32,6 +34,13 @@ class Practitioner(models.Model):
         return "{} {}".format(self.user.first_name, self.user.last_name)
 
 
+def generate_session_id(salt, practitioner, patient, date_time):
+    byte_string = str.encode(str(salt) + str(practitioner) + str(patient) + str(date_time))
+    to_hash = hashlib.sha3_256(byte_string)
+    hash_digest = to_hash.hexdigest()
+    return hash_digest
+
+
 class Appointment(models.Model):
     practitioner = models.ForeignKey(Practitioner,
                                      on_delete=models.SET_NULL,
@@ -54,6 +63,21 @@ class Appointment(models.Model):
     """These are notes left before the appointment by the patient,
     for the benefit of the practitioner
     """
+    """session salt is used to ensure that the session id is less likely to collide.
+    make_random_password is considered 'cryptographically secure' by Django
+    """
+    session_salt = models.CharField(max_length=255,
+                                    default=partial(User.objects.make_random_password, 10), editable=False)
+    """This is used to associate an appointment to a specific chat session.
+    This id can then be used to join that chat session
+    """
+    session_id = models.CharField(max_length=255,
+                                  default=partial(generate_session_id,
+                                                  salt=session_salt,
+                                                  practitioner=practitioner,
+                                                  patient=patient,
+                                                  date_time=start_date_and_time)
+                                  , editable=False)
 
     def __str__(self):
         """Return a string representation of Appointment"""
