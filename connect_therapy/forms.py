@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm,\
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, \
     UsernameField
 from django.contrib.auth.models import User
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -43,7 +43,7 @@ class PatientLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        },),
+        }, ),
         label="Email"
     )
 
@@ -97,7 +97,7 @@ class PractitionerLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        },),
+        }, ),
         label="Email"
     )
 
@@ -121,3 +121,18 @@ class PractitionerLoginForm(AuthenticationForm):
 class PractitionerNotesForm(forms.Form):
     practitioner_notes = forms.CharField(label="notes for practitioner", widget=forms.Textarea)
     patient_notes_by_practitioner = forms.CharField(label="notes for patient", widget=forms.Textarea)
+
+
+
+class PractitionerAppointmentForm(forms.Form):
+    start_date_and_time = forms.DateTimeField(help_text=" Format: DD/MM/YYYY",
+                                              required=True,
+                                              input_formats=['%m/%d/%Y'])
+
+    length = forms.TimeField(help_text=" Format: H:M",
+                             required=True,
+                             input_formats=['%H:%M'])
+
+    class meta:
+        model = Appointment
+        fields = ('start_date_and_time', 'length')

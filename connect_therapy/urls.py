@@ -90,4 +90,7 @@ urlpatterns = [
          PractitionerMyAppointmentsView.as_view(),
          name='practitioner-my-appointments'
          ),
+    path('practitioner/set-appointments',
+         SetAppointmentView.as_view(),
+         name='practitioner-set-appointments'),
 ]

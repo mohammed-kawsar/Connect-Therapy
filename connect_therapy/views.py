@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView
@@ -139,3 +139,21 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).order_by('-start_date_and_time')
         return context
+
+
+class SetAppointmentView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
+    form_class = PractitionerAppointmentForm
+    template_name = 'connect_therapy/practitioner/appointment-form-page.html'
+    success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+
+    def form_valid(self, form):
+        appointment = Appointment(
+            patient=None,
+            practitioner=self.request.user.practitioner,
+            start_date_and_time=form.cleaned_data['start_date_and_time'],
+            length=form.cleaned_data['length']
+        )
+        appointment.save()
+        return super().form_valid(form)
+

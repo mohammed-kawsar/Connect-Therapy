@@ -1,0 +1,10 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Set your available appointment times {% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Confirm" />
+</form>
+{% endblock %}
