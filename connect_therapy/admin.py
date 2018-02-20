@@ -2,7 +2,11 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin as UserAdminParent
 
+<<<<<<< Updated upstream
 from connect_therapy.models import Practitioner
+=======
+from connect_therapy.models import Practitioner, Patient, Appointment
+>>>>>>> Stashed changes
 
 
 @admin.register(Practitioner)
@@ -40,7 +44,12 @@ admin.site.unregister(Group)
 admin.site.unregister(User)
 admin.site.site_header = 'Connect Therapy Administration'
 admin.site.site_title = 'Connect Therapy - Admin'
+<<<<<<< Updated upstream
 
+=======
+admin.site.register(Appointment)
+admin.site.register(Patient)
+>>>>>>> Stashed changes
 
 @admin.register(User)
 class UserAdmin(UserAdminParent):
