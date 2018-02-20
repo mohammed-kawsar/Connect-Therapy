@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, \
     UsernameField
@@ -125,14 +127,25 @@ class PractitionerNotesForm(forms.Form):
 
 
 class PractitionerAppointmentForm(forms.Form):
-    start_date_and_time = forms.DateTimeField(help_text=" Format: DD/MM/YYYY",
+    start_date_and_time = forms.DateTimeField(help_text=" Format: DD/MM/YYYY H:M",
                                               required=True,
-                                              input_formats=['%m/%d/%Y'])
+                                              input_formats=['%d/%m/%Y %H:%M'])
 
     length = forms.TimeField(help_text=" Format: H:M",
                              required=True,
                              input_formats=['%H:%M'])
 
-    class meta:
-        model = Appointment
-        fields = ('start_date_and_time', 'length')
+    def clean_start_date_and_time(self):
+        data = self.cleaned_data['start_date_and_time']
+
+        # Check appointment date is not in past.
+        if data.date() < datetime.date.today():
+            raise forms.ValidationError("Invalid date, cannot enter a past date!",
+                                        code='invalid'
+                                        )
+
+        if data.date() > datetime.date.today() + datetime.timedelta(weeks=4):
+            raise forms.ValidationError("Invalid date, cannot enter a date more than 4 weeks ahead!",
+                                        code='invalid'
+                                        )
+        return data

@@ -156,4 +156,3 @@ class SetAppointmentView(LoginRequiredMixin, FormView):
         )
         appointment.save()
         return super().form_valid(form)
-
