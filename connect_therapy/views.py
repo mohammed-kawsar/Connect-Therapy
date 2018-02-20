@@ -1,12 +1,12 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import HttpResponse
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView, ListView
+from django.views.generic import FormView, DetailView, ListView, TemplateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
+from django.views.generic.base import View
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -140,11 +140,35 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         ).order_by('-start_date_and_time')
         return context
 
-class BookAppointmentListView(ListView):
-    template_name = 'connect_therapy/patient/book_appointment.html'
-    
-    def get_queryset(self):
-        return Appointment.objects.all()
+
+"""LoginRequiredMixin, to be added below"""
+
+
+class BookAppointmentView(TemplateView):
+    template_name = "connect_therapy/patient/book_appointment.html"
+
+    # login_url = reverse_lazy("connect_therapy:patient-login")
+    def get(self, request):
+        print("At get")
+        form = AppointmentDateSelectForm
+        return render(self.request,
+                      self.template_name,
+                      context={"form": form})
+
+    def post(self, request):
+        print("At post")
+        form = AppointmentDateSelectForm(request.POST)
+
+        if form.is_valid():
+            date = form.cleaned_data['date']
+            print(date)
+            return render(self.request,
+                          self.template_name,
+                          context={"form": form, "date": date})
+        else:
+            print("Create appointment form is not valid. views.py #154")
+            return self.get(request)
+
 
 class BookAppointmentDetailView(DetailView):
     model = Appointment

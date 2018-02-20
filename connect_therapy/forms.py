@@ -1,7 +1,9 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm,\
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, \
     UsernameField
 from django.contrib.auth.models import User
+from django.forms import SelectDateWidget
+
 from connect_therapy.models import Patient, Practitioner, Appointment
 
 
@@ -43,7 +45,7 @@ class PatientLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        },),
+        }, ),
         label="Email"
     )
 
@@ -97,7 +99,7 @@ class PractitionerLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        },),
+        }, ),
         label="Email"
     )
 
@@ -121,3 +123,11 @@ class PractitionerLoginForm(AuthenticationForm):
 class PractitionerNotesForm(forms.Form):
     practitioner_notes = forms.CharField(label="notes for practitioner", widget=forms.Textarea)
     patient_notes_by_practitioner = forms.CharField(label="notes for patient", widget=forms.Textarea)
+
+
+class AppointmentDateSelectForm(forms.Form):
+    date = forms.DateField(widget=SelectDateWidget())
+
+    def is_valid(self):
+        valid = super(AppointmentDateSelectForm, self).is_valid()
+        return valid
