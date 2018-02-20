@@ -1,12 +1,11 @@
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView, ListView, TemplateView
+from django.views.generic import FormView, DetailView, TemplateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
-from django.views.generic.base import View
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -161,10 +160,16 @@ class BookAppointmentView(TemplateView):
 
         if form.is_valid():
             date = form.cleaned_data['date']
-            print(date)
+            day = date.day
+            month = date.month
+            year = date.year
+
+            appointments = Appointment.objects.filter(start_date_and_time__day=day
+                                                      ).filter(start_date_and_time__month=month
+                                                               ).filter(start_date_and_time__year=year)
             return render(self.request,
                           self.template_name,
-                          context={"form": form, "date": date})
+                          context={"form": form, "appointments": appointments})
         else:
             print("Create appointment form is not valid. views.py #154")
             return self.get(request)
