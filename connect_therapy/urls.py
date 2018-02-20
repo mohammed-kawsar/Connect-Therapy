@@ -40,9 +40,14 @@ urlpatterns = [
          ),
          name='patient-logout-success'
          ),
+    path('chat/<int:pk>',
+         ChatView.as_view(),
+         name="chat"
+         ),
     path('patient/my-appointments',
          PatientMyAppointmentsView.as_view(),
-         name='patient-my-appointments'),
+         name='patient-my-appointments'
+         ),
     path('practitioner/signup',
          PractitionerSignUpView.as_view(),
          name='practitioner-signup'
@@ -77,9 +82,14 @@ urlpatterns = [
          ),
          name='practitioner-logout-success'
          ),
+    path('practitioner/notes/<int:appointment_id>',
+         PractitionerNotesView.as_view(),
+         name='practitioner-notes'
+         ),
     path('practitioner/my-appointments',
          PractitionerMyAppointmentsView.as_view(),
-         name='practitioner-my-appointments'),
+         name='practitioner-my-appointments'
+        ),
     path('patient/cancel-appointment/<int:pk>',
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'
