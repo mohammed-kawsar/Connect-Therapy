@@ -152,4 +152,4 @@ class PatientAppointmentNotes(LoginRequiredMixin, generic.DetailView):
     model = Appointment
     template_name = 'connect_therapy/practitioner/my-appointments.html'
 
-    
+
