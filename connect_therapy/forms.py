@@ -119,7 +119,7 @@ class PractitionerLoginForm(AuthenticationForm):
 
 
 class CancelForm(forms.Form):
-    ''''''
+    pass
 
 
 class PractitionerNotesForm(forms.Form):
