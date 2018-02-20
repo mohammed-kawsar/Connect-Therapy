@@ -13,11 +13,7 @@
         <p>There are no appointments available for your chosen date</p>
     {% else %}
         {% for app in appointments %}
-            <tr class="current">
-                <td> {{ app.start_date_and_time }} </td>
-                <td> Duration: {{ app.length }} </td>
-                <td>Practitioner: {{ app.practitioner }} </td>
-            </tr>
+            <p>{{ app }}</p>
         {% endfor %}
     {% endif %}
 {% endblock %}
