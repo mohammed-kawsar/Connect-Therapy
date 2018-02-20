@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView
@@ -141,11 +141,15 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class ClinicianAppointmentNotes(generic.DetailView):
+class ClinicianAppointmentNotes(LoginRequiredMixin, generic.DetailView):
+    login_url = reverse_lazy('connect_therapy:patient-notes')
     model = Appointment
     template_name = 'connect_therapy/practitioner/my-appointments.html'
 
 
-class PatientAppointmentNotes(generic.DetailView):
+class PatientAppointmentNotes(LoginRequiredMixin, generic.DetailView):
+    login_url = reverse_lazy('connect_therapy:practitioner-notes')
     model = Appointment
     template_name = 'connect_therapy/practitioner/my-appointments.html'
+
+    
