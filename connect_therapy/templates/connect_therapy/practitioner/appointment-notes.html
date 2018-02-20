@@ -1,28 +1,28 @@
 {% extends 'connect_therapy/base.html' %}
-{% block title %}Practitioner notes{% endblock %}
+{% block title %}Practitioner Notes{% endblock %}
 
 {% block content %}
-<h3>View Notes</h3></br>
-    {% for appointment in future_appointments %}
-        <tr class="current">
-            <td> {{ appointment.start_date_and_time }} </td>
-            <td>Duration: {{ appointment.length }}</td>
-            <td>Patient: {{ appointment.patient }}</td>
-            <td><a href="">Cancel Appointment</a></td>
-        </tr>
-        {% empty %}
-        <p> No upcoming appointments yet. </p>
-    {%  endfor %}
 
-    <h2>Previous Bookings</h2>
-    {% for appointment in past_appointments %}
-        <tr class="previous">
-            <td> {{ appointment.start_date_and_time }} </td>
-            <td>Duration: {{ appointment.length }}</td>
-            <td>Patient: {{ appointment.patient }}</td>
-            <td> <a href="">View Notes</a> </td>
-        </tr>
-        {% empty %}
-        <p> No previous appointments. </p>
-    {% endfor %}
+    <h3>Practitioner Notes</h3>
+
+    <div class="practitionerNotes">
+
+
+        {{ appointment.practitioner_notes }}
+
+    </div>
+
+
+
+    <h3> Notes Before Meeting </h3>
+
+    <div class="practitionerMeetingNotes">
+
+
+        {{ appointment.patient_notes_before_meeting }}
+
+    </div>
+
+
+
 {% endblock %}

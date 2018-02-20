@@ -4,8 +4,8 @@ from django.contrib.auth.admin import UserAdmin as UserAdminParent
 
 from connect_therapy.models import Practitioner
 
-
 @admin.register(Practitioner)
+
 class PractitionerAdmin(admin.ModelAdmin):
     def get_user_first_name(practitioner):
         return practitioner.user.first_name

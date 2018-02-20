@@ -1,0 +1,14 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Patient Notes{% endblock %}
+
+{% block content %}
+
+    <h3>Previous Patient Notes</h3>
+
+    <div class="notes">
+
+        {{ appointment.patient_notes_by_practitioner }}
+
+    </div>
+
+{% endblock %}
