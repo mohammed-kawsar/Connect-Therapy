@@ -9,7 +9,7 @@
             <td> {{ appointment.start_date_and_time }} </td>
             <td>Duration: {{ appointment.length }}</td>
             <td>Patient: {{ appointment.patient }}</td>
-            <td><a href="">Cancel Appointment</a></td>
+            <td><a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id%}">Cancel Appointment</a></td>
         </tr>
         {% empty %}
         <p> No upcoming appointments yet. </p>

@@ -1,12 +1,13 @@
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, DeleteView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import generic
+
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -156,3 +157,9 @@ class SetAppointmentView(LoginRequiredMixin, FormView):
         )
         appointment.save()
         return super().form_valid(form)
+
+class AppointmentDelete(DeleteView):
+    model = Appointment
+    template_name = 'connect_therapy/practitioner/appointment-cancel.html'
+    fields = ['practitioner','patient','start_date_and_time','length', 'practitioner_notes', 'patient_notes_by_practitioner']
+    success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')

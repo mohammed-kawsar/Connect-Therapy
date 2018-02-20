@@ -92,5 +92,10 @@ urlpatterns = [
          ),
     path('practitioner/set-appointments',
          SetAppointmentView.as_view(),
-         name='practitioner-set-appointments'),
+         name='practitioner-set-appointments'
+         ),
+    path('practitioner/<int:pk>/cancel-appointment',
+         AppointmentDelete.as_view(),
+         name='practitioner-cancel-appointment'
+         ),
 ]

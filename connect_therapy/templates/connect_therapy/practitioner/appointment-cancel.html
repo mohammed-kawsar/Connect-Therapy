@@ -1,0 +1,10 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Cancel your appointment{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to cancel your appointment? "{{ object }}"?</p>
+        <input type="submit" value="Confirm" />
+    </form>
+{% endblock %}
