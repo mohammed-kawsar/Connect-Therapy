@@ -117,3 +117,6 @@ class PractitionerLoginForm(AuthenticationForm):
             )
         super().confirm_login_allowed(user)
 
+
+class CancelForm(forms.Form):
+    ''''''

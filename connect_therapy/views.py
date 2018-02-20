@@ -109,23 +109,10 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class CancelForm(forms.Form):
-
-
-    '''class PatientCancelAppointmentView(DetailView):
-
-    model = Appointment
-    template_name = 'connect_therapy/patient/cancel-appointment.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(PatientCancelAppointmentView, self).get_context_data(**kwargs)
-        context['form'] = MyFormClass
-        return context'''
-
-
 class PatientCancelAppointmentView(FormMixin, DetailView):
     model = Appointment
     form_class = CancelForm
+    template_name = 'connect_therapy/appointment_detail.html'
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
