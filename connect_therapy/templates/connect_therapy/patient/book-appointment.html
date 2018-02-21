@@ -3,7 +3,7 @@
 
 {% block content %}
 
-    <h1 class="jumbotron">You are booking an appointment with {{ object.user.get_full_name }}</h1>
+    <h1 class="jumbotron">You are booking an appointment with {{ object.user.get_full_name }} </h1>
 
     <form action="" method="post">
         {% csrf_token %}
@@ -12,7 +12,8 @@
     </form>
 
     {% if appointments is not None and appointments|length > 0 %}
-        <form action="" method="get">
+        <form action="{% url 'connect_therapy:book-appointment-checkout' pk=object.user.practitioner.id %}"
+              method="get">
             {% for app in appointments %}
                 <p><input type="checkbox" name="app_id" value={{ app.id }}> {{ app }} </input> </p>
             {% endfor %}

@@ -95,7 +95,7 @@ urlpatterns = [
          name='book-appointment'
          ),
     path('patient/book-appointment/<int:pk>/checkout',
-         BookAppointmentView.as_view(),
+         BookAppointmentCheckout.as_view(),
          name='book-appointment-checkout'
          ),
 ]

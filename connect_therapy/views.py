@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView, TemplateView
 from django.contrib.auth import authenticate, login
@@ -147,7 +148,6 @@ class BookAppointmentView(DetailView):
     def get(self, request, pk):
         # define the object for the detail view
         self.object = self.get_object()
-        print(self.object)
         form = AppointmentDateSelectForm
         return render(self.request,
                       self.template_name,
@@ -160,18 +160,7 @@ class BookAppointmentView(DetailView):
         form = AppointmentDateSelectForm(request.POST)
         if form.is_valid():
             date = form.cleaned_data['date']
-            day = date.day
-            month = date.month
-            year = date.year
-
-            appointments = Appointment.objects.filter(start_date_and_time__day=day
-                                                      ).filter(start_date_and_time__month=month
-                                                               ).filter(start_date_and_time__year=year
-                                                                        ).filter(patient__isnull=True
-                                                                                 ).filter(practitioner_id=pk)
-
-            for a in appointments:
-                print(a.practitioner.user.get_full_name())
+            appointments = Appointment.get_valid_appointments(date, pk)
 
             return render(self.request,
                           self.template_name,
@@ -183,6 +172,13 @@ class BookAppointmentView(DetailView):
             return self.get(request)
 
 
-class BookAppointmentDetailView(DetailView):
-    model = Appointment
-    template_name = 'connect_therapy.patient/book-appointment-details.html'
+class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
+    template_name = 'connect_therapy.patient/book-appointment-checkout.html'
+    login_url = reverse_lazy('connect_therapy:patient-login')
+    def get(self, request, *args, **kwargs):
+        app_ids = request.GET.getlist('app_id')
+        id = kwargs['pk']
+        user = User.objects.get(pk=self.request.user.id)
+        patient = Patient.objects.get(user=user)
+        valid = Appointment.is_appointment_valid(app_ids, id, patient_id=patient.id)
+        return HttpResponse("You at the checkout")

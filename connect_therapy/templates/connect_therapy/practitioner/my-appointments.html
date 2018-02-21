@@ -16,8 +16,8 @@
         {% for appointment in future_appointments %}
             <tr class="current">
                 <td> {{ appointment.start_date_and_time }} </td>
-                <td> Duration: {{ appointment.length }} </td>
-                <td>Practitioner: {{ appointment.practitioner }} </td>
+                <td> {{ appointment.length }} </td>
+                <td> {{ appointment.practitioner }} </td>
                 <td><a href=""> Cancel Appointment</a></td>
             </tr>
         {% endfor %}
@@ -40,7 +40,8 @@
                 <td> {{ appointment.start_date_and_time }} </td>
                 <td> {{ appointment.length }}</td>
                 <td> {{ appointment.patient }}</td>
-                <td><a href="">View Notes</a></td>
+                <td><a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}">View Notes</a>
+                </td>
             </tr>
         {% endfor %}
     {% else %}
