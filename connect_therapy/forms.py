@@ -123,7 +123,7 @@ class PractitionerNotesForm(forms.Form):
     patient_notes_by_practitioner = forms.CharField(label="notes for patient", widget=forms.Textarea)
 
 
-class EditProfileForm(UserChangeForm):
+class EditProfileForm(forms.ModelForm):
 
     class Meta:
         model = Practitioner
@@ -132,5 +132,4 @@ class EditProfileForm(UserChangeForm):
                   'address_line_2',
                   'postcode',
                   'bio',
-                  'password'
                   )

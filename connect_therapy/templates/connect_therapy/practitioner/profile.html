@@ -2,10 +2,11 @@
 {% block title %}Practitioner profile{% endblock %}
 
 {% block content %}
-    <p>{{ user.first_name }}</p>
-    <p>{{ user.last_name }}</p>
-    <p>{{ user.email }}</p>
-    <p>{{ user.practitioner.mobile }}</p>
-    <p>{{ user.practitioner.address_line_1 }}</p>
-    <p>{{ user.practitioner.bio }}</p>
+    <p>first name: {{ user.first_name }}</p>
+    <p>last name: {{ user.last_name }}</p>
+    <p>email: {{ user.email }}</p>
+    <p>mobile: {{ user.practitioner.mobile }}</p>
+    <p>address line 1: {{ user.practitioner.address_line_1 }}</p>
+    <p>address line 2: {{ user.practitioner.address_line_2 }}</p>
+    <p>bio: {{ user.practitioner.bio }}</p>
 {% endblock %}

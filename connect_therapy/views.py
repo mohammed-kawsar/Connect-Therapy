@@ -1,14 +1,16 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth import views as auth_views
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.utils import timezone
 from django.views import generic
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.decorators import login_required
+from django.template.context_processors import csrf
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -151,19 +153,22 @@ class PractitionerProfile(generic.TemplateView):
         args = {'user': user}
         return render(request, args)
 
-
+@login_required
 def edit_profile(request):
     if request.method == 'POST':
-        form = EditProfileForm(request.POST, instance=request.user)
+        form = EditProfileForm(request.POST, instance=request.user.profile)
 
         if form.is_valid():
             form.save()
-            return redirect('/practitioner/profile')
+            return HttpResponseRedirect('/practitioner/profile')
 
     else:
         form = EditProfileForm(instance=request.user)
-        args = {'form': form}
-        return render(request, 'connect_therapy/practitioner/edit-profile.html', args)
+        args = {}
+        args.update(csrf(request))
+        args['form'] = form
+        # args = {'form': form}
+        return render_to_response('connect_therapy/practitioner/edit-profile.html', args)
 
 
 def change_password(request):

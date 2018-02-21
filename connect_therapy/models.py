@@ -86,3 +86,4 @@ class Appointment(models.Model):
                                        str(self.start_date_and_time),
                                        str(self.length))
 
+User.profile = property(lambda u: Practitioner.objects.get_or_create(user=u)[0])
