@@ -12,6 +12,7 @@
     <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Cancel" />
+    <input type="submit" value="Confirm" />
+    <a href="{% url 'connect_therapy:patient-my-appointments' %}" class="btn btn-default"> Go Back</a>
 </form>
 {% endblock %}
