@@ -129,23 +129,20 @@ class Appointment(models.Model):
         # merges and sorts the lists
         merged_list = list(existing_user_appointments) + appointments_to_book
         merged_list = sorted(merged_list, key=lambda appointment: appointment.start_date_and_time)
-
+        print(merged_list)
         # gets overlapping appointments
         overlapping_appointments = []
-        for i in range(0, len(merged_list) - 2):
+        for i in range(0, len(merged_list) - 1):
             cur_start_time = merged_list[i].start_date_and_time
-            cur_duration = merged_list[i].length
+            cur_end_time = cls.add_time(cur_start_time, merged_list[i].length)
+
             next_start_time = merged_list[i + 1].start_date_and_time
-            next_duration = merged_list[i + 1].length
+            next_end_time = cls.add_time(next_start_time, merged_list[i + 1].length)
 
             # TODO: Missing case, when either task completely envelopes another i.e. last for the full duration
 
-            if (cls.add_time(cur_start_time, cur_duration) > next_start_time) and cls.add_time(cur_start_time,
-                                                                                               cur_duration) < cls.add_time(
-                next_start_time, next_duration) or \
-                    cls.add_time(next_start_time, next_duration) > cur_start_time and cls.add_time(next_start_time,
-                                                                                                   next_duration) < cls.add_time(
-                cur_start_time, cur_duration) or \
+            if next_start_time < cur_end_time < next_end_time or \
+                    cur_start_time < next_end_time < cur_end_time or \
                     cur_start_time == next_start_time:
                 overlapping_appointments.append(
                     [merged_list[i].start_date_and_time, merged_list[i + 1].start_date_and_time])
