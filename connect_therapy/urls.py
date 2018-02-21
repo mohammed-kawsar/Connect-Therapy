@@ -99,4 +99,7 @@ urlpatterns = [
          views.edit_profile,
          name='edit-profile'
          ),
+    path('practitioner/profile/change-password',
+         views.change_password,
+         name='change-password'),
 ]

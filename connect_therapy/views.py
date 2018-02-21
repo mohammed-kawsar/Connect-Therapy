@@ -2,12 +2,13 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import generic
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -163,6 +164,22 @@ def edit_profile(request):
         form = EditProfileForm(instance=request.user)
         args = {'form': form}
         return render(request, 'connect_therapy/practitioner/edit-profile.html', args)
+
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('/practitioner/profile')
+        else:
+            return redirect('/practitioner/profile/change-password')
+    else:
+        form = PasswordChangeForm(user=request.user)
+        args = {'form': form}
+        return render(request, 'connect_therapy/practitioner/change-password.html', args)
 
 # class PractitionerEditProfile(FormView):
 #     template_name = 'connect_therapy/practitioner/profile/edit'
