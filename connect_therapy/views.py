@@ -143,9 +143,9 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
 """LoginRequiredMixin, to be added below"""
 
 
-class BookAppointmentView(TemplateView):
+class BookAppointmentView(DetailView):
     template_name = "connect_therapy/patient/book_appointment.html"
-
+    model = Practitioner
     # login_url = reverse_lazy("connect_therapy:patient-login")
     def get(self, request):
         print("At get")

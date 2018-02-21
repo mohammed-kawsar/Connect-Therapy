@@ -2,28 +2,49 @@
 {% block title %}Practitioner appointments{% endblock %}
 
 {% block content %}
-<h1>Your Appointments</h1></br>
-    <h2>Current Bookings</h2>
-    {% for appointment in future_appointments %}
-        <tr class="current">
-            <td> {{ appointment.start_date_and_time }} </td>
-            <td>Duration: {{ appointment.length }}</td>
-            <td>Patient: {{ appointment.patient }}</td>
-            <td><a href="">Cancel Appointment</a></td>
+    <h1>Your Appointments</h1></br>
+    {% if future_appointments|length > 0 %}
+        <h2>Current Bookings</h2>
+        <table>
+        <tr>
+            <th>Date and time</th>
+            <th>Duration</th>
+            <th>Practitioner</th>
+            <th>Actions</th>
         </tr>
-        {% empty %}
-        <p> No upcoming appointments yet. </p>
-    {%  endfor %}
+
+        {% for appointment in future_appointments %}
+            <tr class="current">
+                <td> {{ appointment.start_date_and_time }} </td>
+                <td> Duration: {{ appointment.length }} </td>
+                <td>Practitioner: {{ appointment.practitioner }} </td>
+                <td><a href=""> Cancel Appointment</a></td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <p> No upcoming appointments. </p>
+    {% endif %}
+</table>
 
     <h2>Previous Bookings</h2>
-    {% for appointment in past_appointments %}
-        <tr class="previous">
-            <td> {{ appointment.start_date_and_time }} </td>
-            <td>Duration: {{ appointment.length }}</td>
-            <td>Patient: {{ appointment.patient }}</td>
-            <td> <a href="">View Notes</a> </td>
+    {% if past_appointments|length > 0 %}
+        <table>
+        <tr>
+            <th>Date and time</th>
+            <th>Duration</th>
+            <th>Practitioner</th>
+            <th>Actions</th>
         </tr>
-        {% empty %}
+        {% for appointment in past_appointments %}
+            <tr class="previous">
+                <td> {{ appointment.start_date_and_time }} </td>
+                <td> {{ appointment.length }}</td>
+                <td> {{ appointment.patient }}</td>
+                <td><a href="">View Notes</a></td>
+            </tr>
+        {% endfor %}
+    {% else %}
         <p> No previous appointments. </p>
-    {% endfor %}
+    {% endif %}
+</table>
 {% endblock %}
