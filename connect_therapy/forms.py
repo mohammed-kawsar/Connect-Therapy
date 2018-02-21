@@ -132,4 +132,5 @@ class EditProfileForm(UserChangeForm):
                   'address_line_2',
                   'postcode',
                   'bio',
+                  'password'
                   )
