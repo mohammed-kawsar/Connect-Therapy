@@ -86,11 +86,3 @@ class Appointment(models.Model):
                                        str(self.start_date_and_time),
                                        str(self.length))
 
-
-# def create_profile(sender, **kwargs):
-#     if kwargs['created']:
-#         user_profile = Practitioner.objects.create(user = kwargs['instance'])
-#
-#
-# post_save.connect(create_profile, sender=User)
-

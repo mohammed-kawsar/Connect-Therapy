@@ -151,18 +151,18 @@ class PractitionerProfile(generic.TemplateView):
         return render(request, args)
 
 
+def edit_profile(request):
+    if request.method == 'POST':
+        form = EditProfileForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            return redirect('/practitioner/profile')
+
+    else:
+        form = EditProfileForm(instance=request.user)
+        args = {'form': form}
+        return render(request, 'connect_therapy/practitioner/edit-profile.html', args)
+
 # class PractitionerEditProfile(FormView):
 #     template_name = 'connect_therapy/practitioner/profile/edit'
-#
-#     def edit_profile(request):
-#         if request.method == 'POST':
-#             form = EditProfileForm(request.POST, instance=request.user)
-#
-#             if form.is_valid():
-#                 form.save()
-#                 return redirect('connect_therapy/practitioner/profile')
-#
-#         else:
-#             form = EditProfileForm(instance=request.user)
-#             args = {'form': form}
-#             return render(request, 'connect_therapy/practitioner/edit.html', args)

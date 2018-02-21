@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
 from connect_therapy.views import *
+from . import views
 
 app_name = 'connect_therapy'
 urlpatterns = [
@@ -95,7 +96,7 @@ urlpatterns = [
          name='practitioner-profile'
          ),
     path('practitioner/profile/edit',
-         PractitionerEditProfile.as_view(),
-         name='practitioner-edit-profile'
+         views.edit_profile,
+         name='edit-profile'
          ),
 ]
