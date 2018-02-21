@@ -131,3 +131,4 @@ class AppointmentDateSelectForm(forms.Form):
     def is_valid(self):
         valid = super(AppointmentDateSelectForm, self).is_valid()
         return valid
+

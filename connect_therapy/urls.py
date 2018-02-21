@@ -90,8 +90,12 @@ urlpatterns = [
          PractitionerMyAppointmentsView.as_view(),
          name='practitioner-my-appointments'
          ),
-    path('patient/book-appointment',
+    path('patient/book-appointment/<int:pk>',
          BookAppointmentView.as_view(),
-         name='patient-book-appointment'
+         name='book-appointment'
+         ),
+    path('patient/book-appointment/<int:pk>/checkout',
+         BookAppointmentView.as_view(),
+         name='book-appointment-checkout'
          ),
 ]

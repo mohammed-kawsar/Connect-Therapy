@@ -140,24 +140,24 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-"""LoginRequiredMixin, to be added below"""
-
-
 class BookAppointmentView(DetailView):
-    template_name = "connect_therapy/patient/book_appointment.html"
+    template_name = "connect_therapy/patient/book-appointment.html"
     model = Practitioner
-    # login_url = reverse_lazy("connect_therapy:patient-login")
-    def get(self, request):
-        print("At get")
+
+    def get(self, request, pk):
+        # define the object for the detail view
+        self.object = self.get_object()
+        print(self.object)
         form = AppointmentDateSelectForm
         return render(self.request,
                       self.template_name,
-                      context={"form": form})
+                      context={"form": form,
+                               "object": self.object})
 
-    def post(self, request):
-        print("At post")
+    def post(self, request, pk):
+        self.object = self.get_object()
+        practitioner = Practitioner.objects.filter(pk=pk)
         form = AppointmentDateSelectForm(request.POST)
-
         if form.is_valid():
             date = form.cleaned_data['date']
             day = date.day
@@ -166,10 +166,18 @@ class BookAppointmentView(DetailView):
 
             appointments = Appointment.objects.filter(start_date_and_time__day=day
                                                       ).filter(start_date_and_time__month=month
-                                                               ).filter(start_date_and_time__year=year)
+                                                               ).filter(start_date_and_time__year=year
+                                                                        ).filter(patient__isnull=True
+                                                                                 ).filter(practitioner_id=pk)
+
+            for a in appointments:
+                print(a.practitioner.user.get_full_name())
+
             return render(self.request,
                           self.template_name,
-                          context={"form": form, "appointments": appointments})
+                          context={"form": form,
+                                   "appointments": appointments,
+                                   "object": self.get_object()})
         else:
             print("Create appointment form is not valid. views.py #154")
             return self.get(request)
@@ -177,4 +185,4 @@ class BookAppointmentView(DetailView):
 
 class BookAppointmentDetailView(DetailView):
     model = Appointment
-    template_name = 'connect_therapy.patient/book_appointment_details.html'
+    template_name = 'connect_therapy.patient/book-appointment-details.html'
