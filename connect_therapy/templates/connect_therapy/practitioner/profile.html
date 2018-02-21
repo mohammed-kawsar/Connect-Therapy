@@ -1,0 +1,11 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Practitioner profile{% endblock %}
+
+{% block content %}
+    <p>{{ user.first_name }}</p>
+    <p>{{ user.last_name }}</p>
+    <p>{{ user.email }}</p>
+    <p>{{ user.practitioner.mobile }}</p>
+    <p>{{ user.practitioner.address_line_1 }}</p>
+    <p>{{ user.practitioner.bio }}</p>
+{% endblock %}

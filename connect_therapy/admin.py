@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin as UserAdminParent
 
-from connect_therapy.models import Practitioner
+from connect_therapy.models import Practitioner, Appointment
 
 
 @admin.register(Practitioner)
@@ -40,7 +40,7 @@ admin.site.unregister(Group)
 admin.site.unregister(User)
 admin.site.site_header = 'Connect Therapy Administration'
 admin.site.site_title = 'Connect Therapy - Admin'
-
+admin.site.register(Appointment)
 
 @admin.register(User)
 class UserAdmin(UserAdminParent):

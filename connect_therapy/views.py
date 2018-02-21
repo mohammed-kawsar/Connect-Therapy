@@ -7,6 +7,7 @@ from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import generic
+from django.contrib.auth.models import User
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -139,3 +140,29 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).order_by('-start_date_and_time')
         return context
+
+
+class PractitionerProfile(generic.TemplateView):
+    template_name = 'connect_therapy/practitioner/profile.html'
+
+    def view_profile(request):
+        user = request.user
+        args = {'user': user}
+        return render(request, args)
+
+
+# class PractitionerEditProfile(FormView):
+#     template_name = 'connect_therapy/practitioner/profile/edit'
+#
+#     def edit_profile(request):
+#         if request.method == 'POST':
+#             form = EditProfileForm(request.POST, instance=request.user)
+#
+#             if form.is_valid():
+#                 form.save()
+#                 return redirect('connect_therapy/practitioner/profile')
+#
+#         else:
+#             form = EditProfileForm(instance=request.user)
+#             args = {'form': form}
+#             return render(request, 'connect_therapy/practitioner/edit.html', args)
