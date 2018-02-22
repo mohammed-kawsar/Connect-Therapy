@@ -163,7 +163,7 @@ def edit_profile(request):
             return HttpResponseRedirect('/practitioner/profile')
 
     else:
-        form = EditProfileForm(instance=request.user)
+        form = EditProfileForm(instance=request.user.profile)
         args = {}
         args.update(csrf(request))
         args['form'] = form
