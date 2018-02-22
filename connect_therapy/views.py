@@ -141,15 +141,19 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class PractitionerAppointmentNotes(LoginRequiredMixin, generic.DetailView):
-    login_url = reverse_lazy('connect_therapy:practitioner-notes')
+class PractitionerPreviousNotesView(LoginRequiredMixin, generic.DetailView):
+    login_url = reverse_lazy('connect_therapy:practitioner-appointment-notes')
     model = Appointment
     template_name = 'connect_therapy/practitioner/appointment-notes.html'
 
 
-class PatientAppointmentNotes(LoginRequiredMixin, generic.DetailView):
-    login_url = reverse_lazy('connect_therapy:patient-notes')
+class PractitionerCurrentNotesView(LoginRequiredMixin, generic.DetailView):
+    login_url = reverse_lazy('connect_therapy:practitioner-before-meeting-notes')
+    model = Appointment
+    template_name = 'connect_therapy/practitioner/before-meeting-notes.html'
+
+
+class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
+    login_url = reverse_lazy('connect_therapy:patient-appointment-notes')
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
-
-
