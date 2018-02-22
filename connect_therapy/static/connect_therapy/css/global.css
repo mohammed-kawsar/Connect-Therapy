@@ -333,7 +333,7 @@ and (min-resolution: 192dpi) {
     height: 60px;
     line-height: 20px;
 
-    position: fixed;
+    position: relative;
     width: 100%;
 
 }
