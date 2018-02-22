@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import generic
 from django.views.generic.edit import FormMixin
+from django import forms
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -144,7 +145,7 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
 
 class PatientCancelAppointmentView(FormMixin, DetailView):
     model = Appointment
-    form_class = CancelForm
+    form_class = forms.Form
     template_name = 'connect_therapy/appointment_detail.html'
 
     def get_success_url(self):

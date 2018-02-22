@@ -89,7 +89,7 @@ urlpatterns = [
     path('practitioner/my-appointments',
          PractitionerMyAppointmentsView.as_view(),
          name='practitioner-my-appointments'
-        ),
+         ),
     path('patient/cancel-appointment/<int:pk>',
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'
