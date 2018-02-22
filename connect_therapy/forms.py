@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm,\
-    UsernameField
+    UsernameField, UserChangeForm
 from django.contrib.auth.models import User
 from connect_therapy.models import Patient, Practitioner, Appointment
 
@@ -56,6 +56,22 @@ class PatientLoginForm(AuthenticationForm):
                 code='not-patient'
             )
         super().confirm_login_allowed(user)
+
+
+class PatientEditDetailsForm(UserChangeForm):
+    mobile = forms.CharField(max_length=20)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        return email
+
+    class Meta:
+        model = User
+        fields = ('email', 'mobile')
+
+        widgets = {
+            'email': forms.TextInput(attrs={'size': 35})
+        }
 
 
 class PractitionerSignUpForm(UserCreationForm):

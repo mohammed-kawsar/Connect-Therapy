@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, UpdateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect, get_object_or_404
@@ -68,6 +68,26 @@ class PatientMyAppointmentsView(generic.TemplateView):
             patient=self.request.user.patient
         ).order_by('-start_date_and_time')
         return context
+
+
+class PatientEditDetails(UpdateView):
+    model = Patient
+    form_class = PatientEditDetailsForm
+    success_url = reverse_lazy('connect_therapy:patient-signup-success')
+    template_name = 'connect_therapy/patient/edit-details.html'
+
+    def edit_profile(self, request):
+        user = request.user
+        form = PatientEditDetailsForm(request.POST, instance=request.user)
+        if request.method == 'POST':
+            if form.is_valid():
+                form.save()
+                # return HttpResponse
+        else:
+            form = PatientEditDetailsForm
+
+        context = {'form': form, }
+        return render(request, 'connect_therapy/patient/edit-details.html', context)
 
 
 class PractitionerSignUpView(FormView):

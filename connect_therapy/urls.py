@@ -48,6 +48,10 @@ urlpatterns = [
          PatientMyAppointmentsView.as_view(),
          name='patient-my-appointments'
          ),
+    path('patient/edit-details',
+         PatientEditDetails.as_view(),
+         name='patient-edit-details'
+         ),
     path('practitioner/signup',
          PractitionerSignUpView.as_view(),
          name='practitioner-signup'
