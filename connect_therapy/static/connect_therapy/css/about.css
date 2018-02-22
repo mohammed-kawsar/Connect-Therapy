@@ -1,25 +1,9 @@
-
 .post1 img {
     padding-top: 50px;
     padding-left: 200px;
     padding-bottom: 50px;
-        float: right;
-}
-
-.post2{
-    padding-right: 360px;
-}
-
-.image2{
     float: right;
-    padding: 50px;
 }
-
-/*.text1 {
-    padding-left: 50px;
-    padding-top: 50px;
-    padding-right: 70px;
-}*/
 
 .text1 {
 
@@ -34,11 +18,6 @@
 
 }
 
-.text2 {
-    float: left;
-
-}
-
 .title {
     color: #30419A;
     font-family: Cuprum-Bold;
@@ -46,10 +25,10 @@
 
 .item1 img {
     width: 100%;
-    height: 70%;
+    height: 100%;
 }
 
-.caption h3{
+.caption h3 {
     position: absolute;
     font-family: Cuprum-Regular;
 
@@ -75,12 +54,7 @@
     font-size: 30px;
 }
 
-
-.image2 img{
-    padding-top: 50px;
-}
-
-.main-image img{
+.main-image img {
     width: 100%;
     height: 500px;
 }

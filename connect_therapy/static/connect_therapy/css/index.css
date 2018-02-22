@@ -107,6 +107,7 @@
 
 }
 
+.
 .clinician {
     width: 50px;
     height: 50px;
@@ -215,32 +216,37 @@
 /* Stuff added to test image-button */
 
 .container {
-  position: relative;
-  width: 50%;
+    position: relative;
+    width: 50%;
 }
 
 /* Make the image responsive */
 .container img {
-  width: 100%;
-  height: auto;
+    width: 100%;
+    height: auto;
+    top: 0;
+    bottom: 50%;
+    left: 0;
+    right: 0;
+    margin: auto;
 }
 
 /* Style the button and place it in the middle of the container/image */
 .container .btn {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  background-color: #555;
-  color: white;
-  font-size: 16px;
-  padding: 12px 24px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    background-color: #555;
+    color: white;
+    font-size: 16px;
+    padding: 12px 24px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 .container .btn:hover {
-  background-color: black;
+    background-color: black;
 }

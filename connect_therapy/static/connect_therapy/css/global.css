@@ -5,36 +5,13 @@ html,
     margin-top: 0;
 }
 
-.navbar-collapse {
-
-    font-family: Cuprum-Regular;
-    font-size: 16px;
-    color: #432424;
-    margin-right: auto;
-    margin-left: 0;
-    padding-top: 1px;
-    position: relative;
-
-}
-
-.collapse {
-
-    padding-right: 100px;
-
-}
-
 body {
 
     height: 100%;
     width: 100%;
-}
-
-body {
-
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     color: #6c6f73;
-
 }
 
 .content {
@@ -328,7 +305,7 @@ and (min-resolution: 192dpi) {
 
     right: 0;
     left: 0;
-    bottom:0;
+    bottom: 0;
     position: -ms-device-fixed;
     height: 60px;
     line-height: 20px;
