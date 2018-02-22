@@ -185,6 +185,3 @@ def change_password(request):
         form = PasswordChangeForm(user=request.user)
         args = {'form': form}
         return render(request, 'connect_therapy/practitioner/change-password.html', args)
-
-# class PractitionerEditProfile(FormView):
-#     template_name = 'connect_therapy/practitioner/profile/edit'
