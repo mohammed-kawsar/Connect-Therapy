@@ -133,12 +133,12 @@ class Appointment(models.Model):
 
         # merges and sorts the lists
         merged_list = list(existing_user_appointments) + appointments_to_book
-        merged_list = sorted(merged_list, key=lambda appointment: appointment.start_date_and_time)
 
         return cls.get_overlaps(merged_list)
 
     @classmethod
     def get_overlaps(cls, list_of_appointments):
+        list_of_appointments = sorted(list_of_appointments, key=lambda appointment: appointment.start_date_and_time)
         overlapping_appointments = []
         for i in range(0, len(list_of_appointments) - 1):
             cur_start_time = list_of_appointments[i].start_date_and_time
@@ -149,8 +149,10 @@ class Appointment(models.Model):
 
             # limit to same day appointments
             if cur_start_time.date() == next_end_time.date():
-                if next_start_time >= cur_start_time or next_end_time <= cur_end_time or \
-                        cur_start_time >= next_start_time or cur_end_time <= next_end_time:
+                if next_start_time < cur_end_time < next_end_time or \
+                        cur_start_time < next_end_time < cur_end_time or \
+                        next_start_time >= cur_start_time and next_end_time <= cur_end_time or \
+                        cur_start_time >= next_start_time and cur_end_time <= next_end_time:
                     overlapping_appointments.append(
                         [list_of_appointments[i].start_date_and_time, list_of_appointments[i + 1].start_date_and_time])
 
