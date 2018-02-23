@@ -121,4 +121,3 @@ class PractitionerLoginForm(AuthenticationForm):
 class PractitionerNotesForm(forms.Form):
     practitioner_notes = forms.CharField(label="notes for practitioner", widget=forms.Textarea)
     patient_notes_by_practitioner = forms.CharField(label="notes for patient", widget=forms.Textarea)
-
