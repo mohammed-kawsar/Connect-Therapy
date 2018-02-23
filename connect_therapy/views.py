@@ -7,6 +7,7 @@ from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import generic
+from django.forms.formsets import formset_factory
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -71,7 +72,7 @@ class PatientMyAppointmentsView(generic.TemplateView):
 
 
 class PatientEditDetails(UpdateView):
-    model = Patient
+    model = User
     form_class = PatientEditDetailsForm
     success_url = reverse_lazy('connect_therapy:patient-signup-success')
     template_name = 'connect_therapy/patient/edit-details.html'
@@ -82,12 +83,14 @@ class PatientEditDetails(UpdateView):
         if request.method == 'POST':
             if form.is_valid():
                 form.save()
-                # return HttpResponse
         else:
             form = PatientEditDetailsForm
 
-        context = {'form': form, }
-        return render(request, 'connect_therapy/patient/edit-details.html', context)
+            # return HttpResponse
+
+        context = {'form': form}
+        return render(request, 'connect_therapy/patient/edit-details.html',
+                      context)
 
 
 class PractitionerSignUpView(FormView):

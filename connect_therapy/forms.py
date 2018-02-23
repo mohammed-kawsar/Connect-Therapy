@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm,\
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, \
     UsernameField, UserChangeForm
 from django.contrib.auth.models import User
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -43,7 +43,7 @@ class PatientLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        },),
+        }, ),
         label="Email"
     )
 
@@ -59,19 +59,71 @@ class PatientLoginForm(AuthenticationForm):
 
 
 class PatientEditDetailsForm(UserChangeForm):
+    date_of_birth = forms.DateField(help_text=" Format: DD/MM/YYYY",
+                                    input_formats=[
+                                        '%d/%m/%Y'
+                                    ])
+    gender = forms.ChoiceField(choices=Patient.gender_choices)
     mobile = forms.CharField(max_length=20)
 
     def clean_email(self):
         email = self.cleaned_data['email']
         return email
 
+    def clean_password(self):
+        data = self.cleaned_data['password']
+        return data
+
     class Meta:
         model = User
-        fields = ('email', 'mobile')
+        fields = ('first_name',
+                  'last_name',
+                  'gender',
+                  'date_of_birth',
+                  'email',
+                  'mobile')
 
         widgets = {
             'email': forms.TextInput(attrs={'size': 35})
         }
+
+    # def __init__(self, *args, **kwargs):
+    #     super(PatientEditDetailsForm, self).__init__(*args, **kwargs)
+    #
+    #     self.fields['first_name', 'last_name'].widget.attrs['readonly'] = True
+
+
+# class PatientProfile(forms.ModelForm):
+#     date_of_birth = forms.DateField(help_text=" Format: DD/MM/YYYY",
+#                                     input_formats=[
+#                                         '%d/%m/%Y'
+#                                     ])
+#
+#     gender = forms.ChoiceField(choices=Patient.gender_choices)
+#
+#     mobile = forms.CharField(max_length=20)
+#
+#     class Meta:
+#         model = Patient
+#
+#         fields = ('date_of_birth', 'gender', 'mobile')
+#
+#     # def __init__(self, *args, **kwargs):
+#     #     super(PatientProfile, self).__init__(*args, **kwargs)
+#     #
+#     #     self.fields['date_of_birth', 'gender'].widget.attrs['readonly'] = True
+
+
+# class PatientEditDetailsForm(forms.ModelForm):
+#     class Meta:
+#         model = User
+#
+#         fields = ('email', 'password', 'first_name', 'last_name')
+
+    # def __init__(self, *args, **kwargs):
+    #     super(PatientProfile, self).__init__(*args, **kwargs)
+    #
+    #     self.fields['email', 'password', 'first_name', 'last_name'].widget.attrs['readonly'] = True
 
 
 class PractitionerSignUpForm(UserCreationForm):
@@ -113,7 +165,7 @@ class PractitionerLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        },),
+        }, ),
         label="Email"
     )
 
