@@ -1,0 +1,7 @@
+{% extends 'connect_therapy/emails/html/base.html' %}
+{% block body %}
+    <p>Sorry {{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}
+    has cancelled your appointment for {{ appointment.start_date_and_time }}.</p>
+
+    <p>In line with our Terms and Conditions, as they have cancelled with over 24 hours notice, they were not be charged.</p>
+{% endblock %}
