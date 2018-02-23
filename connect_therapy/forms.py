@@ -45,7 +45,7 @@ class PatientLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        }, ),
+        },),
         label="Email"
     )
 
@@ -99,7 +99,7 @@ class PractitionerLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        }, ),
+        },),
         label="Email"
     )
 
@@ -125,8 +125,7 @@ class PractitionerNotesForm(forms.Form):
     patient_notes_by_practitioner = forms.CharField(label="notes for patient", widget=forms.Textarea)
 
 
-
-class PractitionerAppointmentForm(forms.Form):
+class PractitionerDefineAppointmentForm(forms.Form):
     start_date_and_time = forms.DateTimeField(help_text=" Format: DD/MM/YYYY H:M",
                                               required=True,
                                               input_formats=['%d/%m/%Y %H:%M'])
@@ -136,16 +135,21 @@ class PractitionerAppointmentForm(forms.Form):
                              input_formats=['%H:%M'])
 
     def clean_start_date_and_time(self):
-        data = self.cleaned_data['start_date_and_time']
+        start_datetime = self.cleaned_data['start_date_and_time']
 
         # Check appointment date is not in past.
-        if data.date() < datetime.date.today():
+        if start_datetime.date() < datetime.date.today():
             raise forms.ValidationError("Invalid date, cannot enter a past date!",
                                         code='invalid'
                                         )
 
-        if data.date() > datetime.date.today() + datetime.timedelta(weeks=4):
-            raise forms.ValidationError("Invalid date, cannot enter a date more than 4 weeks ahead!",
+        if start_datetime.date() > datetime.date.today() + datetime.timedelta(months=3):
+            raise forms.ValidationError("Invalid date, cannot enter a date more than 3 months ahead!",
                                         code='invalid'
                                         )
-        return data
+        if start_datetime.date() < datetime.date.today() + datetime.timedelta(days=1) :
+            raise forms.ValidationError("Invalid date, cannot enter a date less than 24 hours in advance!",
+                                        code='invalid'
+                                        )
+
+        return start_datetime

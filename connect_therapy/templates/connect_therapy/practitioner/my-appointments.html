@@ -6,10 +6,14 @@
     <h2>Current Bookings</h2>
     {% for appointment in future_appointments %}
         <tr class="current">
-            <td> {{ appointment.start_date_and_time }} </td>
-            <td>Duration: {{ appointment.length }}</td>
+            <td> {{ appointment.start_date_and_time.date }} </td>
+            <td>Start Time: {{ appointment.start_date_and_time.time}}</td>
+            <td>End Time: {{ appointment.length }}</td>
             <td>Patient: {{ appointment.patient }}</td>
-            <td><a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id%}">Cancel Appointment</a></td>
+                {% if appointment.patient != none %}
+                    <td>Patient: {{ appointment.patient.date_of_birth }}</td>
+                {%  endif %}
+            <td><a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}">Cancel Appointment</a></td>
         </tr>
         {% empty %}
         <p> No upcoming appointments yet. </p>

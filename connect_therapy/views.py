@@ -144,7 +144,7 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
 
 class SetAppointmentView(LoginRequiredMixin, FormView):
     login_url = reverse_lazy('connect_therapy:practitioner-login')
-    form_class = PractitionerAppointmentForm
+    form_class = PractitionerDefineAppointmentForm
     template_name = 'connect_therapy/practitioner/appointment-form-page.html'
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
 
