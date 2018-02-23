@@ -142,14 +142,14 @@ class PractitionerDefineAppointmentForm(forms.Form):
             raise forms.ValidationError("Invalid date, cannot enter a past date!",
                                         code='invalid'
                                         )
-
-        if start_datetime.date() > datetime.date.today() + datetime.timedelta(months=3):
+        if start_datetime.date() > datetime.date.today() + datetime.timedelta(weeks=12):
             raise forms.ValidationError("Invalid date, cannot enter a date more than 3 months ahead!",
                                         code='invalid'
                                         )
-        if start_datetime.date() < datetime.date.today() + datetime.timedelta(days=1) :
-            raise forms.ValidationError("Invalid date, cannot enter a date less than 24 hours in advance!",
-                                        code='invalid'
+
+        if Appointment.objects.filter(start_date_and_time=start_datetime).exists():
+            raise forms.ValidationError("Date and time already exists for an appointment, enter a different time",
+                                        code='exists'
                                         )
 
         return start_datetime
