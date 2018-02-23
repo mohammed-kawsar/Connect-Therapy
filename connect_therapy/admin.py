@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin as UserAdminParent
 
 from connect_therapy.models import Practitioner, Patient, Appointment
 
+
 @admin.register(Practitioner)
 class PractitionerAdmin(admin.ModelAdmin):
     def get_user_first_name(practitioner):
@@ -37,6 +38,7 @@ class PractitionerAdmin(admin.ModelAdmin):
 
 admin.site.unregister(Group)
 admin.site.unregister(User)
+
 admin.site.site_header = 'Connect Therapy Administration'
 admin.site.site_title = 'Connect Therapy - Admin'
 

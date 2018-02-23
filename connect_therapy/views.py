@@ -175,10 +175,13 @@ class BookAppointmentView(DetailView):
 class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
     template_name = 'connect_therapy.patient/book-appointment-checkout.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
+
     def get(self, request, *args, **kwargs):
         app_ids = request.GET.getlist('app_id')
         id = kwargs['pk']
         user = User.objects.get(pk=self.request.user.id)
         patient = Patient.objects.get(user=user)
         valid = Appointment.is_appointment_valid(app_ids, id, patient_id=patient.id)
-        return HttpResponse("You at the checkout")
+        if len(valid) > 0:
+            return HttpResponse("Your selected appointment will overlap with your existing appointments")
+        return HttpResponse("You're at the checkout")

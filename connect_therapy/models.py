@@ -104,48 +104,54 @@ class Appointment(models.Model):
         return appointments
 
     @classmethod
-    def add_time(cls, date_time, time):
+    def _add_time(cls, date_time, time):
         return date_time + timedelta(hours=time.hour, minutes=time.minute,
                                      seconds=time.minute)
 
     @classmethod
     def is_appointment_valid(cls, selected_appointments, selected_practitioner, patient_id):
-        # get existing up-coming appointments
-        cls.appointment_overlap_exists(selected_appointments, selected_practitioner, patient_id)
+        over_lap = cls.appointment_overlap_exists(selected_appointments, selected_practitioner, patient_id)
+
+        if len(over_lap) > 0:
+            return over_lap
+        else:
+            return []
 
     @classmethod
     def appointment_overlap_exists(cls, selected_appointments, selected_practitioner, patient_id):
         patient_obj = Patient.objects.get(pk=patient_id)
         existing_user_appointments = Appointment.objects.filter(patient_id=patient_obj.id)
-        print(patient_obj)
+
         if len(existing_user_appointments) == 0:
             print("Patient doesnt have any appointments")
             return False
 
+        # get the appointments the patient is trying to book, from the database
         appointments_to_book = []
-        for id in selected_appointments:
-            appointments_to_book.append(Appointment.objects.get(pk=id))
+        for _id in selected_appointments:
+            appointments_to_book.append(Appointment.objects.get(pk=_id))
 
         # merges and sorts the lists
         merged_list = list(existing_user_appointments) + appointments_to_book
         merged_list = sorted(merged_list, key=lambda appointment: appointment.start_date_and_time)
-        print(merged_list)
-        # gets overlapping appointments
+
+        return cls.get_overlaps(merged_list)
+
+    @classmethod
+    def get_overlaps(cls, list_of_appointments):
         overlapping_appointments = []
-        for i in range(0, len(merged_list) - 1):
-            cur_start_time = merged_list[i].start_date_and_time
-            cur_end_time = cls.add_time(cur_start_time, merged_list[i].length)
+        for i in range(0, len(list_of_appointments) - 1):
+            cur_start_time = list_of_appointments[i].start_date_and_time
+            cur_end_time = cls._add_time(cur_start_time, list_of_appointments[i].length)
 
-            next_start_time = merged_list[i + 1].start_date_and_time
-            next_end_time = cls.add_time(next_start_time, merged_list[i + 1].length)
+            next_start_time = list_of_appointments[i + 1].start_date_and_time
+            next_end_time = cls._add_time(next_start_time, list_of_appointments[i + 1].length)
 
-            # TODO: Missing case, when either task completely envelopes another i.e. last for the full duration
+            # limit to same day appointments
+            if cur_start_time.date() == next_end_time.date():
+                if next_start_time >= cur_start_time or next_end_time <= cur_end_time or \
+                        cur_start_time >= next_start_time or cur_end_time <= next_end_time:
+                    overlapping_appointments.append(
+                        [list_of_appointments[i].start_date_and_time, list_of_appointments[i + 1].start_date_and_time])
 
-            if next_start_time < cur_end_time < next_end_time or \
-                    cur_start_time < next_end_time < cur_end_time or \
-                    cur_start_time == next_start_time:
-                overlapping_appointments.append(
-                    [merged_list[i].start_date_and_time, merged_list[i + 1].start_date_and_time])
-
-        print(overlapping_appointments)
         return overlapping_appointments
