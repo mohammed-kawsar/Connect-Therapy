@@ -1,0 +1,12 @@
+{% extends 'connect_therapy/emails/html/base.html' %}
+{% block body %}
+    <p>This is a confirmation that you have booked an appointment with Dr. {{ appointment.practitioner.user.first_name }} {{ appointment.practitioner.user.last_name}}
+        starting on {{ appointment.start_date_and_time }} for {{ appointment.length }}.</p>
+    <p>If this was in error, you can cancel the appointment free of charge, up to 24 hours before, from our website.</p>
+{% endblock %}
+
+{% block signoff %}
+    <p>Thanks,</p>
+    <p>Connect Therapy Admin Team on behalf of <b>Dr. {{ appointment.practitioner.user.first_name }}
+        {{ appointment.practitioner.user.last_name}}</b></p>
+{% endblock %}
