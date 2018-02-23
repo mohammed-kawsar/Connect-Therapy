@@ -41,6 +41,14 @@ urlpatterns = [
          ),
          name='patient-logout-success'
          ),
+    path('chat/<int:pk>',
+         ChatView.as_view(),
+         name="chat"
+         ),
+    path('patient/my-appointments',
+         PatientMyAppointmentsView.as_view(),
+         name='patient-my-appointments'
+         ),
     path('practitioner/signup',
          PractitionerSignUpView.as_view(),
          name='practitioner-signup'
@@ -86,7 +94,6 @@ urlpatterns = [
          ),
          name='practitioner-homepage'
          ),
-
     path('',
          TemplateView.as_view(
              template_name='connect_therapy/index.html'
@@ -99,5 +106,12 @@ urlpatterns = [
          ),
          name='patient-homepage'
          ),
-
+    path('practitioner/notes/<int:appointment_id>',
+         PractitionerNotesView.as_view(),
+         name='practitioner-notes'
+         ),
+    path('practitioner/my-appointments',
+         PractitionerMyAppointmentsView.as_view(),
+         name='practitioner-my-appointments'
+         ),
 ]

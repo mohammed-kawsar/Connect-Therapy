@@ -1,9 +1,13 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.urls import reverse
+from django.utils import timezone
 from connect_therapy.models import *
 from connect_therapy.forms import *
+from connect_therapy.admin import *
 from datetime import date, datetime, time
 import pytz
+from connect_therapy.views import *
 
 
 class PatientModelTests(TestCase):
@@ -55,6 +59,68 @@ class AppointmentModelTests(TestCase):
         appointment.save()
         self.assertEqual(str(appointment),
                          'John Smith - 2018-03-02 15:16:00+00:00 for 01:00:00')
+
+    def test_session_salt_generation(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        patient = Patient(user=u,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+
+        patient.save()
+
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+
+        appointment = Appointment(
+            practitioner=practitioner,
+            patient=patient,
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=15,
+                                         minute=16,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1)
+        )
+        appointment.save()
+        self.assertTrue(len(appointment.session_salt) == 10)
+
+    def test_session_id_generation(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        patient = Patient(user=u,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+
+        patient.save()
+
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+
+        appointment = Appointment(
+            practitioner=practitioner,
+            patient=patient,
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=15,
+                                         minute=16,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1)
+        )
+        appointment.save()
+        self.assertTrue(len(appointment.session_id) > 0)
 
 
 class PatientSignUpFormTests(TestCase):
@@ -137,7 +203,7 @@ class PatientLoginFormTests(TestCase):
                           mobile='+447476565333'
                           )
         patient.save()
-        form = PatientLoginForm(data= {
+        form = PatientLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -273,7 +339,7 @@ class PractitionerLoginFormTests(TestCase):
                                     is_approved=True
                                     )
         practitioner.save()
-        form = PractitionerLoginForm(data= {
+        form = PractitionerLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -291,7 +357,7 @@ class PractitionerLoginFormTests(TestCase):
                                     is_approved=False
                                     )
         practitioner.save()
-        form = PractitionerLoginForm(data= {
+        form = PractitionerLoginForm(data={
             'username': 'test@example.com',
             'password': 'woofwoof12'
         })
@@ -342,3 +408,108 @@ class PractitionerLoginFormTests(TestCase):
             'password': 'woofwoof12'
         })
         self.assertFalse(form.is_valid())
+
+
+class testPractitionerAdmin(TestCase):
+    def test_get_user_first_name(self):
+        user = User(first_name="John", last_name="Smith")
+        user.save()
+        practitioner = Practitioner(user=user,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        self.assertEqual(PractitionerAdmin.get_user_first_name(practitioner),
+                         'John'
+                         )
+
+    def test_get_user_last_name(self):
+        user = User(first_name="John", last_name="Smith")
+        user.save()
+        practitioner = Practitioner(user=user,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        self.assertEqual(PractitionerAdmin.get_user_last_name(practitioner),
+                         'Smith'
+                         )
+
+    def test_get_user_email(self):
+        user = User(first_name="John",
+                    last_name="Smith",
+                    email='test@example.com'
+                    )
+        user.save()
+        practitioner = Practitioner(user=user,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        self.assertEqual(PractitionerAdmin.get_user_email(practitioner),
+                         'test@example.com')
+
+    def test_mark_approved(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+        PractitionerAdmin.mark_approved(None, None, Practitioner.objects.all())
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=False)), 0)
+
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=True)), 1)
+
+    def test_not_mark_approved(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello",
+                                    is_approved=True)
+        practitioner.save()
+        PractitionerAdmin.mark_not_approved(None,
+                                            None,
+                                            Practitioner.objects.all())
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=False)),
+                         1
+                         )
+        self.assertEqual(len(Practitioner.objects.filter(is_approved=True)),
+                         0
+                         )
+
+
+class TestPractitionerNotes(TestCase):
+    def test_practitioner_notes_form(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello",
+                                    is_approved=True)
+        practitioner.save()
+        appointment = Appointment(practitioner=practitioner,
+                                  start_date_and_time=datetime(year=2018,
+                                                               month=4,
+                                                               day=17,
+                                                               hour=15,
+                                                               minute=10,
+                                                               tzinfo=pytz.utc),
+                                  length=time(hour=1))
+        appointment.save()
+        pnv = PractitionerNotesView()
+        pnv.appointment = appointment
+        form = PractitionerNotesForm(data={'practitioner_notes': 'test',
+                                           'patient_notes_by_practitioner': 'text'})
+        form.is_valid()
+        pnv.form_valid(form)
+        self.assertEqual(pnv.appointment.practitioner_notes, 'test')
+        self.assertEqual(pnv.appointment.patient_notes_by_practitioner, 'text')
+

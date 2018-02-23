@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'x6rx)+ued3iv%hho#5^a71k)iak4*s2%jy$ck_hmt5=52#(-)a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True # should be true unless doing test on local network
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [] # should be [] unless doing test on local network (then it should be ['*']
 
 
 # Application definition
@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'connect_therapy.apps.ConnectTherapyConfig'
+    'connect_therapy.apps.ConnectTherapyConfig',
+    "sslserver", # used to test video chat
 ]
 
 MIDDLEWARE = [
