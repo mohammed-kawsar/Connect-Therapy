@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -9,6 +10,7 @@
     <title>{% block title %}{% endblock %}</title>
     {% block header %}{% endblock %}
 </head>
+
 <body>
 <header>
     {% if user.is_authenticated and user.patient %}
@@ -132,35 +134,6 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 ﻿
 <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
-
-<!--
-
-<footer id="main-footer">
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                &copy; 2018 Connect Therapy. All rights reserved.
-                <hr>
-                Coded by SEQwyn
-            </div>
-            <div class="col-md-2">
-                <h6>&nbsp; Our Team</h6>
-                <ul classes="list-unstyled">
-                    <li><a href="">Founder</a></li>
-                </ul>
-            </div>
-            <div class="col-md-2">
-                <h6>&nbsp;Privacy Policy</h6>
-                <ul classes="list-unstyled">
-                    <li><a href="">Terms of Use</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</footer>
-
--->
 
 <!--FOOTER 2-->
 <footer class="footer2">
