@@ -1,0 +1,117 @@
+{% extends 'connect_therapy/base.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+        <link href="{% static '/connect_therapy/css/index.css' %}" rel="stylesheet">
+    </head>
+    <body>
+
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="item1 carousel-item active">
+                <div class="container">
+                    <img src="{% static '/connect_therapy/images/cup.jpeg' %}" alt="Snow">
+                    <button class="btn">Sign Up</button>
+                </div>
+                <div class="caption"><h3>C O N N E C T &nbsp; &nbsp;T H E R A P Y</h3></div>
+            </div>
+            <div class="item2 carousel-item">
+                <img class="black-back" src="{% static '/connect_therapy/images/notes2.jpg' %}" alt="Second slide">
+                <div class="clinic">
+                    <img class="clinician" src="{% static '/connect_therapy/images/clinician.png' %}"
+                         alt="Second slide"
+                         align="middle">
+                </div>
+                <h2 class="clinician-quote">"This web application is amazing, it allows patients to get treatment
+                    wherever they are and whenever they want"</h2>
+            </div>
+            <div class="item3 carousel-item">
+                <img class="d-block" src="{% static '/connect_therapy/images/3rdback.jpg' %}" alt="Third slide">
+                <div class="patient-block">
+                    <img class="patient" src="{% static '/connect_therapy/images/clinician.png' %}"
+                         alt="Third slide"
+                         align="middle">
+                </div>
+                <h2 class="patient-quote">"Patient quote: This web application is amazing, it allows patients to get
+                    treatment wherever they are and whenever they want"</h2>
+            </div>
+        </div>
+        <div class="arrows">
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+
+    <section id="feature-one" class="feature-dark">
+        <div class="container">
+            <div class="feature-content">
+
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 feature-caption">
+                        <h6> Incredible feature</h6>
+                        <h2>Totally incredible website</h2>
+                        <p class="lead">
+                            Niduci tisa suyofos natenix po, nute ieros dorurij ofodu na nomer begora imil
+                            dit be. Cili wihidi ludelu nonihie bugil.
+                            Ugurot ivah co erevun tieleret lar. Royaru usacinen lodie lo reteri. Fape lite lono une
+                            seto. Ilefi gut sonoyis oyora l
+                            imebe rur. Sielore ener honuz yikete pe sehi. Ci sase nicot rat nuted temiv sepuhi
+                            telalos
+                            sosofa! Kosit orietino ehire?
+                        </p>
+                    </div>
+                    <div class="col-lg-6 col-md-6 float-sm-right">
+                        <img class="d-block float-right" id="feature-image"
+                             src="{% static '/connect_therapy/images/slide.png' %}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <script>
+        $('#myCarousel').carousel({
+            interval: false
+        });
+    </script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    ﻿
+    <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
+    </body>
+{% endblock %}

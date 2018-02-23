@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, TemplateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect, get_object_or_404
