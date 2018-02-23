@@ -1,0 +1,25 @@
+{% extends 'connect_therapy/emails/plain-text/base.txt' %}
+{% block body %}
+    <p>Thanks for signing up with Connect Therapy, just a quick thing before you get started.</p>
+
+    <p>Please confirm your email address here:</p>
+    <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+        <tbody>
+        <tr>
+            <td align="left">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tbody>
+                    <tr>
+                        <td> <a href="{{ link }}" target="_blank">Confirm Email</a> </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>If that link didn't work, try copying this into your browser: <a href="{{ link }}">{{ link }}</a></p>
+
+    <p>If you was not expecting this email, feel free to disregard it.</p>
+{% endblock %}
