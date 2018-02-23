@@ -149,6 +149,8 @@ class Appointment(models.Model):
 
             # limit to same day appointments
             if cur_start_time.date() == next_end_time.date():
+                # first 2 clauses check for partial overlaps
+                # next 2 check for complete overlaps i.e. 1 app. covers another completely
                 if next_start_time < cur_end_time < next_end_time or \
                         cur_start_time < next_end_time < cur_end_time or \
                         next_start_time >= cur_start_time and next_end_time <= cur_end_time or \

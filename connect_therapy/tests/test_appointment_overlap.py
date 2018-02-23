@@ -292,3 +292,51 @@ class TestAppointmentOverLap(TestCase):
 
         overlaps = Appointment.get_overlaps([a4, a2, a3, a1])
         self.assertEquals(len(overlaps), 3)
+
+    def test_same_start_different_duartion(self):
+        a1 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=14,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=time(minute=1)
+        )
+        a1.save()
+
+        a2 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=14,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=time(minute=2)
+        )
+        a2.save()
+
+        a3 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=14,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=time(minute=3)
+        )
+        a3.save()
+
+        a4 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=14,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=time(minute=4)
+        )
+        a4.save()
+
+        overlaps = Appointment.get_overlaps([a4, a2, a3, a1])
+        self.assertEquals(len(overlaps), 3)
