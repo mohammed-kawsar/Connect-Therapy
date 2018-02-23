@@ -1,7 +1,10 @@
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import FormView
+from django.views.generic import FormView, DetailView, TemplateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import generic
 
@@ -37,6 +40,16 @@ class PatientLoginView(auth_views.LoginView):
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-login-success')
+
+
+class ChatView(UserPassesTestMixin, DetailView):
+    model = Appointment
+    template_name = 'connect_therapy/chat.html'
+    login_url = reverse_lazy('connect_therapy:patient-login')
+
+    def test_func(self):
+        return (self.request.user.id == self.get_object().patient.user.id) \
+               or (self.request.user.id == self.get_object().practitioner.user.id)
 
 
 class PatientMyAppointmentsView(generic.TemplateView):
@@ -88,6 +101,26 @@ class PractitionerLoginView(auth_views.LoginView):
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:practitioner-login-success')
+
+
+class PractitionerNotesView(FormView):
+    form_class = PractitionerNotesForm
+    template_name = 'connect_therapy/practitioner/notes.html'
+    success_url = reverse_lazy('connect_therapy:practitioner-login-success')
+
+    def form_valid(self, form):
+        self.appointment.practitioner_notes = form.cleaned_data['practitioner_notes']
+        self.appointment.patient_notes_by_practitioner = form.cleaned_data['patient_notes_by_practitioner']
+        self.appointment.save()
+        return super().form_valid(form)
+
+    def get(self, request, appointment_id):
+        self.appointment = get_object_or_404(Appointment, pk=appointment_id)
+        return super().get(request)
+
+    def post(self, request, appointment_id):
+        self.appointment = get_object_or_404(Appointment, pk=appointment_id)
+        return super().post(request)
 
 
 class PractitionerMyAppointmentsView(generic.TemplateView):
