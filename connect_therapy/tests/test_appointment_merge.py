@@ -6,8 +6,8 @@ from django.test import TestCase
 from connect_therapy.views import *
 
 
-class TestAppointmentOverLap(TestCase):
-    "Test the overlap checking algorithm for appointments"
+class TestAppointmentMerge(TestCase):
+    "Test the merging algorithm for appointments"
 
     def test_one_appointment(self):
         a1 = Appointment(
@@ -20,10 +20,10 @@ class TestAppointmentOverLap(TestCase):
             length=time(hour=3)
         )
         a1.save()
-        overlaps = Appointment._get_overlaps([a1])
-        self.assertEqual(len(overlaps), 0)
+        merged = Appointment.merge_appointments([a1])
+        self.assertEqual(len(merged), 1)
 
-    def test_four_same_time(self):
+    def test_two_un_mergeable(self):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
@@ -38,7 +38,7 @@ class TestAppointmentOverLap(TestCase):
         a2 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
-                                         day=2,
+                                         day=1,
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
@@ -46,32 +46,10 @@ class TestAppointmentOverLap(TestCase):
         )
         a2.save()
 
-        a3 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
-            length=time(hour=3)
-        )
-        a3.save()
+        merged = Appointment.merge_appointments([a1, a2])
+        self.assertEqual(len(merged), 2)
 
-        a4 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
-            length=time(hour=3)
-        )
-        a4.save()
-
-        overlaps = Appointment._get_overlaps([a1, a2, a3, a4])
-        self.assertEquals(len(overlaps), 3)
-
-    def test_two_spread_over_lapping(self):
+    def test_two_mergeable(self):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
@@ -84,68 +62,57 @@ class TestAppointmentOverLap(TestCase):
         a1.save()
 
         a2 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=14,
-                                         minute=40,
-                                         tzinfo=pytz.utc),
-            length=time(hour=1)
-        )
-        a2.save()
-
-        overlaps = Appointment._get_overlaps([a1, a2])
-        self.assertEquals(len(overlaps), 1)
-
-    def test_four_spread_over_lapping(self):
-        a1 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
-            length=time(hour=1)
-        )
-        a1.save()
-
-        a2 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=14,
-                                         minute=50,
-                                         tzinfo=pytz.utc),
-            length=time(hour=1)
-        )
-        a2.save()
-
-        a3 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
                                          hour=15,
-                                         minute=10,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1)
+        )
+        a2.save()
+
+        merged = Appointment.merge_appointments([a1, a2])
+        self.assertEqual(len(merged), 1)
+
+    def test_two_mergeable_one_not(self):
+        a1 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=14,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1)
+        )
+        a1.save()
+
+        a2 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=15,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1)
+        )
+        a2.save()
+
+        a3 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=17,
+                                         minute=20,
                                          tzinfo=pytz.utc),
             length=time(hour=1)
         )
         a3.save()
 
-        a4 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=16,
-                                         minute=00,
-                                         tzinfo=pytz.utc),
-            length=time(hour=1)
-        )
-        a4.save()
+        merged = Appointment.merge_appointments([a1, a2, a3])
+        self.assertEqual(len(merged), 2)
 
-        overlaps = Appointment._get_overlaps([a1, a2, a3, a4])
-        self.assertEquals(len(overlaps), 3)
-
-    def test_three_consecutive_one_overlap(self):
+    def test_six_mergeable(self):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
@@ -184,64 +151,38 @@ class TestAppointmentOverLap(TestCase):
                                          month=3,
                                          day=2,
                                          hour=17,
-                                         minute=19,
+                                         minute=20,
                                          tzinfo=pytz.utc),
             length=time(hour=1)
         )
         a4.save()
 
-        overlaps = Appointment._get_overlaps([a4, a2, a3, a1])
-        self.assertEquals(len(overlaps), 1)
-
-    def test_four_disjoint(self):
-        a1 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
-            length=time(hour=1)
-        )
-        a1.save()
-
-        a2 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=15,
-                                         minute=30,
-                                         tzinfo=pytz.utc),
-            length=time(hour=1)
-        )
-        a2.save()
-
-        a3 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=17,
-                                         minute=00,
-                                         tzinfo=pytz.utc),
-            length=time(hour=1)
-        )
-        a3.save()
-
-        a4 = Appointment(
+        a5 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
                                          hour=18,
-                                         minute=10,
+                                         minute=20,
                                          tzinfo=pytz.utc),
             length=time(hour=1)
         )
-        a4.save()
+        a5.save()
 
-        overlaps = Appointment._get_overlaps([a4, a2, a3, a1])
-        self.assertEquals(len(overlaps), 0)
+        a6 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=19,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1)
+        )
+        a6.save()
 
-    def test_slight_over_lap(self):
+        merged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
+        self.assertEqual(len(merged), 1)
+
+    def test_six_unmergeable(self):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
@@ -249,7 +190,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=time(minute=30)
         )
         a1.save()
 
@@ -257,10 +198,10 @@ class TestAppointmentOverLap(TestCase):
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
-                                         hour=14,
-                                         minute=21,
+                                         hour=15,
+                                         minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=time(minute=45)
         )
         a2.save()
 
@@ -268,10 +209,10 @@ class TestAppointmentOverLap(TestCase):
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
-                                         hour=14,
-                                         minute=22,
+                                         hour=16,
+                                         minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=time(minute=59)
         )
         a3.save()
 
@@ -279,60 +220,34 @@ class TestAppointmentOverLap(TestCase):
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
-                                         hour=14,
-                                         minute=23,
+                                         hour=17,
+                                         minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=time(minute=15)
         )
         a4.save()
 
-        overlaps = Appointment._get_overlaps([a4, a2, a3, a1])
-        self.assertEquals(len(overlaps), 3)
-
-    def test_same_start_different_duartion(self):
-        a1 = Appointment(
+        a5 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
-                                         hour=14,
+                                         hour=18,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=time(minute=50)
         )
-        a1.save()
+        a5.save()
 
-        a2 = Appointment(
+        a6 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
-                                         hour=14,
+                                         hour=19,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=2)
+            length=time(hour=1)
         )
-        a2.save()
+        a6.save()
 
-        a3 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
-            length=time(minute=3)
-        )
-        a3.save()
-
-        a4 = Appointment(
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
-            length=time(minute=4)
-        )
-        a4.save()
-
-        overlaps = Appointment._get_overlaps([a4, a2, a3, a1])
-        self.assertEquals(len(overlaps), 3)
+        merged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
+        self.assertEqual(len(merged), 6)

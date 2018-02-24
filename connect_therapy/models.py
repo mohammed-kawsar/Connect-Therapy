@@ -125,12 +125,29 @@ class Appointment(models.Model):
         return appointments
 
     @classmethod
-    def _add_time(cls, date_time, time):
+    def _add_datetime_time(cls, date_time, time):
         """This method expects the first arg to be a datetime object and the second to be a time object
         It will then add the time to the date time object and return it
         """
         return date_time + timedelta(hours=time.hour, minutes=time.minute,
                                      seconds=time.minute)
+
+    @classmethod
+    def _add_time(cls, start_date_and_time, time_1, time_2):
+        time_1 = timedelta(hours=time_1.hour, minutes=time_1.minute,
+                           seconds=time_1.minute)
+        time_2 = timedelta(hours=time_2.hour, minutes=time_2.minute,
+                           seconds=time_2.minute)
+
+        total = time_1 + time_2
+        seconds = total.total_seconds()
+        hour = seconds / 3600
+        minute = (seconds % 3600) / 60
+        datetime_format = datetime(year=start_date_and_time.year, month=start_date_and_time.month,
+                                   day=start_date_and_time.day,
+                                   hour=int(hour), minute=int(minute))
+
+        return datetime_format
 
     @classmethod
     def check_validity(cls, selected_appointments, selected_practitioner):
@@ -187,10 +204,10 @@ class Appointment(models.Model):
         for i in range(0, len(list_of_appointments) - 1):
             # TODO: Might need to change length to duration if model changes to DurationField from TimeField
             cur_start_time = list_of_appointments[i].start_date_and_time
-            cur_end_time = cls._add_time(cur_start_time, list_of_appointments[i].length)
+            cur_end_time = cls._add_datetime_time(cur_start_time, list_of_appointments[i].length)
 
             next_start_time = list_of_appointments[i + 1].start_date_and_time
-            next_end_time = cls._add_time(next_start_time, list_of_appointments[i + 1].length)
+            next_end_time = cls._add_datetime_time(next_start_time, list_of_appointments[i + 1].length)
 
             # limit to same day appointments
             if cur_start_time.date() == next_end_time.date():
@@ -205,3 +222,33 @@ class Appointment(models.Model):
                         [list_of_appointments[i], list_of_appointments[i + 1]])
 
         return overlapping_appointments
+
+    @classmethod
+    def merge_appointments(cls, list_of_appointments):
+        stack = []
+        merged_list = []
+        if len(list_of_appointments) <= 1:
+            return list_of_appointments
+        else:
+            list_of_appointments = sorted(list_of_appointments, key=lambda appointment: appointment.start_date_and_time)
+            for app in list_of_appointments:
+                if len(stack) == 0:
+                    stack.append(app)
+                else:
+                    i_from_s = stack.pop()
+
+                    i_end_time = cls._add_datetime_time(i_from_s.start_date_and_time, i_from_s.length)
+
+                    if i_end_time == app.start_date_and_time:
+
+                        merged = Appointment(practitioner=app.practitioner,
+                                             start_date_and_time=i_from_s.start_date_and_time,
+                                             length=cls._add_time(i_from_s.start_date_and_time, i_from_s.length,
+                                                                  app.length))
+
+                        stack.append(merged)
+                    else:
+                        stack.append(i_from_s)
+                        stack.append(app)
+
+        return stack

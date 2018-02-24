@@ -189,11 +189,14 @@ class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
             overlap_exists = Appointment.get_appointment_overlaps(valid_appointments, patient=patient)
             if overlap_exists[0] is False:
                 # valid appointments but overlap exists
-                return render(request, self.get_template_names(), context={"clashes": overlap_exists[1]})
+                clashes = overlap_exists[1]
+                return render(request, self.get_template_names(), context={"clashes": clashes})
             else:
                 # all valid
                 # TODO: Merge any consecutive appointments, tell the user about the merge as well
-                return render(request, self.get_template_names(), {})
+                bookable_appointments = overlap_exists[1]
+
+                return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments})
         else:
             # appointments not valid
             invalid_appointments = True
