@@ -182,19 +182,19 @@ class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
         user = User.objects.get(pk=self.request.user.id)
         patient = Patient.objects.get(user=user)
 
-        appointment_validity = Appointment.check_validity_and_overlaps(selected_appointments=app_ids,
-                                                                       selected_practitioner=practitioner_id,
-                                                                       patient_id=patient.id)
+        valid_appointments = Appointment.check_validity(selected_appointments=app_ids,
+                                                        selected_practitioner=practitioner_id)
 
-        if len(appointment_validity) == 2 and appointment_validity[0] is False:
-            # case where clashes exist
-            overlaps = appointment_validity[1]
-            return render(request, self.get_template_names(), context={"clashes": overlaps})
-        elif len(appointment_validity) == 1 and appointment_validity[0] is False:
-            # case where invalid appointments have been passed in
+        if valid_appointments is not False:
+            overlap_exists = Appointment.get_appointment_overlaps(valid_appointments, patient=patient)
+            if overlap_exists[0] is False:
+                # valid appointments but overlap exists
+                return render(request, self.get_template_names(), context={"clashes": overlap_exists[1]})
+            else:
+                # all valid
+                # TODO: Merge any consecutive appointments, tell the user about the merge as well
+                return render(request, self.get_template_names(), {})
+        else:
+            # appointments not valid
             invalid_appointments = True
             return render(request, self.get_template_names(), context={"invalid_appointments": invalid_appointments})
-        elif len(appointment_validity) == 2 and appointment_validity[0] is True:
-            # case where appointments are valid
-            return render(request, self.get_template_names(), {})
-            # TODO: Merge any consecutive appointments, tell the user about the merge as well

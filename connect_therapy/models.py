@@ -133,10 +133,10 @@ class Appointment(models.Model):
                                      seconds=time.minute)
 
     @classmethod
-    def check_validity_and_overlaps(cls, selected_appointments, selected_practitioner, patient_id):
+    def check_validity(cls, selected_appointments, selected_practitioner):
         """Will check the validity of appointments selected.
-        If they are valid, it will return the result of the overlap checker.
-        Otherwise, will return a list containing false only
+        If they are valid, it will return the list of appointments from the database.
+        Otherwise, false.
         """
         appointments_to_book = []
         selected_practitioner = Practitioner.objects.get(pk=selected_practitioner)
@@ -148,14 +148,14 @@ class Appointment(models.Model):
                         appointment.patient is None:
                     appointments_to_book.append(Appointment.objects.get(pk=_id))
                 else:
-                    return [False]
+                    return False
             except ObjectDoesNotExist:
-                return [False]
+                return False
 
-        return cls.appointment_overlaps(appointments_to_book, patient_id)
+        return appointments_to_book
 
     @classmethod
-    def appointment_overlaps(cls, appointments_to_book, patient_id):
+    def get_appointment_overlaps(cls, appointments_to_book, patient):
         """Will return
                 - List containing False, if appointments selected are invalid
                 - List of 2 elements:
@@ -163,8 +163,7 @@ class Appointment(models.Model):
                         - First element false if overlap, second list of clashing appointments
                 """
 
-        patient_obj = Patient.objects.get(pk=patient_id)
-        existing_user_appointments = Appointment.objects.filter(patient_id=patient_obj.id)
+        existing_user_appointments = Appointment.objects.filter(patient=patient)
 
         if len(existing_user_appointments) == 0:
             print("Patient doesnt have any appointments")
@@ -172,7 +171,7 @@ class Appointment(models.Model):
 
         merged_list = list(existing_user_appointments) + appointments_to_book
 
-        over_laps = cls.get_overlaps(merged_list)
+        over_laps = cls._get_overlaps(merged_list)
 
         if len(over_laps) > 0:
             return [False, over_laps]
@@ -180,7 +179,7 @@ class Appointment(models.Model):
             return [True, sorted(appointments_to_book, key=lambda appointment: appointment.start_date_and_time)]
 
     @classmethod
-    def get_overlaps(cls, list_of_appointments):
+    def _get_overlaps(cls, list_of_appointments):
         """Passing in a list of appointments will allow this method to look for overlaps between appointments
         """
         list_of_appointments = sorted(list_of_appointments, key=lambda appointment: appointment.start_date_and_time)
