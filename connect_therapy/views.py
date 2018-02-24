@@ -1,7 +1,7 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, TemplateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render, redirect, get_object_or_404
@@ -171,3 +171,21 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+class PractitionerPreviousNotesView(LoginRequiredMixin, generic.DetailView):
+    login_url = reverse_lazy('connect_therapy:practitioner-appointment-notes')
+    model = Appointment
+    template_name = 'connect_therapy/practitioner/appointment-notes.html'
+
+
+class PractitionerCurrentNotesView(LoginRequiredMixin, generic.DetailView):
+    login_url = reverse_lazy('connect_therapy:practitioner-before-meeting-notes')
+    model = Appointment
+    template_name = 'connect_therapy/practitioner/before-meeting-notes.html'
+
+
+class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
+    login_url = reverse_lazy('connect_therapy:patient-appointment-notes')
+    model = Appointment
+    template_name = 'connect_therapy/patient/appointment-notes.html'
