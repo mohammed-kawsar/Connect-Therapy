@@ -1,6 +1,4 @@
-
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import views as auth_views, authenticate, login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
@@ -50,6 +48,12 @@ class ChatView(UserPassesTestMixin, DetailView):
     model = Appointment
     template_name = 'connect_therapy/chat.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
+
+    """TODO: The chat feature will throw an error page saying something like NoneType has no object user
+        or something like that.
+        What that means is that the appointment doesnt have an associated patient or practitioner
+        or doesnt exist. Fix.
+    """
 
     def test_func(self):
         return (self.request.user.id == self.get_object().patient.user.id) \
