@@ -182,7 +182,10 @@ class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
         user = User.objects.get(pk=self.request.user.id)
         patient = Patient.objects.get(user=user)
 
-        appointment_validity = Appointment.check_validity_and_overlaps(app_ids, practitioner_id, patient_id=patient.id)
+        appointment_validity = Appointment.check_validity_and_overlaps(selected_appointments=app_ids,
+                                                                       selected_practitioner=practitioner_id,
+                                                                       patient_id=patient.id)
+
         if len(appointment_validity) == 2 and appointment_validity[0] is False:
             # case where clashes exist
             overlaps = appointment_validity[1]
