@@ -58,7 +58,7 @@ class PatientLoginForm(AuthenticationForm):
         super().confirm_login_allowed(user)
 
 
-class PatientEditDetailsForm(UserChangeForm):
+class PatientEditDetailsForm(forms.ModelForm):
     date_of_birth = forms.DateField(help_text=" Format: DD/MM/YYYY",
                                     input_formats=[
                                         '%d/%m/%Y'

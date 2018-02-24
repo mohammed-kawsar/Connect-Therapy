@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView, UpdateView
@@ -8,6 +8,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views import generic
 from django.forms.formsets import formset_factory
+from django.contrib.auth.decorators import login_required
+
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -71,12 +73,26 @@ class PatientMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class PatientEditDetails(UpdateView):
-    model = User
+class PatientEditDetails(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
+    model = Patient
     form_class = PatientEditDetailsForm
-    success_url = reverse_lazy('connect_therapy:patient-signup-success')
+    success_url = reverse_lazy('connect_therapy:patient-edit-details-success')
     template_name = 'connect_therapy/patient/edit-details.html'
 
+    def get_object(self, queryset=None):
+        return self.request.user.patient
+
+    def test_func(self):
+        print(str(self.request.user.patient.user_id))
+        print(str())
+        return True
+    
+    # def get_context_data(self, **kwargs):
+    #     context = super(PatientEditDetails, self).get_context_data(**kwargs)
+    #     context['patient'] = Patient.objects.get(user=self.request.user)
+    #     context['user'] = User.objects.get(patient=self.request.user.patient)
+    #     return context
+    @login_required
     def edit_profile(self, request):
         user = request.user
         form = PatientEditDetailsForm(request.POST, instance=request.user)
