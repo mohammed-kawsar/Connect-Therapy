@@ -1,0 +1,18 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Cancel Appointment{% endblock %}
+
+{% block content %}
+
+    <h1>Are you sure you want to cancel your appointment?</h1>
+    <br>
+    <h3>IF YOU ARE CANCELLING YOUR APPOINTMENT WITHIN 24HRS YOU WILL STILL BE CHARGED OTHERWISE YOU WILL BE REFUNDED</h3>
+    <br>
+
+    <p>Click here to cancel your appointment</p>
+    <form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Confirm" />
+    <a href="{% url 'connect_therapy:patient-my-appointments' %}" class="btn btn-default"> Go Back</a>
+</form>
+{% endblock %}
