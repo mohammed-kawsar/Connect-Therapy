@@ -74,7 +74,7 @@ class PatientMyAppointmentsView(generic.TemplateView):
 
 
 class PatientEditDetails(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
-    model = Patient
+    model = User
     form_class = PatientEditDetailsForm
     success_url = reverse_lazy('connect_therapy:patient-edit-details-success')
     template_name = 'connect_therapy/patient/edit-details.html'

@@ -87,10 +87,12 @@ class PatientEditDetailsForm(forms.ModelForm):
             'email': forms.TextInput(attrs={'size': 35})
         }
 
-    # def __init__(self, *args, **kwargs):
-    #     super(PatientEditDetailsForm, self).__init__(*args, **kwargs)
-    #
-    #     self.fields['first_name', 'last_name'].widget.attrs['readonly'] = True
+    def __init__(self, *args, **kwargs):
+        super(PatientEditDetailsForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs['readonly'] = True
+        self.fields['last_name'].widget.attrs['readonly'] = True
+        self.fields['gender'].widget.attrs['readonly'] = True
+        self.fields['date_of_birth'].widget.attrs['readonly'] = True
 
 
 # class PatientProfile(forms.ModelForm):
