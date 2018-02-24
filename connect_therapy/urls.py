@@ -114,6 +114,10 @@ urlpatterns = [
          PractitionerMyAppointmentsView.as_view(),
          name='practitioner-my-appointments'
          ),
+    path('patient/cancel-appointment/<int:pk>',
+         PatientCancelAppointmentView.as_view(),
+         name='patient-cancel-appointment'
+         ),
     path('practitioner/view-previous-notes/<int:pk>',
          PractitionerPreviousNotesView.as_view(),
          name='practitioner-appointment-notes'
@@ -124,6 +128,6 @@ urlpatterns = [
          ),
     path('patient/view-previous-notes/<int:pk>',
          PatientPreviousNotesView.as_view(),
-         name='patient-appointment-notes'
+         name='patient-appointment-notes,
          ),
 ]
