@@ -112,7 +112,7 @@ class TestAppointmentMerge(TestCase):
         merged = Appointment.merge_appointments([a1, a2, a3])
         self.assertEqual(len(merged), 2)
 
-    def test_six_mergeable(self):
+    def test_six_un_mergeable_one_mergeable(self):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
@@ -223,7 +223,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=17,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=15)
+            length=time(hour=1)
         )
         a4.save()
 
@@ -250,4 +250,5 @@ class TestAppointmentMerge(TestCase):
         a6.save()
 
         merged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
-        self.assertEqual(len(merged), 6)
+        print(merged)
+        self.assertEqual(len(merged), 5)
