@@ -2,7 +2,9 @@ import hashlib
 from datetime import datetime, timedelta
 from functools import partial
 
+import pytz
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 
@@ -88,7 +90,25 @@ class Appointment(models.Model):
                                        str(self.length))
 
     @classmethod
+    def check_appointments_valid(cls, list_of_appointments, selected_practitioner):
+        """Given a list of appointments and a selected practitioner, this method will check whether the appointments
+        are valid and whether they can be booked with the given practitioner
+        """
+        """ TODO: Check that the appointments taken from the URL are valid in terms of 
+                    1. Being available
+                    2. Belonging to the correct practitioner
+                    3. Not in the past
+                    *May* be able to reuse some code     
+        """
+
+        for app in list_of_appointments:
+            print(app)
+
+    @classmethod
     def get_valid_appointments(cls, selected_date, selected_practitioner):
+        """This method will return a list of valid appointments which can be booked by the user based on a given date
+        and practitioner
+        """
         selected_date_converted = datetime(selected_date.year, selected_date.month, selected_date.day)
         # TODO: Need to add a filter for appointment cut off times which may vary per practitioner
         if selected_date_converted < datetime.now():
@@ -100,45 +120,69 @@ class Appointment(models.Model):
                                                            ).filter(start_date_and_time__year=selected_date.year
                                                                     ).filter(patient__isnull=True
                                                                              ).filter(
-            practitioner_id=selected_practitioner)
+            practitioner_id=selected_practitioner).order_by("start_date_and_time")
 
         return appointments
 
     @classmethod
     def _add_time(cls, date_time, time):
+        """This method expects the first arg to be a datetime object and the second to be a time object
+        It will then add the time to the date time object and return it
+        """
         return date_time + timedelta(hours=time.hour, minutes=time.minute,
                                      seconds=time.minute)
 
     @classmethod
-    def check_for_overlaps(cls, selected_appointments, selected_practitioner, patient_id):
-        over_lap = cls.appointment_overlap_exists(selected_appointments, selected_practitioner, patient_id)
+    def check_validity_and_overlaps(cls, selected_appointments, selected_practitioner, patient_id):
+        """Will check the validity of appointments selected.
+        If they are valid, it will return the result of the overlap checker.
+        Otherwise, will return a list containing false only
+        """
+        appointments_to_book = []
+        selected_practitioner = Practitioner.objects.get(pk=selected_practitioner)
+        for _id in selected_appointments:
+            try:
+                appointment = Appointment.objects.get(pk=_id)
+                if appointment.start_date_and_time >= datetime.now(pytz.UTC) and \
+                        appointment.practitioner == selected_practitioner and \
+                        appointment.patient is None:
+                    appointments_to_book.append(Appointment.objects.get(pk=_id))
+                else:
+                    return [False]
+            except ObjectDoesNotExist:
+                return [False]
 
-        if len(over_lap) > 0:
-            return over_lap
-        else:
-            return []
+        return cls.appointment_overlaps(appointments_to_book, patient_id)
 
     @classmethod
-    def appointment_overlap_exists(cls, selected_appointments, selected_practitioner, patient_id):
+    def appointment_overlaps(cls, appointments_to_book, patient_id):
+        """Will return
+                - List containing False, if appointments selected are invalid
+                - List of 2 elements:
+                        - First element true if no overlap, second list of valid appointments
+                        - First element false if overlap, second list of clashing appointments
+                """
+
         patient_obj = Patient.objects.get(pk=patient_id)
         existing_user_appointments = Appointment.objects.filter(patient_id=patient_obj.id)
 
         if len(existing_user_appointments) == 0:
             print("Patient doesnt have any appointments")
-            return False
+            return [True, sorted(appointments_to_book, key=lambda appointment: appointment.start_date_and_time)]
 
-        # get the appointments the patient is trying to book, from the database
-        appointments_to_book = []
-        for _id in selected_appointments:
-            appointments_to_book.append(Appointment.objects.get(pk=_id))
-
-        # merges and sorts the lists
         merged_list = list(existing_user_appointments) + appointments_to_book
 
-        return cls.get_overlaps(merged_list)
+        over_laps = cls.get_overlaps(merged_list)
+
+        if len(over_laps) > 0:
+            return [False, over_laps]
+        else:
+            return [True, sorted(appointments_to_book, key=lambda appointment: appointment.start_date_and_time)]
 
     @classmethod
     def get_overlaps(cls, list_of_appointments):
+        """Passing in a list of appointments will allow this method to look for overlaps between appointments
+        """
         list_of_appointments = sorted(list_of_appointments, key=lambda appointment: appointment.start_date_and_time)
         overlapping_appointments = []
         for i in range(0, len(list_of_appointments) - 1):

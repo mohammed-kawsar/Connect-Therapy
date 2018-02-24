@@ -9,6 +9,8 @@
         {% for app in clashes %}
             <p> {% string_value app %} </p>
         {% endfor %}
+    {% elif invalid_appointments == True %}
+        <h3>You have selected invalid appointments, please go <b>back</b> and try again.</h3>
     {% else %}
         <h3>Great, no clashes, we'll get those booked for you</h3>
         <p>Right after you've paid</p>
