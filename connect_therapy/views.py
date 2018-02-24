@@ -1,12 +1,11 @@
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView, TemplateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
+from django.views.generic import FormView, DetailView, TemplateView
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -160,7 +159,8 @@ class BookAppointmentView(DetailView):
         form = AppointmentDateSelectForm(request.POST)
         if form.is_valid():
             date = form.cleaned_data['date']
-            appointments = Appointment.get_valid_appointments(date, pk)
+            # pk = practitioner id
+            appointments = Appointment.get_valid_appointments(date, pk).order_by("start_date_and_time")
 
             return render(self.request,
                           self.template_name,
@@ -173,7 +173,7 @@ class BookAppointmentView(DetailView):
 
 
 class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
-    template_name = 'connect_therapy.patient/book-appointment-checkout.html'
+    template_name = 'connect_therapy/patient/book-appointment-checkout.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
 
     def get(self, request, *args, **kwargs):
@@ -181,7 +181,19 @@ class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
         id = kwargs['pk']
         user = User.objects.get(pk=self.request.user.id)
         patient = Patient.objects.get(user=user)
-        valid = Appointment.is_appointment_valid(app_ids, id, patient_id=patient.id)
-        if len(valid) > 0:
-            return HttpResponse("Your selected appointment will overlap with your existing appointments")
-        return HttpResponse("You're at the checkout")
+        overlaps = Appointment.check_for_overlaps(app_ids, id, patient_id=patient.id)
+
+        """ TODO: Check that the appointments taken from the URL are valid in terms of 
+            1. Being available
+            2. Belonging to the correct practitioner
+            3. Not in the past
+            *May* be able to reuse some code
+        """
+
+        if len(overlaps) > 0:
+            return render(request, self.get_template_names(), context={"clashes": overlaps})
+        else:
+
+            # TODO: Merge any consecutive appointments, tell the user about the merge as well
+
+            return render(request, self.get_template_names())

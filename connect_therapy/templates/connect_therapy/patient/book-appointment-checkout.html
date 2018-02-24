@@ -1,6 +1,16 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Appointment Details{% endblock %}
-
+{% load appointment_tags %}
 {% block content %}
-  
+    <h1 class="jumbotron">Checkout</h1>
+    {% if clashes is not None and clashes|length > 0 %}
+        <h3>You seem to have some clashes.</h3>
+        <p>You can review clashes below and then go back and select a different appointment</p>
+        {% for app in clashes %}
+            <p> {% string_value app %} </p>
+        {% endfor %}
+    {% else %}
+        <h3>Great, no clashes, we'll get those booked for you</h3>
+        <p>Right after you've paid</p>
+    {% endif %}
 {% endblock %}
