@@ -72,11 +72,21 @@ class PatientMyAppointmentsView(generic.TemplateView):
         return context
 
 
+class PatientProfile(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'connect_therapy/patient/profile.html'
+
+    @login_required
+    def view_profile(self, request):
+        user = request.user
+        args = {'user': user}
+        return render(request, args)
+
+
 class PatientEditDetails(LoginRequiredMixin, UpdateView):
     model = Patient
     form_class = PatientEditDetailsForm
-    success_url = reverse_lazy('connect_therapy:patient-edit-details-success')
-    template_name = 'connect_therapy/patient/edit-details.html'
+    success_url = reverse_lazy('connect_therapy:patient-profile')
+    template_name = 'connect_therapy/patient/edit-profile.html'
 
     # Returns the object to populate the form and to update the model.
     # Issue here is can only do either user or patient not both.
@@ -97,7 +107,7 @@ class PatientEditDetails(LoginRequiredMixin, UpdateView):
             form = PatientEditDetailsForm
 
         context = {'form': form}
-        return render(request, 'connect_therapy/patient/edit-details.html',
+        return render(request, 'connect_therapy/patient/edit-profile.html',
                       context)
 
 

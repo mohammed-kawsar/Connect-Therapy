@@ -48,15 +48,13 @@ urlpatterns = [
          PatientMyAppointmentsView.as_view(),
          name='patient-my-appointments'
          ),
-    path('patient/edit-details',
+    path('patient/profile',
+         PatientProfile.as_view(),
+         name='patient-profile'
+         ),
+    path('patient/profile/edit',
          PatientEditDetails.as_view(),
-         name='patient-edit-details'
-         ),
-    path('patient/edit-details/success',
-         TemplateView.as_view(
-             template_name='connect_therapy/patient/edit-details-success.html'
-         ),
-         name='patient-edit-details-success'
+         name='patient-profile-edit'
          ),
     path('practitioner/signup',
          PractitionerSignUpView.as_view(),

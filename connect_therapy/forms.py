@@ -67,14 +67,6 @@ class PatientEditDetailsForm(forms.ModelForm):
     gender = forms.ChoiceField(choices=Patient.gender_choices)
     mobile = forms.CharField(max_length=20)
 
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        return email
-
-    def clean_password(self):
-        data = self.cleaned_data['password']
-        return data
-
     class Meta:
         model = User
         fields = ('first_name',
