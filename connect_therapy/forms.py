@@ -59,9 +59,10 @@ class PatientLoginForm(AuthenticationForm):
 
 
 class PatientEditDetailsForm(forms.ModelForm):
+    # Added extra regex for date of birth as output is in a different format.
     date_of_birth = forms.DateField(help_text=" Format: DD/MM/YYYY",
                                     input_formats=[
-                                        '%d/%m/%Y'
+                                        '%d/%m/%Y', '%Y-%m-%d'
                                     ])
     gender = forms.ChoiceField(choices=Patient.gender_choices)
     mobile = forms.CharField(max_length=20)
@@ -87,45 +88,13 @@ class PatientEditDetailsForm(forms.ModelForm):
             'email': forms.TextInput(attrs={'size': 35})
         }
 
+    # Prevents a user from editing these fields in the form.
     def __init__(self, *args, **kwargs):
         super(PatientEditDetailsForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].widget.attrs['readonly'] = True
         self.fields['last_name'].widget.attrs['readonly'] = True
         self.fields['gender'].widget.attrs['readonly'] = True
         self.fields['date_of_birth'].widget.attrs['readonly'] = True
-
-
-# class PatientProfile(forms.ModelForm):
-#     date_of_birth = forms.DateField(help_text=" Format: DD/MM/YYYY",
-#                                     input_formats=[
-#                                         '%d/%m/%Y'
-#                                     ])
-#
-#     gender = forms.ChoiceField(choices=Patient.gender_choices)
-#
-#     mobile = forms.CharField(max_length=20)
-#
-#     class Meta:
-#         model = Patient
-#
-#         fields = ('date_of_birth', 'gender', 'mobile')
-#
-#     # def __init__(self, *args, **kwargs):
-#     #     super(PatientProfile, self).__init__(*args, **kwargs)
-#     #
-#     #     self.fields['date_of_birth', 'gender'].widget.attrs['readonly'] = True
-
-
-# class PatientEditDetailsForm(forms.ModelForm):
-#     class Meta:
-#         model = User
-#
-#         fields = ('email', 'password', 'first_name', 'last_name')
-
-    # def __init__(self, *args, **kwargs):
-    #     super(PatientProfile, self).__init__(*args, **kwargs)
-    #
-    #     self.fields['email', 'password', 'first_name', 'last_name'].widget.attrs['readonly'] = True
 
 
 class PractitionerSignUpForm(UserCreationForm):

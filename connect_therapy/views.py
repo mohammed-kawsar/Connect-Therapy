@@ -10,7 +10,6 @@ from django.views import generic
 from django.forms.formsets import formset_factory
 from django.contrib.auth.decorators import login_required
 
-
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
 
@@ -73,36 +72,29 @@ class PatientMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class PatientEditDetails(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
-    model = User
+class PatientEditDetails(LoginRequiredMixin, UpdateView):
+    model = Patient
     form_class = PatientEditDetailsForm
     success_url = reverse_lazy('connect_therapy:patient-edit-details-success')
     template_name = 'connect_therapy/patient/edit-details.html'
 
+    # Returns the object to populate the form and to update the model.
+    # Issue here is can only do either user or patient not both.
     def get_object(self, queryset=None):
         return self.request.user.patient
 
-    def test_func(self):
-        print(str(self.request.user.patient.user_id))
-        print(str())
-        return True
-    
-    # def get_context_data(self, **kwargs):
-    #     context = super(PatientEditDetails, self).get_context_data(**kwargs)
-    #     context['patient'] = Patient.objects.get(user=self.request.user)
-    #     context['user'] = User.objects.get(patient=self.request.user.patient)
-    #     return context
+    # Ensures only logged in user can edit their profile and posts the
+    # form to update the model.
     @login_required
     def edit_profile(self, request):
-        user = request.user
-        form = PatientEditDetailsForm(request.POST, instance=request.user)
+        user = request.user.patient
+        form = PatientEditDetailsForm(request.POST,
+                                      instance=user)
         if request.method == 'POST':
             if form.is_valid():
                 form.save()
         else:
             form = PatientEditDetailsForm
-
-            # return HttpResponse
 
         context = {'form': form}
         return render(request, 'connect_therapy/patient/edit-details.html',
