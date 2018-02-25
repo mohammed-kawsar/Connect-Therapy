@@ -3,6 +3,6 @@ Dear {% if user.practitioner %}Dr.{% endif %} {{ user.first_name }} {{ user.last
 {% block body %}{% endblock %}
 
 {% block signoff %}
-Your's Sincerely,
+Yours Sincerely,
 Connect Therapy Admin Team
 {% endblock %}

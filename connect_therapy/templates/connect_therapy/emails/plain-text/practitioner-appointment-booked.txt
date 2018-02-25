@@ -5,6 +5,6 @@ on {{ appointment.start_date_and_time }} for {{ appointment.length }}.
 {% endblock %}
 
 {% block signoff %}
-Thanks,
+Yours Sincerely,
 Connect Therapy Admin Team on behalf of Dr. {{ appointment.practitioner.user.first_name }} {{ appointment.practitioner.user.last_name}}
 {% endblock %}

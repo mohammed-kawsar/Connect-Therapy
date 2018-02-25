@@ -9,6 +9,6 @@ appointment for {{ appointment.start_date_and_time }}. You will receive a full r
 {% endblock %}
 
 {% block signoff %}
-Your's Sincerely,
+Yours Sincerely,
 Connect Therapy Admin Team on behalf of Dr. {{ appointment.practitioner.user.first_name }} {{ appointment.practitioner.user.last_name }}
 {% endblock %}

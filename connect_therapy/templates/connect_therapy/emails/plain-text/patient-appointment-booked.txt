@@ -6,6 +6,6 @@ If this was in error, you can cancel the appointment free of charge, up to 24 ho
 {% endblock %}
 
 {% block signoff %}
-Thanks,
+Yours Sincerely,
 Connect Therapy Admin Team on behalf of Dr. {{ appointment.practitioner.user.first_name }} {{ appointment.practitioner.user.last_name}}
 {% endblock %}
