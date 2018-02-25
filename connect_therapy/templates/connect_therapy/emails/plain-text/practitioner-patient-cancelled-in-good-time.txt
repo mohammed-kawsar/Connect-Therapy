@@ -2,5 +2,5 @@
 {% block body %}
 Sorry {{ appointment.patient.user.first_name }} {{ appointment.patient.user.last_name }}
 has cancelled your appointment for {{ appointment.start_date_and_time }}.
-In line with our Terms and Conditions, as they have cancelled with over 24 hours notice, they were not be charged.
+In line with our Terms and Conditions, as they have cancelled with over 24 hours notice, they will not be charged.
 {% endblock %}
