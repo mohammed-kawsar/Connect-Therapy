@@ -5,5 +5,5 @@ Thanks for signing up with Connect Therapy, just a quick thing before you get st
 Please confirm your email address here:
 {{ link }}
 
-If you was not expecting this email, feel free to disregard it.
+If you were not expecting this email, feel free to disregard it.
 {% endblock %}
