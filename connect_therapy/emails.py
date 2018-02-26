@@ -223,3 +223,40 @@ def send_practitioner_appointment_booked(appointment):
         recipient_list=[appointment.patient.user.email, ],
         html_message=html_message
     )
+
+
+def send_practitioner_appointment_reminders():
+    appointments_today = Appointment.objects.filter(
+        start_date_and_time__day=timezone.now().date(),
+        patient__isnull=False
+    )
+
+    successfully_delivered = 0
+
+    for appointment in appointments_today:
+        context = {
+            'user': appointment.practitioner.user,
+            'appointment': appointment
+        }
+        plain_text_message = render_to_string(
+            'connect_therapy/emails/plain-text/'
+            'practitioner-appointment-reminder.txt',
+            context
+        )
+        html_message = render_to_string(
+            'connect_therapy/emails/html/practitioner-appointment-reminder.html',
+            context
+        )
+        successfully_delivered += send_mail(
+            subject='Connect Therapy - Appointment Reminder',
+            message=plain_text_message,
+            from_email=from_email,
+            recipient_list=[appointment.practitioner.user.email, ],
+            fail_silently=True,
+            html_message=html_message
+        )
+
+    print("{} emails not delivered".format(
+        len(appointments_today) - successfully_delivered
+        )
+    )
