@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from functools import partial
 import hashlib
+from django.db.models.signals import post_save
 
 
 class Patient(models.Model):
@@ -84,3 +85,11 @@ class Appointment(models.Model):
         return "{} - {} for {}".format(str(self.practitioner),
                                        str(self.start_date_and_time),
                                        str(self.length))
+
+
+def create_profile(sender, **kwargs):
+    user = kwargs["instance"]
+    if kwargs["created"]:
+        user_profile = Practitioner(user=user)
+        user_profile.save()
+post_save.connect(create_profile, sender=User)

@@ -128,6 +128,14 @@ urlpatterns = [
          ),
     path('patient/view-previous-notes/<int:pk>',
          PatientPreviousNotesView.as_view(),
-         name='patient-appointment-notes,
+         name='patient-appointment-notes',
+         ),
+    path('practitioner/profile',
+         PractitionerProfile.as_view(),
+         name='practitioner-profile'
+         ),
+    path('practitioner/update/<int:pk>',
+         views.edit_user,
+         name='update-profile'
          ),
 ]

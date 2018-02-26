@@ -4,11 +4,14 @@ from django.urls import reverse_lazy
 from django.views.generic import FormView, DetailView, TemplateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from django.utils import timezone
 from django.views import generic
 from django.views.generic.edit import FormMixin
 from django import forms
+from django.contrib.auth.decorators import login_required
+from django.forms.models import inlineformset_factory
+from django.core.exceptions import PermissionDenied
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -189,3 +192,46 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     login_url = reverse_lazy('connect_therapy:patient-appointment-notes')
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
+
+
+class PractitionerProfile(generic.TemplateView):
+    template_name = 'connect_therapy/practitioner/profile.html'
+
+    def view_profile(request):
+        user = request.user
+        args = {'user': user}
+        return render(request, args)
+
+
+@login_required()
+def edit_user(request, pk):
+    user = User.objects.get(pk=pk)
+    if request.method == "POST":
+        user_form = UserProfileForm(request.POST, instance=user)
+        if user_form.is_valid():
+            return HttpResponseRedirect('/practitioner/profile')
+
+        return render(request, "practitioner/update.html", {
+            "noodle": pk,
+            "noodle_form": user_form,
+        })
+    else:
+        raise PermissionDenied
+
+
+#     created_user = user_form.save(commit=False)
+            #     formset = profileInlineFormset(request.POST, instance=created_user)
+
+                # if formset.is_valid():
+                #     created_user.save()
+                #     formset.save()
+
+
+# formset = profileInlineFormset(request.POST, instance=user)
+
+    # user_form = UserProfileForm(instance=user)
+    # profileInlineFormset = inlineformset_factory(User, Practitioner, fields=('mobile', 'address_line_1', 'address_line_2', 'bio'))
+
+    # if request.user.id == user.id:
+
+# "formset": formset,
