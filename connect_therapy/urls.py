@@ -1,7 +1,4 @@
-from django.urls import path, reverse_lazy
-from django.views.generic import TemplateView
-from django.contrib.auth import views as auth_views
-from . import views
+from django.urls import path
 
 from connect_therapy.views import *
 
@@ -90,7 +87,7 @@ urlpatterns = [
          name='about'),
     path('practitioner',
          TemplateView.as_view(
-            template_name='connect_therapy/practitioner/homepage.html'
+             template_name='connect_therapy/practitioner/homepage.html'
          ),
          name='practitioner-homepage'
          ),
@@ -115,12 +112,15 @@ urlpatterns = [
          name='practitioner-my-appointments'
          ),
     path('patient/book-appointment/<int:pk>',
-         BookAppointmentView.as_view(),
+         ViewBookableAppointments.as_view(),
          name='book-appointment'
          ),
     path('patient/book-appointment/<int:pk>/checkout',
-         BookAppointmentCheckout.as_view(),
-         name='book-appointment-checkout'),
+         ReviewSelectedAppointments.as_view(),
+         name='book-appointment-review'),
+    path('patient/book-appointment/<int:pk>/checkout/confirm',
+         Checkout.as_view(),
+         name='checkout-confirm'),
     path('patient/cancel-appointment/<int:pk>',
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'

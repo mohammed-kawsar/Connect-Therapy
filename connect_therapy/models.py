@@ -147,7 +147,7 @@ class Appointment(models.Model):
                                    day=start_date_and_time.day,
                                    hour=int(hour), minute=int(minute))
 
-        return datetime_format
+        return datetime_format.time()
 
     @classmethod
     def check_validity(cls, selected_appointments, selected_practitioner):

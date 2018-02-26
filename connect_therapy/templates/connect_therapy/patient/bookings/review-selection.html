@@ -45,7 +45,7 @@
         {% elif bookable_appointments is not None and bookable_appointments|length > 0 %}
             <h3>Great, no clashes, we'll get those booked for you</h3>
             <h4>Also, note that consecutive appointments will be merged together</h4>
-            <form action="{% url 'connect_therapy:checkout-confirm' pk=practitioner_id %}"
+            <form action="{% url 'connect_therapy:checkout-confirm' practitioner_id %}"
                   method="post">
                 <table class="table table-hover">
                     {% csrf_token %}

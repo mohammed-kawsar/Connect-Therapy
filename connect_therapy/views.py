@@ -1,14 +1,12 @@
 from django.contrib.auth import views as auth_views, authenticate, login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-
 from django.views.generic import FormView, DetailView, TemplateView
-
 from django.views.generic.edit import FormMixin
-
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -149,8 +147,8 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class BookAppointmentView(DetailView):
-    template_name = "connect_therapy/patient/book-appointment.html"
+class ViewBookableAppointments(DetailView):
+    template_name = "connect_therapy/patient/bookings/view-available.html"
     model = Practitioner
 
     def get(self, request, pk):
@@ -177,12 +175,11 @@ class BookAppointmentView(DetailView):
                                    "appointments": appointments,
                                    "object": self.get_object()})
         else:
-            print("Create appointment form is not valid. views.py #154")
             return self.get(request)
 
 
-class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
-    template_name = 'connect_therapy/patient/book-appointment-checkout.html'
+class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
+    template_name = 'connect_therapy/patient/bookings/review-selection.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
 
     def post(self, request, *args, **kwargs):
@@ -202,13 +199,20 @@ class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
                 return render(request, self.get_template_names(), context={"clashes": clashes})
             else:
                 # all valid
-                # TODO: Merge any consecutive appointments, tell the user about the merge as well
-                bookable_appointments = overlap_exists[1]
-                return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments})
+                bookable_appointments = Appointment.merge_appointments(overlap_exists[1])
+                return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments,
+                                                                   "practitioner_id": practitioner_id})
         else:
             # appointments not valid
             invalid_appointments = True
             return render(request, self.get_template_names(), context={"invalid_appointments": invalid_appointments})
+
+
+class Checkout(TemplateView):
+    template_name = "connect_therapy/patient/bookings/checkout.html"
+
+    def post(self, request, *args, **kwargs):
+        return HttpResponse("You're at the checkout")
 
 
 class PatientCancelAppointmentView(FormMixin, DetailView):
