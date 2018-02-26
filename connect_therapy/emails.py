@@ -155,3 +155,24 @@ def patient_confirm_email(patient, link):
         recipient_list=[patient.user.email, ],
         html_message=html_message
     )
+
+
+def patient_email_confirmed(patient):
+    context = {
+        'user': patient.user
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/patient-email-confirmed.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/patient-email-confirmed.html',
+        context
+    )
+    send_mail(
+        subject='Connect Therapy - Email Confirmed',
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[patient.user.email, ],
+        html_message=html_message
+    )
