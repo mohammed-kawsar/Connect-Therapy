@@ -176,3 +176,27 @@ def patient_email_confirmed(patient):
         recipient_list=[patient.user.email, ],
         html_message=html_message
     )
+
+
+def patient_practitioner_has_cancelled(appointment, message=None):
+    """This must be called BEFORE deleteing the appointment"""
+    context = {
+        'user': appointment.patient.user,
+        'message': message
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/'
+        'patient-practitioner-has-cancelled.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/patient-practitioner-has-cancelled.html',
+        context
+    )
+    send_mail(
+        subject='Connect Therapy - Your appointment has been cancelled',
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[appointment.patient.user.email, ],
+        html_message=html_message
+    )
