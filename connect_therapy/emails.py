@@ -133,3 +133,25 @@ def send_patient_cancelled_under_24_hours(patient, appointment):
         recipient_list=[patient.user.email, ],
         html_message=html_message
     )
+
+
+def patient_confirm_email(patient, link):
+    context = {
+        'user': patient.user,
+        'link': link
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/patient-confirm-email.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/patient-confirm-email.html',
+        context
+    )
+    send_mail(
+        subject='Connect Therapy - Confirm Email',
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[patient.user.email, ],
+        html_message=html_message
+    )
