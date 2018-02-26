@@ -4,6 +4,8 @@ from django.core.mail import send_mail
 
 from connect_therapy.models import Appointment
 
+from_email = 'support@connecttherapy.com'
+
 
 def send_patient_appointment_reminders():
     appointments_today = Appointment.objects.filter(
@@ -30,7 +32,7 @@ def send_patient_appointment_reminders():
         successfully_delivered += send_mail(
             subject='Connect Therapy - Appointment Reminder',
             message=plain_text_message,
-            from_email='support@connecttherapy.com',
+            from_email=from_email,
             recipient_list=[appointment.patient.user.email, ],
             fail_silently=True,
             html_message=html_message
