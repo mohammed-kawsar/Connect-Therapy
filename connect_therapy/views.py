@@ -185,8 +185,8 @@ class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
     template_name = 'connect_therapy/patient/book-appointment-checkout.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
 
-    def get(self, request, *args, **kwargs):
-        app_ids = request.GET.getlist('app_id')
+    def post(self, request, *args, **kwargs):
+        app_ids = request.POST.getlist('app_id')
         practitioner_id = kwargs['pk']
         user = User.objects.get(pk=self.request.user.id)
         patient = Patient.objects.get(user=user)
@@ -204,7 +204,6 @@ class BookAppointmentCheckout(LoginRequiredMixin, TemplateView):
                 # all valid
                 # TODO: Merge any consecutive appointments, tell the user about the merge as well
                 bookable_appointments = overlap_exists[1]
-
                 return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments})
         else:
             # appointments not valid

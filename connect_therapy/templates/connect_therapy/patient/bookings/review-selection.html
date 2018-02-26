@@ -1,0 +1,71 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Review Bookings{% endblock %}
+{% block header %}
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> {% endblock %}
+{% block content %}
+    <h1 class="jumbotron">Here is what you selected</h1>
+    <div class="container">
+        {% if clashes is not None and clashes|length > 0 %}
+            <h3>You seem to have some clashes.</h3>
+            <p>You can review clashes below and then go back and select a different appointment</p>
+            <div class="row row-centered pos">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-centered">
+                    <p>The shaded in appointments are those you already have booked</p>
+                    <table class="table table-hover">
+                        {% for i,j in clashes %}
+                            <tr>
+                                {% if i.patient is None %}
+                                    <td>Dr. {{ i.practitioner.user.get_full_name }}
+                                        on {{ i.start_date_and_time }}</td>
+                                {% else %}
+                                    <td bgcolor="#ccd4e2">Dr. {{ i.practitioner.user.get_full_name }}
+                                        on {{ i.start_date_and_time }}</td>
+                                {% endif %}
+
+
+                                <td>clashes with</td>
+
+                                {% if j.patient is None %}
+                                    <td>Dr. {{ j.practitioner.user.get_full_name }}
+                                        on {{ j.start_date_and_time }}</td>
+                                {% else %}
+                                    <td bgcolor="#ccd4e2">Dr. {{ j.practitioner.user.get_full_name }}
+                                        on {{ j.start_date_and_time }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+
+        {% elif invalid_appointments == True %}
+            <h3>You have selected invalid appointments, please go <b>back</b> and try again.</h3>
+        {% elif bookable_appointments is not None and bookable_appointments|length > 0 %}
+            <h3>Great, no clashes, we'll get those booked for you</h3>
+            <h4>Also, note that consecutive appointments will be merged together</h4>
+            <form action="{% url 'connect_therapy:checkout-confirm' pk=practitioner_id %}"
+                  method="post">
+                <table class="table table-hover">
+                    {% csrf_token %}
+                    <tr>
+                        <th>Practitioner</th>
+                        <th>Date and time</th>
+                        <th>Duration</th>
+                    </tr>
+                    {% for app in bookable_appointments %}
+                        <tr>
+                            <input type="hidden" name="app_id" value={{ app.id }}>
+                            <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
+                            <td>{{ app.start_date_and_time }}</td>
+                            <td>{{ app.length }}</td>
+                        </tr>
+                    {% endfor %}
+                    <h4>...Right after you've paid</h4>
+                </table>
+                <input type="submit" value="Continue">
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}
