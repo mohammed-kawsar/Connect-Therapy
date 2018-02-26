@@ -7,6 +7,28 @@ from connect_therapy.models import Appointment
 from_email = 'support@connecttherapy.com'
 
 
+def send_password_reset(user, link):
+    context = {
+        'user': user,
+        'link': link
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/password-reset.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/password-reset.html',
+        context
+    )
+    send_mail(
+        subject='Connect Therapy - Password Reset',
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[user.email, ],
+        html_message=html_message
+    )
+
+
 def send_patient_appointment_booked(appointment):
     context = {
         'user': appointment.patient.user,
