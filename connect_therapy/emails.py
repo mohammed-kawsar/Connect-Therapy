@@ -328,3 +328,24 @@ def send_practitioner_confirm_email(practitioner, link):
         recipient_list=[practitioner.user.email, ],
         html_message=html_message
     )
+
+
+def send_practitioner_email_confirmed(practitioner):
+    context = {
+        'user': practitioner.user
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/practitioner-email-confirmed.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/practitioner-email-confirmed.html',
+        context
+    )
+    send_mail(
+        subject='Connect Therapy - Email Confirmed',
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[practitioner.user.email, ],
+        html_message=html_message
+    )
