@@ -7,6 +7,29 @@ from connect_therapy.models import Appointment
 from_email = 'support@connecttherapy.com'
 
 
+def send_patient_appointment_booked(appointment):
+    context = {
+        'user': appointment.patient.user,
+        'appointment': appointment
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/'
+        'patient-appointment-booked.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/patient-appointment-booked.html',
+        context
+    )
+    send_mail(
+        subject='Connect Therapy - Appointment Booked',
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[appointment.patient.user.email, ],
+        html_message=html_message
+    )
+
+
 def send_patient_appointment_reminders():
     appointments_today = Appointment.objects.filter(
         start_date_and_time__day=timezone.now().date(),
