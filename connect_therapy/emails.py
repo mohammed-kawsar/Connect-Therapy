@@ -110,3 +110,26 @@ def send_patient_cancelled_in_good_time(patient, appointment):
         recipient_list=[patient.user.email, ],
         html_message=html_message
     )
+
+
+def send_patient_cancelled_under_24_hours(patient, appointment):
+    context = {
+        'user': patient.user,
+        'appointment': appointment
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/'
+        'patient-cancelled-under-24-hours.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/patient-cancelled-under-24-hours.html',
+        context
+    )
+    send_mail(
+        subject='Connect Therapy - Appointment Cancelled',
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[patient.user.email, ],
+        html_message=html_message
+    )
