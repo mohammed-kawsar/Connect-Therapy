@@ -305,3 +305,26 @@ def send_practitioner_cancelled(appointment):
         recipient_list=[appointment.practitioner.user.email, ],
         html_message=html_message
     )
+
+
+def send_practitioner_confirm_email(practitioner, link):
+    context = {
+        'user': practitioner.user,
+        'link': link
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/'
+        'practitioner-confirm-email.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/practitioner-confirm-email.html',
+        context
+    )
+    send_mail(
+        subject="Connect Therapy - Confirm Email",
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[practitioner.user.email, ],
+        html_message=html_message
+    )
