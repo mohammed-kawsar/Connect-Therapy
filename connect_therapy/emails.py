@@ -373,3 +373,28 @@ def send_practitioner_patient_cancelled_in_good_time(appointment):
         recipient_list=[appointment.practitioner.user.email, ],
         html_message=html_message
     )
+
+
+def send_practitioner_patient_cancelled_in_under_24_hours(appointment):
+    """This must be called BEFORE the appointment is actually cancelled"""
+    context = {
+        'user': appointment.practitioner.user,
+        'appointment': appointment
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/'
+        'practitioner-patient-cancelled-in-under-24-hours.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/'
+        'practitioner-patient-cancelled-in-under-24-hours.html',
+        context
+    )
+    send_mail(
+        subject='Connect Therapy - Appointment Cancelled',
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[appointment.practitioner.user.email, ],
+        html_message=html_message
+    )
