@@ -260,3 +260,25 @@ def send_practitioner_appointment_reminders():
         len(appointments_today) - successfully_delivered
         )
     )
+
+
+def send_practitioner_approved(practitioner):
+    context = {
+        'user': practitioner.user,
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/'
+        'practitioner-approved.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/practitioner-approved.html',
+        context
+    )
+    send_mail(
+        subject="Connect Therapy - You've been approved",
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[practitioner.user.email, ],
+        html_message=html_message
+    )
