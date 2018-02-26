@@ -135,7 +135,7 @@ def send_patient_cancelled_under_24_hours(patient, appointment):
     )
 
 
-def patient_confirm_email(patient, link):
+def send_patient_confirm_email(patient, link):
     context = {
         'user': patient.user,
         'link': link
@@ -157,7 +157,7 @@ def patient_confirm_email(patient, link):
     )
 
 
-def patient_email_confirmed(patient):
+def send_patient_email_confirmed(patient):
     context = {
         'user': patient.user
     }
@@ -178,7 +178,7 @@ def patient_email_confirmed(patient):
     )
 
 
-def patient_practitioner_has_cancelled(appointment, message=None):
+def send_patient_practitioner_has_cancelled(appointment, message=None):
     """This must be called BEFORE deleting the appointment"""
     context = {
         'user': appointment.patient.user,
@@ -202,7 +202,7 @@ def patient_practitioner_has_cancelled(appointment, message=None):
     )
 
 
-def practitioner_appointment_booked(appointment):
+def send_practitioner_appointment_booked(appointment):
     context = {
         'user': appointment.practitioner.user,
         'appointment': appointment
