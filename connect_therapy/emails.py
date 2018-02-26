@@ -87,3 +87,26 @@ def send_patient_appointment_reminders():
         len(appointments_today) - successfully_delivered
         )
     )
+
+
+def send_patient_cancelled_in_good_time(patient, appointment):
+    context = {
+        'user': patient.user,
+        'appointment': appointment
+    }
+    plain_text_message = render_to_string(
+        'connect_therapy/emails/plain-text/'
+        'patient-cancelled-in-good-time.txt',
+        context
+    )
+    html_message = render_to_string(
+        'connect_therapy/emails/html/patient-cancelled-in-good-time.html',
+        context
+    )
+    send_mail(
+        subject='Connect Therapy - Appointment Cancelled',
+        message=plain_text_message,
+        from_email=from_email,
+        recipient_list=[patient.user.email, ],
+        html_message=html_message
+    )
