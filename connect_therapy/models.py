@@ -90,21 +90,6 @@ class Appointment(models.Model):
                                        str(self.length))
 
     @classmethod
-    def check_appointments_valid(cls, list_of_appointments, selected_practitioner):
-        """Given a list of appointments and a selected practitioner, this method will check whether the appointments
-        are valid and whether they can be booked with the given practitioner
-        """
-        """ TODO: Check that the appointments taken from the URL are valid in terms of 
-                    1. Being available
-                    2. Belonging to the correct practitioner
-                    3. Not in the past
-                    *May* be able to reuse some code     
-        """
-
-        for app in list_of_appointments:
-            print(app)
-
-    @classmethod
     def get_valid_appointments(cls, selected_date, selected_practitioner):
         """This method will return a list of valid appointments which can be booked by the user based on a given date
         and practitioner
@@ -116,11 +101,11 @@ class Appointment(models.Model):
             return []
 
         appointments = Appointment.objects.filter(start_date_and_time__day=selected_date.day
-                                                  ).filter(start_date_and_time__month=selected_date.month
-                                                           ).filter(start_date_and_time__year=selected_date.year
-                                                                    ).filter(patient__isnull=True
-                                                                             ).filter(
-            practitioner_id=selected_practitioner).order_by("start_date_and_time")
+                                                  , start_date_and_time__month=selected_date.month
+                                                  , start_date_and_time__year=selected_date.year
+                                                  , patient__isnull=True
+                                                  , practitioner_id=selected_practitioner).order_by(
+            "start_date_and_time")
 
         return appointments
 

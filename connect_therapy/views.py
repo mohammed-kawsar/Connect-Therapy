@@ -212,7 +212,7 @@ class Checkout(TemplateView):
     template_name = "connect_therapy/patient/bookings/checkout.html"
 
     def post(self, request, *args, **kwargs):
-        return HttpResponse("You're at the checkout")
+        return render(request, self.get_template_names(),{})
 
 
 class PatientCancelAppointmentView(FormMixin, DetailView):
