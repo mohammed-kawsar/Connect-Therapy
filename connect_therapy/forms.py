@@ -60,7 +60,7 @@ class PatientLoginForm(AuthenticationForm):
 
 class PatientEditDetailsForm(forms.ModelForm):
     # Added extra regex for date of birth as output is in a different format.
-    date_of_birth = forms.DateField(help_text=" Format: DD/MM/YYYY",
+    date_of_birth = forms.DateField(help_text=" Format: YYYY/MM/DD",
                                     input_formats=[
                                         '%d/%m/%Y', '%Y-%m-%d'
                                     ])
