@@ -73,7 +73,7 @@ class PatientMyAppointmentsView(generic.TemplateView):
 
 
 class PatientNotesBeforeView(LoginRequiredMixin, FormView):
-    form_class = PatientNotesBefore
+    form_class = PatientNotesBeforeForm
     template_name = 'connect_therapy/patient/notes-before-appointment.html'
     success_url = reverse_lazy('connect_therapy:patient-my-appointments')
 

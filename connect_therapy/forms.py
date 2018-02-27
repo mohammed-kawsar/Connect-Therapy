@@ -58,9 +58,9 @@ class PatientLoginForm(AuthenticationForm):
         super().confirm_login_allowed(user)
 
 
-class PatientNotesBefore(forms.Form):
-    patient_notes_before_meeting = forms.CharField(label="notes before appointment",
-                                    widget=forms.Textarea)
+class PatientNotesBeforeForm(forms.Form):
+    patient_notes_before_meeting = forms.CharField(
+        label="notes before appointment", widget=forms.Textarea)
 
 
 class PractitionerSignUpForm(UserCreationForm):
