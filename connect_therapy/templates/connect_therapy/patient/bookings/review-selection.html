@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="{% static 'connect_therapy/styles/bookings.css' %}" type="text/css">
 {% endblock %}
 {% block content %}
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-info">
+
+            {% for message in messages %}
+                <p>  {% if message.tags %} {{ message }} {% endif %} </p>
+            {% endfor %}
+
+        </div>
+    {% endif %}
     <h1 class="jumbotron">Here is what you selected</h1>
     <div class="container">
         {% if clashes is not None and clashes|length > 0 %}

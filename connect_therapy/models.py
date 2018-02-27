@@ -89,6 +89,9 @@ class Appointment(models.Model):
                                        str(self.start_date_and_time),
                                        str(self.length))
 
+    def __cmp__(self, other):
+        return str(self) == str(other)
+
     @classmethod
     def get_valid_appointments(cls, selected_date, selected_practitioner):
         """This method will return a list of valid appointments which can be booked by the user based on a given date
@@ -250,4 +253,14 @@ class Appointment(models.Model):
                         stack.append(i_from_s)
                         stack.append(app)
 
-        return stack,merged_apps
+        merged_apps = cls._remove_duplicates(merged_apps)
+        return stack, merged_apps
+
+    @classmethod
+    def _remove_duplicates(cls, appointments):
+        for app in appointments:
+            for other_app in appointments:
+                if app.start_date_and_time == other_app.start_date_and_time and app != other_app:
+                    appointments.remove(other_app)
+
+        return appointments

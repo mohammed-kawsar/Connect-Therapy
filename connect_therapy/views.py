@@ -1,6 +1,6 @@
+from django.contrib import messages, sessions
 from django.contrib.auth import views as auth_views, authenticate, login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -200,8 +200,14 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
             else:
                 # all valid
                 bookable_appointments, merged_appointments = Appointment.merge_appointments(overlap_exists[1])
+
+                if len(merged_appointments) == 1:
+                    messages.success(request, str(len(merged_appointments)) + " appointment was merged")
+                elif len(merged_appointments) > 1:
+                    messages.success(request, str(len(merged_appointments)) + " appointments were merged")
+                request.session['bookable_appointments'] = str(bookable_appointments)
                 return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments,
-                                                                   "merged_appointments" : merged_appointments,
+                                                                   "merged_appointments": merged_appointments,
                                                                    "practitioner_id": practitioner_id})
         else:
             # appointments not valid
@@ -213,8 +219,8 @@ class Checkout(TemplateView):
     template_name = "connect_therapy/patient/bookings/checkout.html"
 
     def post(self, request, *args, **kwargs):
-        apps = request.POST.getlist('app')
-        return render(request, self.get_template_names(),{"appointments":apps})
+        apps = request.session.pop('bookable_appointments')
+        return render(request, self.get_template_names(), {"appointments": apps})
 
 
 class PatientCancelAppointmentView(FormMixin, DetailView):
