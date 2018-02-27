@@ -20,7 +20,7 @@
             {% for app in appointments %}
                 <p><input type="checkbox" name="app_id" value={{ app.id }}> {{ app }} </input> </p>
             {% endfor %}
-            <input type="submit" value="Continue"/>
+            <input type="submit" class="btn btn-submit" value="Continue"/>
         </form>
     {% endif %}
 

@@ -43,7 +43,7 @@
         {% elif invalid_appointments == True %}
             <h3>You have selected invalid appointments, please go <b>back</b> and try again.</h3>
         {% elif bookable_appointments is not None and bookable_appointments|length > 0 %}
-            <h3>Great, no clashes, we'll get those booked for you</h3>
+            <h2>Great, no clashes, we'll get these booked for you</h2>
             <h4>Also, note that consecutive appointments will be merged together</h4>
             <form action="{% url 'connect_therapy:checkout-confirm' practitioner_id %}"
                   method="post">
@@ -56,7 +56,7 @@
                     </tr>
                     {% for app in bookable_appointments %}
                         <tr>
-                            <input type="hidden" name="app_id" value={{ app.id }}>
+                            <input type="hidden" name="apps" value={{ app }}>
                             <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
                             <td>{{ app.start_date_and_time }}</td>
                             <td>{{ app.length }}</td>
@@ -64,8 +64,33 @@
                     {% endfor %}
 
                 </table>
-                <input type="submit" value="Continue">
+                <input type="submit" class="btn btn-submit" value="Continue">
             </form>
+            {% if merged_appointments|length > 0 %}
+                <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#merged-appointments">
+                    Show merged appointments
+                </button>
+                <div id="merged-appointments" class="collapse">
+                    <h3>The following appointments were merged</h3>
+                    <table class="table table-hover">
+                        {% csrf_token %}
+                        <tr>
+                            <th>Practitioner</th>
+                            <th>Date and time</th>
+                            <th>Duration</th>
+                        </tr>
+                        {% for app in merged_appointments %}
+                            <tr>
+                                <input type="hidden" name="apps" value={{ app }}>
+                                <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
+                                <td>{{ app.start_date_and_time }}</td>
+                                <td>{{ app.length }}</td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+            {% endif %}
         {% endif %}
     </div>
 {% endblock %}

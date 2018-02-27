@@ -199,8 +199,9 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
                 return render(request, self.get_template_names(), context={"clashes": clashes})
             else:
                 # all valid
-                bookable_appointments = Appointment.merge_appointments(overlap_exists[1])
+                bookable_appointments, merged_appointments = Appointment.merge_appointments(overlap_exists[1])
                 return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments,
+                                                                   "merged_appointments" : merged_appointments,
                                                                    "practitioner_id": practitioner_id})
         else:
             # appointments not valid
@@ -212,7 +213,8 @@ class Checkout(TemplateView):
     template_name = "connect_therapy/patient/bookings/checkout.html"
 
     def post(self, request, *args, **kwargs):
-        return render(request, self.get_template_names(),{})
+        apps = request.POST.getlist('app')
+        return render(request, self.get_template_names(),{"appointments":apps})
 
 
 class PatientCancelAppointmentView(FormMixin, DetailView):

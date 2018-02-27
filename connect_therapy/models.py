@@ -219,10 +219,11 @@ class Appointment(models.Model):
         end time of another exactly - in order for them to be merged. If none can be merged, then the original list of
         appointments is returned.
         :param list_of_appointments: The list of appointments to be merged
-        :return: List of merged appointments if it was possible to merge.
+        :return: List of merged appointments if it was possible to merge with a list of appointments which have been
+        merged so these can be deleted or otherwise dealt with.
         """
         stack = []
-        merged_list = []
+        merged_apps = []
         if len(list_of_appointments) <= 1:
             return list_of_appointments
         else:
@@ -243,8 +244,10 @@ class Appointment(models.Model):
                                                                   app.length))
 
                         stack.append(merged)
+                        merged_apps.append(i_from_s)
+                        merged_apps.append(app)
                     else:
                         stack.append(i_from_s)
                         stack.append(app)
 
-        return stack
+        return stack,merged_apps
