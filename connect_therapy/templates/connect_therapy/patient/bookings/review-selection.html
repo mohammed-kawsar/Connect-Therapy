@@ -2,7 +2,10 @@
 {% block title %}Review Bookings{% endblock %}
 {% block header %}
     <meta name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> {% endblock %}
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'connect_therapy/styles/bookings.css' %}" type="text/css">
+{% endblock %}
 {% block content %}
     <h1 class="jumbotron">Here is what you selected</h1>
     <div class="container">
@@ -66,6 +69,7 @@
                 </table>
                 <input type="submit" class="btn btn-submit" value="Continue">
             </form>
+            <div class="merged">
             {% if merged_appointments|length > 0 %}
                 <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#merged-appointments">
                     Show merged appointments
@@ -92,5 +96,6 @@
                 </div>
             {% endif %}
         {% endif %}
+        </div>
     </div>
 {% endblock %}
