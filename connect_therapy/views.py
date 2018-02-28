@@ -195,10 +195,9 @@ class PractitionerViewPatients(generic.TemplateView):
     template_name = 'connect_therapy/practitioner/view-patients.html'
     model = Appointment
 
-    def get(self, request):
-        if request.user.is_authenticated:
-            appointments = Appointment.objects.filter(
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['appointments'] = Appointment.objects.filter(
                 practitioner=self.request.user.practitioner
-            ).order_by('start_date_and_time')
-        args = {'appointments': appointments}
-        return render(request, self.template_name, args)
+            ).order_by('-start_date_and_time')
+        return context
