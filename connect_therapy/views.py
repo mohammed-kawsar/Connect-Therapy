@@ -1,6 +1,8 @@
-from django.contrib import messages, sessions
+from dateutil import parser
+from django.contrib import messages
 from django.contrib.auth import views as auth_views, authenticate, login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -185,10 +187,19 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         app_ids = request.POST.getlist('app_id')
         practitioner_id = kwargs['pk']
+
+        if len(app_ids) == 0:
+            messages.warning(request, "You haven't selected any appointments")
+            return ViewBookableAppointments.get(self, request, practitioner_id)
+
         user = User.objects.get(pk=self.request.user.id)
         patient = Patient.objects.get(user=user)
 
-        valid_appointments = Appointment.check_validity(selected_appointments=app_ids,
+        return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id,
+                                            patient=patient)
+
+    def _deal_with_appointments(self, request, app_ids, practitioner_id, patient):
+        valid_appointments = Appointment.check_validity(selected_appointments_id=app_ids,
                                                         selected_practitioner=practitioner_id)
 
         if valid_appointments is not False:
@@ -201,11 +212,15 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
                 # all valid
                 bookable_appointments, merged_appointments = Appointment.merge_appointments(overlap_exists[1])
 
+                # show user message about merged appointments
                 if len(merged_appointments) == 1:
                     messages.success(request, str(len(merged_appointments)) + " appointment was merged")
                 elif len(merged_appointments) > 1:
                     messages.success(request, str(len(merged_appointments)) + " appointments were merged")
-                request.session['bookable_appointments'] = str(bookable_appointments)
+
+                request.session['bookable_appointments'] = self._appointments_to_dictionary_list(bookable_appointments)
+                request.session['merged_appointments'] = self._appointments_to_dictionary_list(merged_appointments)
+                request.session['patient_id'] = patient.id
                 return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments,
                                                                    "merged_appointments": merged_appointments,
                                                                    "practitioner_id": practitioner_id})
@@ -214,13 +229,54 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
             invalid_appointments = True
             return render(request, self.get_template_names(), context={"invalid_appointments": invalid_appointments})
 
+    @staticmethod
+    def _appointments_to_dictionary_list(appointments):
+        dict_list = []
+        for app in appointments:
+            appointment_dict = {'id': app.id, 'practitioner_id': app.practitioner.id,
+                                'start_date_and_time': str(app.start_date_and_time), 'length': str(app.length),
+                                'session_id': str(app.session_id), 'session_salt': str(app.session_salt)}
+            dict_list.append(appointment_dict)
+        return dict_list
+
 
 class Checkout(TemplateView):
     template_name = "connect_therapy/patient/bookings/checkout.html"
 
+    def get(self, request, *args, **kwargs):
+        appointments_to_book = []
+        apps = request.session['bookable_appointments']
+        if apps is None:
+            return render(request, self.get_template_names(), {"appointments": appointments_to_book})
+        for app_dict in apps:
+            if app_dict['id'] is None:
+                appointment = Appointment(practitioner_id=app_dict['practitioner_id'],
+                                          start_date_and_time=parser.parse(app_dict['start_date_and_time']),
+                                          length=parser.parse(app_dict['length']),
+                                          session_id=app_dict)
+                appointments_to_book.append(appointment)
+            else:
+                appointments_to_book.append(Appointment.objects.get(pk=app_dict['id']))
+
+        return render(request, self.get_template_names(), {"appointments": appointments_to_book})
+
     def post(self, request, *args, **kwargs):
-        apps = request.session.pop('bookable_appointments')
-        return render(request, self.get_template_names(), {"appointments": apps})
+        # session_id would only be passed in to identify an appointment to delete
+        if 'session_id' in request.POST:
+            list_of_appointments = request.session['bookable_appointments']
+            if list_of_appointments is None:
+                return self.get(request, *args, **kwargs)
+            for app in list_of_appointments:
+                if app['session_id'] == request.POST['session_id']:
+                    request.session['bookable_appointments'] = list_of_appointments.remove(app)
+                    return self.get(request, *args, *kwargs)
+        elif 'checkout' in request.POST:
+            # TODO: Add payment gateway stuff here..probably
+            return HttpResponse("We will facilitate booking appointments here")
+
+            pass
+
+        return HttpResponse("Post")
 
 
 class PatientCancelAppointmentView(FormMixin, DetailView):

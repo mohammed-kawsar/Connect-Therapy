@@ -85,9 +85,10 @@ class Appointment(models.Model):
 
     def __str__(self):
         """Return a string representation of Appointment"""
-        return "{} - {} for {}".format(str(self.practitioner),
-                                       str(self.start_date_and_time),
-                                       str(self.length))
+        return "{} - {} - {} for {}".format(str(self.id),
+                                            str(self.practitioner),
+                                            str(self.start_date_and_time),
+                                            str(self.length))
 
     def __cmp__(self, other):
         return str(self) == str(other)
@@ -138,14 +139,14 @@ class Appointment(models.Model):
         return datetime_format.time()
 
     @classmethod
-    def check_validity(cls, selected_appointments, selected_practitioner):
+    def check_validity(cls, selected_appointments_id, selected_practitioner):
         """Will check the validity of appointments selected.
         If they are valid, it will return the list of appointments from the database.
         Otherwise, false.
         """
         appointments_to_book = []
         selected_practitioner = Practitioner.objects.get(pk=selected_practitioner)
-        for _id in selected_appointments:
+        for _id in selected_appointments_id:
             try:
                 appointment = Appointment.objects.get(pk=_id)
                 if appointment.start_date_and_time >= datetime.now(pytz.UTC) and \
@@ -228,7 +229,7 @@ class Appointment(models.Model):
         stack = []
         merged_apps = []
         if len(list_of_appointments) <= 1:
-            return list_of_appointments
+            return list_of_appointments, []
         else:
             list_of_appointments = sorted(list_of_appointments, key=lambda appointment: appointment.start_date_and_time)
             for app in list_of_appointments:

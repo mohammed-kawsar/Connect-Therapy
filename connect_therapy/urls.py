@@ -115,12 +115,12 @@ urlpatterns = [
          ViewBookableAppointments.as_view(),
          name='book-appointment'
          ),
-    path('patient/book-appointment/<int:pk>/checkout',
+    path('patient/book-appointment/<int:pk>/review',
          ReviewSelectedAppointments.as_view(),
          name='book-appointment-review'),
-    path('patient/book-appointment/<int:pk>/checkout/confirm',
+    path('patient/checkout',
          Checkout.as_view(),
-         name='checkout-confirm'),
+         name='checkout'),
     path('patient/cancel-appointment/<int:pk>',
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'
