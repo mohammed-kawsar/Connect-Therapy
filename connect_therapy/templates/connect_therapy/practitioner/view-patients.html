@@ -1,0 +1,11 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Practitioner's Patient{% endblock %}
+
+{% block content %}
+    <h1>patients:</h1>
+    <div class="practitionerMeetingNotes">
+        {% for appointment in appointments %}
+            <h3>{{ appointment.patient }}</h3>
+        {% endfor %}
+    </div>
+{% endblock %}

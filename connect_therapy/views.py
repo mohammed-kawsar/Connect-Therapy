@@ -189,3 +189,16 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     login_url = reverse_lazy('connect_therapy:patient-appointment-notes')
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
+
+
+class PractitionerViewPatients(generic.TemplateView):
+    template_name = 'connect_therapy/practitioner/view-patients.html'
+    model = Appointment
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            appointments = Appointment.objects.filter(
+                practitioner=self.request.user.practitioner
+            ).order_by('start_date_and_time')
+        args = {'appointments': appointments}
+        return render(request, self.template_name, args)
