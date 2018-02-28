@@ -1,0 +1,5 @@
+{% extends 'connect_therapy/emails/html/base.txt' %}
+{% block body %}
+    <p>This is a confirmation that you have cancelled your appointment starting {{ appointment.start_date_and_time }}.</p>
+    <p>In line with our Terms and Conditions, as you have cancelled with over 24 hours notice, you will not be charged.</p>
+{% endblock %}
