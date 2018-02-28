@@ -1,8 +1,12 @@
 {% extends "connect_therapy/base.html" %}
 {% block title %}Book Appointments{% endblock %}
+{% load staticfiles %}
+<script src="{% static 'connect_therapy/scripts/scripts.js'%}"></script>
+
 {% block header %}
     <meta name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> {% endblock %}
+
 {% block content %}
     <!-- Display messages -->
     {% if messages %}
@@ -19,9 +23,15 @@
 
     <form action="" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Select date"/>
+        {{ form }}
+        <h3>Select Date</h3>
+        <div id="pickdate"></div>
+        <br>
+
+        <input type="submit" value="Select date" class="btn btn-primary"/>
     </form>
+
+
 
     {% if appointments is not None and appointments|length > 0 %}
         <form action="{% url 'connect_therapy:book-appointment-review' pk=object.user.practitioner.id %}"
