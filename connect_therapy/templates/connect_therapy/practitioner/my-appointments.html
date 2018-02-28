@@ -9,7 +9,7 @@
             <td> {{ appointment.start_date_and_time }} </td>
             <td>Duration: {{ appointment.length }}</td>
             <td>Patient: {{ appointment.patient }}</td>
-            <td> <a href="">View Notes</a> </td>
+            <td> <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}">View Notes</a> </td>
             <td><a href="">Cancel Appointment</a></td>
         </tr>
         {% empty %}
@@ -22,7 +22,7 @@
             <td> {{ appointment.start_date_and_time }} </td>
             <td>Duration: {{ appointment.length }}</td>
             <td>Patient: {{ appointment.patient }}</td>
-            <td> <a href="">View Notes</a> </td>
+            <td> <a href="{% url 'connect_therapy:practitioner-appointment-notes' appointment.id %}">View Notes</a> </td>
         </tr>
         {% empty %}
         <p> No previous appointments. </p>
