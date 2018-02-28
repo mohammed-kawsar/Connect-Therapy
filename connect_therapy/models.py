@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from functools import partial
 
 import pytz
+from dateutil import parser
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -92,6 +93,58 @@ class Appointment(models.Model):
 
     def __cmp__(self, other):
         return str(self) == str(other)
+
+    @classmethod
+    def book_appointments(cls, list_of_appointments, user):
+        """
+        Takes a list of appointments to be booked and the user object booking them.
+        User must be a patient object, other wise will return false
+        :param list_of_appointments:
+        :param user:
+        :return:
+        """
+
+        # An extra check
+        if user.is_anonymous:
+            return False
+
+        try:
+            patient = Patient.objects.get(user=user)
+        except Patient.DoesNotExist:
+            return False
+
+        for app in list_of_appointments:
+            app.patient = patient
+            app.save()
+
+        return True
+
+    @classmethod
+    def delete_appointments(cls, list_of_appointments):
+        for app in list_of_appointments:
+            app.delete()
+
+    @classmethod
+    def convert_dictionaries_to_appointments(cls, appointment_dict_list):
+        """
+        This method is used to convert a list of dictionaries - each on of which represents an appointment object
+        - to a list of actual appointment objects. This is needed because to store an appointment using JSON (for sessions)
+        we must store each appointment object as a dictionary object
+        :param appointment_dict_list: List of dictionaries
+        :return: List of appointments
+        """
+        appointments = []
+        for app_dict in appointment_dict_list:
+            if app_dict['id'] is None:
+                appointment = Appointment(practitioner_id=app_dict['practitioner_id'],
+                                          start_date_and_time=parser.parse(app_dict['start_date_and_time']),
+                                          length=parser.parse(app_dict['length']),
+                                          session_id=app_dict)
+                appointments.append(appointment)
+            else:
+                appointments.append(Appointment.objects.get(pk=app_dict['id']))
+
+        return appointments
 
     @classmethod
     def get_valid_appointments(cls, selected_date, selected_practitioner):

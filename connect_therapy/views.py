@@ -1,4 +1,3 @@
-from dateutil import parser
 from django.contrib import messages
 from django.contrib.auth import views as auth_views, authenticate, login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
@@ -149,9 +148,10 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class ViewBookableAppointments(DetailView):
+class ViewBookableAppointments(LoginRequiredMixin, DetailView):
     template_name = "connect_therapy/patient/bookings/view-available.html"
     model = Practitioner
+    login_url = reverse_lazy('connect_therapy:patient-login')
 
     def get(self, request, pk):
         # define the object for the detail view
@@ -240,24 +240,16 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
         return dict_list
 
 
-class Checkout(TemplateView):
+class Checkout(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('connect_therapy:patient-login')
     template_name = "connect_therapy/patient/bookings/checkout.html"
 
     def get(self, request, *args, **kwargs):
         appointments_to_book = []
-        apps = request.session['bookable_appointments']
-        if apps is None:
+        appointment_dictionary = request.session['bookable_appointments']
+        if appointment_dictionary is None:
             return render(request, self.get_template_names(), {"appointments": appointments_to_book})
-        for app_dict in apps:
-            if app_dict['id'] is None:
-                appointment = Appointment(practitioner_id=app_dict['practitioner_id'],
-                                          start_date_and_time=parser.parse(app_dict['start_date_and_time']),
-                                          length=parser.parse(app_dict['length']),
-                                          session_id=app_dict)
-                appointments_to_book.append(appointment)
-            else:
-                appointments_to_book.append(Appointment.objects.get(pk=app_dict['id']))
-
+        appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
         return render(request, self.get_template_names(), {"appointments": appointments_to_book})
 
     def post(self, request, *args, **kwargs):
@@ -271,12 +263,27 @@ class Checkout(TemplateView):
                     request.session['bookable_appointments'] = list_of_appointments.remove(app)
                     return self.get(request, *args, *kwargs)
         elif 'checkout' in request.POST:
-            # TODO: Add payment gateway stuff here..probably
-            return HttpResponse("We will facilitate booking appointments here")
+            # TODO: Add payment gateway stuff here...probably
 
-            pass
+            appointment_dictionary = request.session['bookable_appointments']
+            if appointment_dictionary is None:
+                return self.get(request, *args, **kwargs)
+            appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
 
-        return HttpResponse("Post")
+            # first delete the appointments we merged, if any
+            merged_dictionary = request.session['merged_appointments']
+            if merged_dictionary is None:
+                # no merges where made so we dont need to do anything with them
+                pass
+            else:
+                merged_appointment_list = Appointment.convert_dictionaries_to_appointments(merged_dictionary)
+                Appointment.delete_appointments(merged_appointment_list)
+
+            # go ahead and book those appointments
+            if Appointment.book_appointments(appointments_to_book, request.user):
+                return render(request, "connect_therapy/patient/bookings/booking-success.html", {})
+            else:
+                return HttpResponse("Failed to book. Patient object doesnt exist.")
 
 
 class PatientCancelAppointmentView(FormMixin, DetailView):
