@@ -16,7 +16,7 @@
     {% if user.is_authenticated and user.patient %}
         <!-- Logged in Patient navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top">
-            <a class="navbar-brand" href="#"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+            <a class="navbar-brand" href="{% url 'connect_therapy:patient-homepage' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                     aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -25,13 +25,13 @@
             <div class="collapse navbar-collapse justify-content-end pull-right" id="appNavBar">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item ">
-                        <a class="nav-link" href="#">About </a>
+                        <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Book Appointment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Live Chat</a>
+                        <a class="nav-link" href="{% url 'connect_therapy:chat' %}">Live Chat</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
@@ -39,9 +39,9 @@
                             Profile
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="#">Manage Appointments</a>
+                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-my-appointments' %}">Manage Appointments</a>
                             <a class="dropdown-item" href="#">Change Details</a>
-                            <a class="dropdown-item" href="#">Logout</a>
+                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-logout' %}">Logout</a>
                         </div>
                     </li>
                 </ul>
@@ -53,7 +53,7 @@
         {% if user.is_authenticated and user.practitioner %}
             <!-- Logged in Practitioner navbar -->
             <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top">
-                <a class="navbar-brand" href="#"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+                <a class="navbar-brand" href="{% url 'connect_therapy:practitioner-homepage' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                         aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -62,13 +62,13 @@
                 <div class="collapse navbar-collapse justify-content-end pull-right" id="appNavBar">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item ">
-                            <a class="nav-link" href="#">About </a>
+                            <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Book Appointment</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Live Chat</a>
+                            <a class="nav-link" href="{% url 'connect_therapy:chat' %}">Live Chat</a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
@@ -78,7 +78,7 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a class="dropdown-item" href="#">Change Details</a>
-                                <a class="dropdown-item" href="#">Logout</a>
+                                <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-logout' %}">Logout</a>
                             </div>
                         </li>
                     </ul>
@@ -88,7 +88,7 @@
         {% else %}
             <!-- Logged out navbar -->
             <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top">
-                <a class="navbar-brand" href="#"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+                <a class="navbar-brand" href="{% url 'connect_therapy:index' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                         aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -97,7 +97,7 @@
                 <div class="collapse navbar-collapse justify-content-end pull-right" id="appNavBar">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item ">
-                            <a class="nav-link" href="#">About </a>
+                            <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                         </li>
                         <li class="nav-item">
                             <a class=“btn btn-primary“ href="#">Login</a>
