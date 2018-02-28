@@ -218,6 +218,7 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
                 elif len(merged_appointments) > 1:
                     messages.success(request, str(len(merged_appointments)) + " appointments were merged")
 
+                # add to session data - used by the checkout
                 request.session['bookable_appointments'] = self._appointments_to_dictionary_list(bookable_appointments)
                 request.session['merged_appointments'] = self._appointments_to_dictionary_list(merged_appointments)
                 request.session['patient_id'] = patient.id
