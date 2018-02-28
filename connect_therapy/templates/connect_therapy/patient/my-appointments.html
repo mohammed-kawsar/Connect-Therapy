@@ -9,7 +9,7 @@
             <td> {{ appointment.start_date_and_time }} </td>
             <td> Duration: {{ appointment.length }} </td>
             <td>Practitioner: {{ appointment.practitioner }} </td>
-            <td> <a href="notes-before-appointment.html">
+            <td> <a href="{% url 'connect_therapy:patient-notes-before' %}">
                 Add notes before appointment </a> </td>
             <td> <a href=""> Cancel Appointment</a> </td>
         </tr>

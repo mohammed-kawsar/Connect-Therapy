@@ -60,7 +60,9 @@ class PatientLoginForm(AuthenticationForm):
 
 class PatientNotesBeforeForm(forms.Form):
     patient_notes_before_meeting = forms.CharField(
-        label="notes before appointment", widget=forms.Textarea)
+        label="notes before appointment",
+        widget=forms.Textarea
+    )
 
 
 class PractitionerSignUpForm(UserCreationForm):
