@@ -8,6 +8,16 @@
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> {% endblock %}
 
 {% block content %}
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-warning">
+
+            {% for message in messages %}
+                <p>  {% if message.tags %} {{ message }} {% endif %} </p>
+            {% endfor %}
+
+        </div>
+    {% endif %}
 
     <h1 class="jumbotron">You are booking an appointment with {{ object.user.get_full_name }} </h1>
 
@@ -30,7 +40,7 @@
             {% for app in appointments %}
                 <p><input type="checkbox" name="app_id" value={{ app.id }}> {{ app }} </input> </p>
             {% endfor %}
-            <input type="submit" value="Continue"/>
+            <input type="submit" class="btn btn-submit" value="Continue"/>
         </form>
     {% endif %}
 

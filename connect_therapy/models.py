@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from functools import partial
 
 import pytz
+from dateutil import parser
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -85,9 +86,65 @@ class Appointment(models.Model):
 
     def __str__(self):
         """Return a string representation of Appointment"""
-        return "{} - {} for {}".format(str(self.practitioner),
-                                       str(self.start_date_and_time),
-                                       str(self.length))
+        return "{} - {} - {} for {}".format(str(self.id),
+                                            str(self.practitioner),
+                                            str(self.start_date_and_time),
+                                            str(self.length))
+
+    def __cmp__(self, other):
+        return str(self) == str(other)
+
+    @classmethod
+    def book_appointments(cls, list_of_appointments, user):
+        """
+        Takes a list of appointments to be booked and the user object booking them.
+        User must be a patient object, other wise will return false
+        :param list_of_appointments:
+        :param user:
+        :return:
+        """
+
+        # An extra check
+        if user.is_anonymous:
+            return False
+
+        try:
+            patient = Patient.objects.get(user=user)
+        except Patient.DoesNotExist:
+            return False
+
+        for app in list_of_appointments:
+            app.patient = patient
+            app.save()
+
+        return True
+
+    @classmethod
+    def delete_appointments(cls, list_of_appointments):
+        for app in list_of_appointments:
+            app.delete()
+
+    @classmethod
+    def convert_dictionaries_to_appointments(cls, appointment_dict_list):
+        """
+        This method is used to convert a list of dictionaries - each on of which represents an appointment object
+        - to a list of actual appointment objects. This is needed because to store an appointment using JSON (for sessions)
+        we must store each appointment object as a dictionary object
+        :param appointment_dict_list: List of dictionaries
+        :return: List of appointments
+        """
+        appointments = []
+        for app_dict in appointment_dict_list:
+            if app_dict['id'] is None:
+                appointment = Appointment(practitioner_id=app_dict['practitioner_id'],
+                                          start_date_and_time=parser.parse(app_dict['start_date_and_time']),
+                                          length=parser.parse(app_dict['length']),
+                                          session_id=app_dict)
+                appointments.append(appointment)
+            else:
+                appointments.append(Appointment.objects.get(pk=app_dict['id']))
+
+        return appointments
 
     @classmethod
     def get_valid_appointments(cls, selected_date, selected_practitioner):
@@ -135,14 +192,14 @@ class Appointment(models.Model):
         return datetime_format.time()
 
     @classmethod
-    def check_validity(cls, selected_appointments, selected_practitioner):
+    def check_validity(cls, selected_appointments_id, selected_practitioner):
         """Will check the validity of appointments selected.
         If they are valid, it will return the list of appointments from the database.
         Otherwise, false.
         """
         appointments_to_book = []
         selected_practitioner = Practitioner.objects.get(pk=selected_practitioner)
-        for _id in selected_appointments:
+        for _id in selected_appointments_id:
             try:
                 appointment = Appointment.objects.get(pk=_id)
                 if appointment.start_date_and_time >= datetime.now(pytz.UTC) and \
@@ -158,12 +215,16 @@ class Appointment(models.Model):
 
     @classmethod
     def get_appointment_overlaps(cls, appointments_to_book, patient):
-        """Will return
+        """
+        Will return
                 - List containing False, if appointments selected are invalid
                 - List of 2 elements:
                         - First element true if no overlap, second list of valid appointments
                         - First element false if overlap, second list of clashing appointments
-                """
+        :param appointments_to_book: List of appointments to be booked
+        :param patient: The patient for which the appoints should be booked for
+        :return: [Boolean - true if overlaps exist, if overlaps exist overlapping appointments original list otherwise]
+        """
 
         existing_user_appointments = Appointment.objects.filter(patient=patient)
 
@@ -210,10 +271,18 @@ class Appointment(models.Model):
 
     @classmethod
     def merge_appointments(cls, list_of_appointments):
+        """
+        This method will merge any consecutive appointments. The start time of one appointment must match with the
+        end time of another exactly - in order for them to be merged. If none can be merged, then the original list of
+        appointments is returned.
+        :param list_of_appointments: The list of appointments to be merged
+        :return: List of merged appointments if it was possible to merge with a list of appointments which have been
+        merged so these can be deleted or otherwise dealt with.
+        """
         stack = []
-        merged_list = []
+        merged_apps = []
         if len(list_of_appointments) <= 1:
-            return list_of_appointments
+            return list_of_appointments, []
         else:
             list_of_appointments = sorted(list_of_appointments, key=lambda appointment: appointment.start_date_and_time)
             for app in list_of_appointments:
@@ -232,8 +301,20 @@ class Appointment(models.Model):
                                                                   app.length))
 
                         stack.append(merged)
+                        merged_apps.append(i_from_s)
+                        merged_apps.append(app)
                     else:
                         stack.append(i_from_s)
                         stack.append(app)
 
-        return stack
+        merged_apps = cls._remove_duplicates(merged_apps)
+        return stack, merged_apps
+
+    @classmethod
+    def _remove_duplicates(cls, appointments):
+        for app in appointments:
+            for other_app in appointments:
+                if app.start_date_and_time == other_app.start_date_and_time and app != other_app:
+                    appointments.remove(other_app)
+
+        return appointments
