@@ -228,10 +228,6 @@ class Appointment(models.Model):
 
         existing_user_appointments = Appointment.objects.filter(patient=patient)
 
-        if len(existing_user_appointments) == 0:
-            print("Patient doesnt have any appointments")
-            return [True, sorted(appointments_to_book, key=lambda appointment: appointment.start_date_and_time)]
-
         merged_list = list(existing_user_appointments) + appointments_to_book
 
         over_laps = cls._get_overlaps(merged_list)
@@ -239,7 +235,7 @@ class Appointment(models.Model):
         if len(over_laps) > 0:
             return [False, over_laps]
         else:
-            return [True, sorted(appointments_to_book, key=lambda appointment: appointment.start_date_and_time)]
+            return [True, sorted(merged_list, key=lambda appointment: appointment.start_date_and_time)]
 
     @classmethod
     def _get_overlaps(cls, list_of_appointments):

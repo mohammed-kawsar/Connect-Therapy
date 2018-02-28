@@ -195,15 +195,12 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
         user = User.objects.get(pk=self.request.user.id)
         patient = Patient.objects.get(user=user)
 
-        return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id,
-                                            patient=patient)
-
-    def _deal_with_appointments(self, request, app_ids, practitioner_id, patient):
         valid_appointments = Appointment.check_validity(selected_appointments_id=app_ids,
                                                         selected_practitioner=practitioner_id)
 
         if valid_appointments is not False:
             overlap_exists = Appointment.get_appointment_overlaps(valid_appointments, patient=patient)
+            print(str(overlap_exists))
             if overlap_exists[0] is False:
                 # valid appointments but overlap exists
                 clashes = overlap_exists[1]
