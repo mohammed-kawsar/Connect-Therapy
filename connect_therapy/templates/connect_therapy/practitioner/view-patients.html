@@ -1,11 +1,65 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Your Patients{% endblock %}
+{% block header %}
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function(){
+        $('#patients').DataTable();
+        });
+    </script>
+{% endblock %}
 
 {% block content %}
     <h1>patients:</h1>
-    <div class="practitionerMeetingNotes">
-        {% for appointment in appointments %}
-            <h3>{{ appointment.patient }}</h3>
+    <table id="patients" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>First name</th>
+                <th>Last name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.patient.user.first_name }}</td>
+                <td>{{ appointment.patient.user.last_name }}</td>
+            </tr>
         {% endfor %}
-    </div>
+        </tbody>
+    </table>
 {% endblock %}
+
+
+{#<html>#}
+{#<head>#}
+{#    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">#}
+{#    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>#}
+{#    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>#}
+{#    <script>#}
+{#        $(document).ready(function(){#}
+{#        $('#patients').DataTable();#}
+{#        });#}
+{#    </script>#}
+{#</head>#}
+{#<body>#}
+{#<h1>patients:</h1>#}
+{#    <table id="patients" class="table table-bordered table-hover">#}
+{#        <thead>#}
+{#            <tr>#}
+{#                <th>First name</th>#}
+{#                <th>Last name</th>#}
+{#            </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#            {% for appointment in appointments %}#}
+{#            <tr>#}
+{#                <td>{{ appointment.patient.user.first_name }}</td>#}
+{#                <td>{{ appointment.patient.user.last_name }}</td>#}
+{#            </tr>#}
+{#        {% endfor %}#}
+{#        </tbody>#}
+{#    </table>#}
+{#</body>#}
+{#</html>#}
