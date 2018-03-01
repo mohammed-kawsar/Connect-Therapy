@@ -227,7 +227,7 @@ class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
                 return render(request, self.get_template_names(), context={"clashes": clashes})
             else:
                 # all valid
-                bookable_appointments, merged_appointments = Appointment.merge_appointments(overlap_exists[1])
+                bookable_appointments, merged_appointments = Appointment.merge_appointments(appointments_to_book)
 
                 # show user message about merged appointments
                 if len(merged_appointments) == 1:
