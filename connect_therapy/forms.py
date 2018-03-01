@@ -2,9 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, \
     UsernameField
 from django.contrib.auth.models import User
-from django.forms import SelectDateWidget
 
-from connect_therapy.models import Patient, Practitioner, Appointment
+from connect_therapy.models import Patient, Practitioner
 
 
 class PatientSignUpForm(UserCreationForm):
@@ -126,9 +125,8 @@ class PractitionerNotesForm(forms.Form):
 
 
 class AppointmentDateSelectForm(forms.Form):
-    date = forms.DateField(widget=SelectDateWidget())
+    date = forms.DateField(widget=forms.SelectDateWidget())
 
     def is_valid(self):
         valid = super(AppointmentDateSelectForm, self).is_valid()
         return valid
-

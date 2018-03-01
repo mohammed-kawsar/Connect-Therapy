@@ -91,11 +91,8 @@ class Appointment(models.Model):
                                             str(self.start_date_and_time),
                                             str(self.length))
 
-    def __cmp__(self, other):
-        return str(self) == str(other)
-
     @classmethod
-    def book_appointments(cls, list_of_appointments, user):
+    def book_appointments(cls, appointments, patient):
         """
         Takes a list of appointments to be booked and the user object booking them.
         User must be a patient object, other wise will return false
@@ -104,24 +101,15 @@ class Appointment(models.Model):
         :return:
         """
 
-        # An extra check
-        if user.is_anonymous:
-            return False
-
-        try:
-            patient = Patient.objects.get(user=user)
-        except Patient.DoesNotExist:
-            return False
-
-        for app in list_of_appointments:
+        for app in appointments:
             app.patient = patient
             app.save()
 
         return True
 
     @classmethod
-    def delete_appointments(cls, list_of_appointments):
-        for app in list_of_appointments:
+    def delete_appointments(cls, appointments):
+        for app in appointments:
             app.delete()
 
     @classmethod
@@ -147,23 +135,23 @@ class Appointment(models.Model):
         return appointments
 
     @classmethod
-    def get_valid_appointments(cls, selected_date, selected_practitioner):
-        """This method will return a list of valid appointments which can be booked by the user based on a given date
-        and practitioner
-        """
-        selected_date_converted = datetime(selected_date.year, selected_date.month, selected_date.day)
+    def get_valid_appointments(cls, date, practitioner):
+
+        selected_date_converted = datetime(date.year, date.month, date.day)
         # TODO: Need to add a filter for appointment cut off times which may vary per practitioner
         if selected_date_converted < datetime.now():
             print("Date is less than current date")
             return []
 
-        appointments = Appointment.objects.filter(start_date_and_time__day=selected_date.day
-                                                  , start_date_and_time__month=selected_date.month
-                                                  , start_date_and_time__year=selected_date.year
+        appointments = Appointment.objects.filter(start_date_and_time__day=date.day
+                                                  , start_date_and_time__month=date.month
+                                                  , start_date_and_time__year=date.year
                                                   , patient__isnull=True
-                                                  , practitioner_id=selected_practitioner).order_by(
-            "start_date_and_time")
-
+                                                  , practitioner_id=practitioner
+                                                  ).order_by("start_date_and_time")
+        """This method will return a list of valid appointments which can be booked by the user based on a given date
+        and practitioner
+        """
         return appointments
 
     @classmethod
@@ -217,10 +205,9 @@ class Appointment(models.Model):
     def get_appointment_overlaps(cls, appointments_to_book, patient):
         """
         Will return
-                - List containing False, if appointments selected are invalid
-                - List of 2 elements:
-                        - First element true if no overlap, second list of valid appointments
-                        - First element false if overlap, second list of clashing appointments
+                - Tuple:
+                        - First element true if no overlap, second list of valid appointments to be booked
+                        - First element false if overlap, second list of overlapping appointments
         :param appointments_to_book: List of appointments to be booked
         :param patient: The patient for which the appoints should be booked for
         :return: [Boolean - true if overlaps exist, if overlaps exist overlapping appointments original list otherwise]
@@ -233,15 +220,15 @@ class Appointment(models.Model):
         over_laps = cls._get_overlaps(merged_list)
 
         if len(over_laps) > 0:
-            return [False, over_laps]
+            return False, over_laps
         else:
-            return [True, sorted(appointments_to_book, key=lambda appointment: appointment.start_date_and_time)]
+            return True, sorted(appointments_to_book, key=lambda appointment: appointment.start_date_and_time)
 
     @classmethod
-    def _get_overlaps(cls, list_of_appointments):
+    def _get_overlaps(cls, appointments):
         """Passing in a list of appointments will allow this method to look for overlaps between appointments
         """
-        list_of_appointments = sorted(list_of_appointments, key=lambda appointment: appointment.start_date_and_time)
+        list_of_appointments = sorted(appointments, key=lambda appointment: appointment.start_date_and_time)
         overlapping_appointments = []
         for i in range(0, len(list_of_appointments) - 1):
             # TODO: Might need to change length to duration if model changes to DurationField from TimeField
@@ -266,7 +253,7 @@ class Appointment(models.Model):
         return overlapping_appointments
 
     @classmethod
-    def merge_appointments(cls, list_of_appointments):
+    def merge_appointments(cls, appointments):
         """
         This method will merge any consecutive appointments. The start time of one appointment must match with the
         end time of another exactly - in order for them to be merged. If none can be merged, then the original list of
@@ -277,10 +264,10 @@ class Appointment(models.Model):
         """
         stack = []
         merged_apps = []
-        if len(list_of_appointments) <= 1:
-            return list_of_appointments, []
+        if len(appointments) <= 1:
+            return appointments, []
         else:
-            list_of_appointments = sorted(list_of_appointments, key=lambda appointment: appointment.start_date_and_time)
+            list_of_appointments = sorted(appointments, key=lambda appointment: appointment.start_date_and_time)
             for app in list_of_appointments:
                 if len(stack) == 0:
                     stack.append(app)

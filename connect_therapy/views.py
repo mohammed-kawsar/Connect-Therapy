@@ -220,10 +220,10 @@ class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
                                                         selected_practitioner=practitioner_id)
 
         if valid_appointments is not False:
-            overlap_exists = Appointment.get_appointment_overlaps(valid_appointments, patient=self.patient)
-            if overlap_exists[0] is False:
+            overlap_free, appointments_to_book = Appointment.get_appointment_overlaps(valid_appointments, patient=self.patient)
+            if overlap_free is False:
                 # valid appointments but overlap exists
-                clashes = overlap_exists[1]
+                clashes = appointments_to_book
                 return render(request, self.get_template_names(), context={"clashes": clashes})
             else:
                 # all valid
@@ -261,13 +261,14 @@ class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
 class Checkout(UserPassesTestMixin, TemplateView):
     login_url = reverse_lazy('connect_therapy:patient-login')
     template_name = "connect_therapy/patient/bookings/checkout.html"
+    patient = Patient()
 
     def test_func(self):
         user = User.objects.get(pk=self.request.user.id)
         if user.is_anonymous:
             return False
         try:
-            patient = Patient.objects.get(user=user)
+            self.patient = Patient.objects.get(user=user)
             return True
         except Patient.DoesNotExist:
             return False
@@ -308,7 +309,7 @@ class Checkout(UserPassesTestMixin, TemplateView):
                 Appointment.delete_appointments(merged_appointment_list)
 
             # go ahead and book those appointments
-            if Appointment.book_appointments(appointments_to_book, request.user):
+            if Appointment.book_appointments(appointments_to_book, self.patient):
                 return render(request, "connect_therapy/patient/bookings/booking-success.html", {})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
