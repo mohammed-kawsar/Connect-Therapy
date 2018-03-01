@@ -148,10 +148,20 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class ViewBookableAppointments(LoginRequiredMixin, DetailView):
+class ViewBookableAppointments(UserPassesTestMixin, DetailView):
     template_name = "connect_therapy/patient/bookings/view-available.html"
     model = Practitioner
     login_url = reverse_lazy('connect_therapy:patient-login')
+
+    def test_func(self):
+        user = User.objects.get(pk=self.request.user.id)
+        if user.is_anonymous:
+            return False
+        try:
+            patient = Patient.objects.get(user=user)
+            return True
+        except Patient.DoesNotExist:
+            return False
 
     def get(self, request, pk):
         # define the object for the detail view
@@ -180,9 +190,20 @@ class ViewBookableAppointments(LoginRequiredMixin, DetailView):
             return self.get(request)
 
 
-class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
+class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
     template_name = 'connect_therapy/patient/bookings/review-selection.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
+    patient = Patient()
+
+    def test_func(self):
+        user = User.objects.get(pk=self.request.user.id)
+        if user.is_anonymous:
+            return False
+        try:
+            self.patient = Patient.objects.get(user=user)
+            return True
+        except Patient.DoesNotExist:
+            return False
 
     def post(self, request, *args, **kwargs):
         app_ids = request.POST.getlist('app_id')
@@ -192,15 +213,14 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
             messages.warning(request, "You haven't selected any appointments")
             return ViewBookableAppointments.get(self, request, practitioner_id)
 
-        user = User.objects.get(pk=self.request.user.id)
-        patient = Patient.objects.get(user=user)
+        return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id)
 
+    def _deal_with_appointments(self, request, app_ids, practitioner_id):
         valid_appointments = Appointment.check_validity(selected_appointments_id=app_ids,
                                                         selected_practitioner=practitioner_id)
 
         if valid_appointments is not False:
-            overlap_exists = Appointment.get_appointment_overlaps(valid_appointments, patient=patient)
-            print(str(overlap_exists))
+            overlap_exists = Appointment.get_appointment_overlaps(valid_appointments, patient=self.patient)
             if overlap_exists[0] is False:
                 # valid appointments but overlap exists
                 clashes = overlap_exists[1]
@@ -218,7 +238,7 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
                 # add to session data - used by the checkout
                 request.session['bookable_appointments'] = self._appointments_to_dictionary_list(bookable_appointments)
                 request.session['merged_appointments'] = self._appointments_to_dictionary_list(merged_appointments)
-                request.session['patient_id'] = patient.id
+                request.session['patient_id'] = self.patient.id
                 return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments,
                                                                    "merged_appointments": merged_appointments,
                                                                    "practitioner_id": practitioner_id})
@@ -238,9 +258,19 @@ class ReviewSelectedAppointments(LoginRequiredMixin, TemplateView):
         return dict_list
 
 
-class Checkout(LoginRequiredMixin, TemplateView):
+class Checkout(UserPassesTestMixin, TemplateView):
     login_url = reverse_lazy('connect_therapy:patient-login')
     template_name = "connect_therapy/patient/bookings/checkout.html"
+
+    def test_func(self):
+        user = User.objects.get(pk=self.request.user.id)
+        if user.is_anonymous:
+            return False
+        try:
+            patient = Patient.objects.get(user=user)
+            return True
+        except Patient.DoesNotExist:
+            return False
 
     def get(self, request, *args, **kwargs):
         appointments_to_book = []
