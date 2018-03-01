@@ -25,7 +25,7 @@
         {% csrf_token %}
         {{ form.as_p }}
         <h3>Select Date</h3>
-        <div id="pickdate"></div>
+        <div id="date_picker"></div>
         <br>
 
         <input type="submit" value="Select date" class="btn btn-primary"/>
@@ -53,11 +53,11 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'connect_therapy/scripts/jquery-3.3.1.js' %}"></script>
-<script src="{% static 'connect_therapy/scripts/jquery-ui/jquery-ui.js' %}"></script>
-<link href="{% static 'connect_therapy/scripts/jquery-ui/jquery-ui.css' %}" rel="stylesheet" type="text/css">
-<link href="{% static 'connect_therapy/scripts/jquery-ui/jquery-ui.structure.css' %}" rel="stylesheet" type="text/css">
-<link href="{% static 'connect_therapy/scripts/jquery-ui/jquery-ui.theme.css' %}" rel="stylesheet" type="text/css">
-<script src="{% static 'connect_therapy/scripts/scripts_view-available.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{% static 'connect_therapy/scripts/scripts_view-available.js' %}"></script>
 {% endblock %}
+
+
 

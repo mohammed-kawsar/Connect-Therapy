@@ -4,14 +4,17 @@
         var hide_id_date_day=document.getElementById('id_date_day');
         var hide_id_date_year=document.getElementById('id_date_year');
         var hide_label = document.getElementsByTagName('label')[0];
+        var jQuery_Date_Picker = document.getElementById("date_picker"); //Only used to check if it is in DOM
         hide_id_date_month.style.display = 'none';
         hide_id_date_day.style.display = 'none';
         hide_id_date_year.style.display = 'none';
         hide_label.style.display = 'none';
 
+
+
     $(document).ready(function () {
 
-    var date =  $("#pickdate").datepicker( {
+        $("#date_picker").datepicker( {
                                 changeMonth: false,
                                 changeYear:false,
                                 showOtherMonths: true,
@@ -85,5 +88,12 @@
                                         }
                                     }
                                 }});
+
+        if (jQuery_Date_Picker.offsetParent === null) {
+            hide_id_date_month.style.display = 'inline';
+            hide_id_date_day.style.display = 'inline';
+            hide_id_date_year.style.display = 'inline';
+            hide_label.style.display = 'inline';
+        }
 
     });
