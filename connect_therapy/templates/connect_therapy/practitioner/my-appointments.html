@@ -10,7 +10,7 @@
             <td>Duration: {{ appointment.length }}</td>
             <td>Patient: {{ appointment.patient }}</td>
             <td>
-                <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' %}">
+                <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}">
                     View Notes
                 </a>
             </td>
