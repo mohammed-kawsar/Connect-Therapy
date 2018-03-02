@@ -154,11 +154,10 @@ class ViewBookableAppointments(UserPassesTestMixin, DetailView):
     login_url = reverse_lazy('connect_therapy:patient-login')
 
     def test_func(self):
-        user = User.objects.get(pk=self.request.user.id)
-        if user.is_anonymous:
+        if self.request.user.is_anonymous:
             return False
         try:
-            patient = Patient.objects.get(user=user)
+            patient = Patient.objects.get(user=self.request.user)
             return True
         except Patient.DoesNotExist:
             return False
@@ -196,11 +195,10 @@ class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
     patient = Patient()
 
     def test_func(self):
-        user = User.objects.get(pk=self.request.user.id)
-        if user.is_anonymous:
+        if self.request.user.is_anonymous:
             return False
         try:
-            self.patient = Patient.objects.get(user=user)
+            patient = Patient.objects.get(user=self.request.user)
             return True
         except Patient.DoesNotExist:
             return False
@@ -220,7 +218,8 @@ class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
                                                         selected_practitioner=practitioner_id)
 
         if valid_appointments is not False:
-            overlap_free, appointments_to_book = Appointment.get_appointment_overlaps(valid_appointments, patient=self.patient)
+            overlap_free, appointments_to_book = Appointment.get_appointment_overlaps(valid_appointments,
+                                                                                      patient=self.patient)
             if overlap_free is False:
                 # valid appointments but overlap exists
                 clashes = appointments_to_book
@@ -264,18 +263,20 @@ class Checkout(UserPassesTestMixin, TemplateView):
     patient = Patient()
 
     def test_func(self):
-        user = User.objects.get(pk=self.request.user.id)
-        if user.is_anonymous:
+        if self.request.user.is_anonymous:
             return False
         try:
-            self.patient = Patient.objects.get(user=user)
+            patient = Patient.objects.get(user=self.request.user)
             return True
         except Patient.DoesNotExist:
             return False
 
     def get(self, request, *args, **kwargs):
         appointments_to_book = []
-        appointment_dictionary = request.session['bookable_appointments']
+        try:
+            appointment_dictionary = request.session['bookable_appointments']
+        except KeyError:
+            return render(request, self.get_template_names(), {"appointments": appointments_to_book})
         if appointment_dictionary is None:
             return render(request, self.get_template_names(), {"appointments": appointments_to_book})
         appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
