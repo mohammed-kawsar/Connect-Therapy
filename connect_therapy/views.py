@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import views as auth_views, authenticate, login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
@@ -54,7 +54,17 @@ class ChatView(UserPassesTestMixin, DetailView):
         or doesnt exist. Fix.
     """
 
+    def get(self, request, *args, **kwargs):
+        if self.get_object().patient is None:
+            messages.info(request, "You need to book an appointment to access this page")
+            return redirect(
+                reverse_lazy('connect_therapy:book-appointment', kwargs={'pk': self.get_object().practitioner.user_id}))
+        return super().get(self, request, *args, **kwargs)
+
     def test_func(self):
+        # if the patient id for the appointment is None, we will let it pass, but redirect in the get method above
+        if self.get_object().patient is None:
+            return True
         return (self.request.user.id == self.get_object().patient.user.id) \
                or (self.request.user.id == self.get_object().practitioner.user.id)
 

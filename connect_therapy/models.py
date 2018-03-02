@@ -210,7 +210,7 @@ class Appointment(models.Model):
                         - First element false if overlap, second list of overlapping appointments
         :param appointments_to_book: List of appointments to be booked
         :param patient: The patient for which the appoints should be booked for
-        :return: [Boolean - true if overlaps exist, if overlaps exist overlapping appointments original list otherwise]
+        :return: Boolean - true if overlaps exist, if overlaps exist overlapping appointments original list otherwise
         """
 
         existing_user_appointments = Appointment.objects.filter(patient=patient)
@@ -258,7 +258,7 @@ class Appointment(models.Model):
         This method will merge any consecutive appointments. The start time of one appointment must match with the
         end time of another exactly - in order for them to be merged. If none can be merged, then the original list of
         appointments is returned.
-        :param list_of_appointments: The list of appointments to be merged
+        :param appointments: The list of appointments to be merged
         :return: List of merged appointments if it was possible to merge with a list of appointments which have been
         merged so these can be deleted or otherwise dealt with.
         """

@@ -102,7 +102,7 @@ class AppointmentBookingViewTest(TestCase):
 
         self.assertRedirects(resp, '/patient/login?next=/patient/book-appointment/1/review')
 
-    def test_redirect_if_practitioner_checkout_page(self):
+    def test_redirect_if_practitioner_visits_checkout_page(self):
         login = self.client.login(username="testuser3", password="12345")
         resp = self.client.get(reverse_lazy('connect_therapy:checkout'))
 
