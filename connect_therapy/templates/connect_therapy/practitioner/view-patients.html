@@ -2,13 +2,7 @@
 {% block title %}Your Patients{% endblock %}
 {% block header %}
     <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-    <script>
-        $(document).ready(function(){
-        $('#patients').DataTable();
-        });
-    </script>
+
 {% endblock %}
 
 {% block content %}
@@ -16,8 +10,9 @@
     <table id="patients" class="table table-bordered table-hover">
         <thead>
             <tr>
-                <th>First name</th>
-                <th>Last name</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Last Appointment</th>
             </tr>
         </thead>
         <tbody>
@@ -25,10 +20,19 @@
             <tr>
                 <td>{{ appointment.patient.user.first_name }}</td>
                 <td>{{ appointment.patient.user.last_name }}</td>
+                <td><a href="{% url 'connect_therapy:practitioner-appointment-notes' pk=appointment.id %}">
+                    {{ appointment.start_date_and_time }}</a></td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+{#    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>#}
+{#    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>#}
+{#    <script>#}
+{#        $(document).ready(function(){#}
+{#        $('#patients').DataTable();#}
+{#        });#}
+{#    </script>#}
 {% endblock %}
 
 
