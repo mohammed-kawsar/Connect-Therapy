@@ -48,12 +48,6 @@ class ChatView(UserPassesTestMixin, DetailView):
     template_name = 'connect_therapy/chat.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
 
-    """TODO: The chat feature will throw an error page saying something like NoneType has no object user
-        or something like that.
-        What that means is that the appointment doesnt have an associated patient or practitioner
-        or doesnt exist. Fix.
-    """
-
     def get(self, request, *args, **kwargs):
         if self.get_object().patient is None:
             messages.info(request, "You need to book an appointment to access this page")
