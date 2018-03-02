@@ -1,7 +1,7 @@
 {% extends "connect_therapy/base.html" %}
 {% block title %}Book Appointments{% endblock %}
 {% load staticfiles %}
-<script src="{% static 'connect_therapy/scripts/scripts.js'%}"></script>
+
 
 {% block header %}
     <meta name="viewport"
@@ -23,9 +23,9 @@
 
     <form action="" method="post">
         {% csrf_token %}
-        {{ form }}
+        {{ form.as_p }}
         <h3>Select Date</h3>
-        <div id="pickdate"></div>
+        <div id="date_picker"></div>
         <br>
 
         <input type="submit" value="Select date" class="btn btn-primary"/>
@@ -51,3 +51,13 @@
     {% endif %}
 
 {% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{% static 'connect_therapy/scripts/scripts_view-available.js' %}"></script>
+{% endblock %}
+
+
+
