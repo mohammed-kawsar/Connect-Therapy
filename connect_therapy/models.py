@@ -94,11 +94,8 @@ class Appointment(models.Model):
     @classmethod
     def book_appointments(cls, appointments, patient):
         """
-        Takes a list of appointments to be booked and the user object booking them.
-        User must be a patient object, other wise will return false
-        :param list_of_appointments:
-        :param user:
-        :return:
+        :param appointments: An iterable of appointments to be booked
+        :param patient: The patient booking the appointment
         """
 
         for app in appointments:
