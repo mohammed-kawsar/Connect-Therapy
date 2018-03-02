@@ -120,4 +120,5 @@ class TestChatView(TestCase):
     def test_redirect_if_booked_appointment(self):
         login = self.client.login(username="testuser1", password="12345")
         resp = self.client.get(reverse_lazy('connect_therapy:chat', kwargs={'pk': 2}))
-        self.assertRedirects(resp, '/patient/book-appointment/2')
+        # needs to redirect to the book appointment page for the practitioner of that appointment
+        self.assertRedirects(resp, '/patient/book-appointment/1')
