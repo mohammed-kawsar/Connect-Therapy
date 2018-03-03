@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm,\
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, \
     UsernameField
 from django.contrib.auth.models import User
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -43,7 +43,7 @@ class PatientLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        },),
+        }, ),
         label="Email"
     )
 
@@ -56,6 +56,13 @@ class PatientLoginForm(AuthenticationForm):
                 code='not-patient'
             )
         super().confirm_login_allowed(user)
+
+
+class PatientNotesBeforeForm(forms.Form):
+    patient_notes_before_meeting = forms.CharField(
+        label="notes before appointment",
+        widget=forms.Textarea
+    )
 
 
 class PractitionerSignUpForm(UserCreationForm):
@@ -97,7 +104,7 @@ class PractitionerLoginForm(AuthenticationForm):
         widget=forms.TextInput(attrs={
             'autofocus': True,
             'size': 35,
-        },),
+        }, ),
         label="Email"
     )
 
