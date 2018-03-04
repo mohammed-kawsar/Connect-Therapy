@@ -58,7 +58,6 @@ def send_patient_appointment_reminders():
         start_date_and_time__gt=timezone.now().date(),
         start_date_and_time__lte=timezone.now().date() + timedelta(days=1)
     ).exclude(patient=None)
-    print(Appointment.objects.all())
 
     successfully_delivered = 0
 
@@ -229,9 +228,9 @@ def send_practitioner_appointment_booked(appointment):
 
 def send_practitioner_appointment_reminders():
     appointments_today = Appointment.objects.filter(
-        start_date_and_time__day=timezone.now().date(),
-        patient__isnull=False
-    )
+        start_date_and_time__gt=timezone.now().date(),
+        start_date_and_time__lte=timezone.now().date() + timedelta(days=1)
+    ).exclude(patient=None)
 
     successfully_delivered = 0
 
@@ -262,6 +261,7 @@ def send_practitioner_appointment_reminders():
         len(appointments_today) - successfully_delivered
         )
     )
+
 
 def send_practitioner_approved(practitioner):
     context = {
