@@ -60,9 +60,7 @@ def send_patient_appointment_reminders():
         patient__isnull=False
     )
 
-    successfully_delivered = 0
-
-    for appointment in appointments_today:
+    def send_reminder(appointment):
         context = {
             'user': appointment.patient.user,
             'appointment': appointment
@@ -76,7 +74,7 @@ def send_patient_appointment_reminders():
             'connect_therapy/emails/html/patient-appointment-reminder.html',
             context
         )
-        successfully_delivered += send_mail(
+        send_mail(
             subject='Connect Therapy - Appointment Reminder',
             message=plain_text_message,
             from_email=from_email,
@@ -85,10 +83,9 @@ def send_patient_appointment_reminders():
             html_message=html_message
         )
 
-    print("{} emails not delivered".format(
-        len(appointments_today) - successfully_delivered
-        )
-    )
+    for appointment in appointments_today:
+        thread = Thread(target=send_reminder, args=(appointment,))
+        thread.start()
 
 
 def send_patient_cancelled_in_good_time(patient, appointment):
