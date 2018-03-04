@@ -86,8 +86,7 @@ class Appointment(models.Model):
 
     def __str__(self):
         """Return a string representation of Appointment"""
-        return "{} - {} - {} for {}".format(str(self.id),
-                                            str(self.practitioner),
+        return "{} - {} for {}".format(str(self.practitioner),
                                             str(self.start_date_and_time),
                                             str(self.length))
 

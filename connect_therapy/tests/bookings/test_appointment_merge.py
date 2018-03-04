@@ -20,7 +20,7 @@ class TestAppointmentMerge(TestCase):
             length=time(hour=3)
         )
         a1.save()
-        merged = Appointment.merge_appointments([a1])
+        merged, unmerged = Appointment.merge_appointments([a1])
         self.assertEqual(len(merged), 1)
 
     def test_two_un_mergeable(self):
@@ -46,7 +46,7 @@ class TestAppointmentMerge(TestCase):
         )
         a2.save()
 
-        merged = Appointment.merge_appointments([a1, a2])
+        merged, unmerged = Appointment.merge_appointments([a1, a2])
         self.assertEqual(len(merged), 2)
 
     def test_two_mergeable(self):
@@ -72,7 +72,7 @@ class TestAppointmentMerge(TestCase):
         )
         a2.save()
 
-        merged = Appointment.merge_appointments([a1, a2])
+        merged, unmerged = Appointment.merge_appointments([a1, a2])
         self.assertEqual(len(merged), 1)
 
     def test_two_mergeable_one_not(self):
@@ -109,7 +109,7 @@ class TestAppointmentMerge(TestCase):
         )
         a3.save()
 
-        merged = Appointment.merge_appointments([a1, a2, a3])
+        merged, unmerged = Appointment.merge_appointments([a1, a2, a3])
         self.assertEqual(len(merged), 2)
 
     def test_six_un_mergeable_one_mergeable(self):
@@ -179,7 +179,7 @@ class TestAppointmentMerge(TestCase):
         )
         a6.save()
 
-        merged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
+        merged, unmerged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
         self.assertEqual(len(merged), 1)
 
     def test_six_unmergeable(self):
@@ -249,6 +249,6 @@ class TestAppointmentMerge(TestCase):
         )
         a6.save()
 
-        merged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
+        merged, unmerged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
         print(merged)
         self.assertEqual(len(merged), 5)
