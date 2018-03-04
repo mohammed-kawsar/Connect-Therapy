@@ -1,2 +1,2 @@
-def appointments_booked(appointments):
+def multiple_appointments_booked(appointments):
     pass

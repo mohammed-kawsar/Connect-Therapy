@@ -11,7 +11,7 @@ from django.views.generic.edit import FormMixin
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
-from connect_therapy.notifications import appointments_booked
+from connect_therapy.notifications import multiple_appointments_booked
 
 
 class PatientSignUpView(FormView):
@@ -316,7 +316,7 @@ class Checkout(UserPassesTestMixin, TemplateView):
 
             # go ahead and book those appointments
             if Appointment.book_appointments(appointments_to_book, self.patient):
-                appointments_booked(appointments_to_book)  # call method from notifications.py
+                multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
                 return render(request, "connect_therapy/patient/bookings/booking-success.html", {})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
