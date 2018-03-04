@@ -3,44 +3,18 @@ from connect_therapy.emails import *
 
 
 def appointment_booked(appointment):
-    threads = [
-        Thread(target=send_patient_appointment_booked, args=(appointment, )),
-        Thread(target=send_practitioner_appointment_booked,
-               args=(appointment, )
-               ),
-    ]
-
-    for thread in threads:
-        thread.start()
-
-    return threads
+    send_practitioner_appointment_booked(appointment)
+    send_patient_appointment_booked(appointment)
 
 
 def multiple_appointments_booked(appointments):
-    threads = map(
-        lambda appointment: Thread(
-            target=appointment_booked,
-            args=(appointment,)
-        ),
-        appointments
-    )
-
-    for thread in threads:
-        thread.start()
-
-    return threads
+    for appointment in appointments:
+        appointment_booked(appointment)
 
 
 def reminders():
-    threads = [
-        Thread(target=send_patient_appointment_reminders),
-        Thread(target=send_practitioner_appointment_reminders),
-    ]
-
-    for thread in threads:
-        thread.start()
-
-    return threads
+    send_patient_appointment_reminders()
+    send_practitioner_appointment_reminders()
 
 
 def appointment_cancelled_by_patient(patient, appointment, under_24h=False):
