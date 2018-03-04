@@ -13,6 +13,8 @@ def appointment_booked(appointment):
     for thread in threads:
         thread.start()
 
+    return threads
+
 
 def multiple_appointments_booked(appointments):
     threads = map(
@@ -26,6 +28,8 @@ def multiple_appointments_booked(appointments):
     for thread in threads:
         thread.start()
 
+    return threads
+
 
 def reminders():
     threads = [
@@ -35,6 +39,8 @@ def reminders():
 
     for thread in threads:
         thread.start()
+
+    return threads
 
 
 def appointment_cancelled_by_patient(patient, appointment, under_24h=False):
