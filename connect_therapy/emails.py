@@ -83,9 +83,18 @@ def send_patient_appointment_reminders():
             html_message=html_message
         )
 
-    for appointment in appointments_today:
-        thread = Thread(target=send_reminder, args=(appointment,))
+    threads = map(
+        lambda appointment: Thread(
+            target=send_reminder,
+            args=(appointment, )
+        ),
+        appointments_today
+    )
+
+    for thread in threads:
         thread.start()
+
+    return threads
 
 
 def send_patient_cancelled_in_good_time(patient, appointment):
@@ -253,9 +262,18 @@ def send_practitioner_appointment_reminders():
             html_message=html_message
         )
 
-    for appointment in appointments_today:
-        thread = Thread(target=send_reminder, args=(appointment,))
+    threads = map(
+        lambda appointment: Thread(
+            target=send_reminder,
+            args=(appointment, )
+        ),
+        appointments_today
+    )
+
+    for thread in threads:
         thread.start()
+
+    return threads
 
 
 def send_practitioner_approved(practitioner):
