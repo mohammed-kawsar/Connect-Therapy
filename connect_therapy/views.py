@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
@@ -12,6 +14,7 @@ from django import forms
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
+from connect_therapy import notifications
 
 
 class PatientSignUpView(FormView):
@@ -157,11 +160,13 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
         return context
 
     def form_valid(self, form):
-        # Here, we would record the user's interest using the message
-        # passed in form.cleaned_data['message']
+        notifications.appointment_cancelled_by_patient(
+            self.object.patient,
+            self.object,
+            self.object.start_date_and_time < timezone.now() + timedelta(hours=24)
+        )
         self.object.patient = None
         self.object.save()
-
         return super(PatientCancelAppointmentView, self).form_valid(form)
 
     def post(self, request, *args, **kwargs):
