@@ -78,11 +78,11 @@
                                      */
                                     var monthSelector = document.getElementById("id_date_month");
                                     setSelectedMonth(monthSelector, month);
-                                    function setSelectedMonth(selectmonth, monthToSelect) {
-                                        for (var i = 0; i < selectmonth.options.length; i++) {
-                                            if (selectmonth.options[i].value == monthToSelect){
+                                    function setSelectedMonth(selectMonth, monthToSelect) {
+                                        for (var i = 0; i < selectMonth.options.length; i++) {
+                                            if (selectMonth.options[i].value == monthToSelect){
 
-                                                selectmonth.options[i].selected = true;
+                                                selectMonth.options[i].selected = true;
                                                 return;
                                             }
                                         }
