@@ -14,6 +14,19 @@ def appointment_booked(appointment):
         thread.start()
 
 
+def multiple_appointments_booked(appointments):
+    threads = map(
+        lambda appointment: Thread(
+            target=appointment_booked,
+            args=(appointment,)
+        ),
+        appointments
+    )
+
+    for thread in threads:
+        thread.start()
+
+
 def reminders():
     threads = [
         Thread(target=send_patient_appointment_reminders),
