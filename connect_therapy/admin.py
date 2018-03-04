@@ -47,4 +47,3 @@ class UserAdmin(UserAdminParent):
     def has_module_permission(self, request):
         """This stops the UserAdmin appearing on the home page"""
         return False
-    

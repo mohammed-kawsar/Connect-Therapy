@@ -202,7 +202,7 @@ class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
         if self.request.user.is_anonymous:
             return False
         try:
-            patient = Patient.objects.get(user=self.request.user)
+            self.patient = Patient.objects.get(user=self.request.user)
             return True
         except Patient.DoesNotExist:
             return False
@@ -270,7 +270,7 @@ class Checkout(UserPassesTestMixin, TemplateView):
         if self.request.user.is_anonymous:
             return False
         try:
-            patient = Patient.objects.get(user=self.request.user)
+            self.patient = Patient.objects.get(user=self.request.user)
             return True
         except Patient.DoesNotExist:
             return False
