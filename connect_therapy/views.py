@@ -75,6 +75,26 @@ class PatientMyAppointmentsView(generic.TemplateView):
         return context
 
 
+class PatientNotesBeforeView(LoginRequiredMixin, FormView):
+    form_class = PatientNotesBeforeForm
+    template_name = 'connect_therapy/patient/notes-before-appointment.html'
+    success_url = reverse_lazy('connect_therapy:patient-my-appointments')
+
+    def form_valid(self, form):
+        self.appointment.patient_notes_before_meeting = \
+            form.cleaned_data['patient_notes_before_meeting']
+        self.appointment.save()
+        return super().form_valid(form)
+
+    def get(self, request, appointment_id):
+        self.appointment = get_object_or_404(Appointment, pk=appointment_id)
+        return super.get(request)
+
+    def post(self, request, appointment_id):
+        self.appointment = get_object_or_404(Appointment, pk=appointment_id)
+        return super().post(request)
+
+
 class PractitionerSignUpView(FormView):
     form_class = PractitionerSignUpForm
     template_name = 'connect_therapy/practitioner/signup.html'
