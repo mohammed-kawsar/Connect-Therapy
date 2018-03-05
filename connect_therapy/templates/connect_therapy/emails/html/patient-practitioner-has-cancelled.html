@@ -1,0 +1,14 @@
+{% extends 'connect_therapy/emails/html/base.html' %}
+{% block body %}
+    <p>We're extremely sorry, Dr. {{ appointment.practitioner.user.first_name }} {{ appointment.practitioner.user.last_name }} has had to cancel your
+    appointment for {{ appointment.start_date_and_time }}. You will receive a full refund in 3-5 working days.</p>
+    {% if message %}
+
+        {{ message }}
+    {% endif %}
+{% endblock %}
+
+{% block signoff %}
+    <p>Yours Sincerely,</p>
+    <p>Connect Therapy Admin Team on behalf of <b>Dr. {{ appointment.practitioner.user.first_name }} {{ appointment.practitioner.user.last_name }}</b></p>
+{% endblock %}
