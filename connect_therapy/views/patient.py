@@ -8,7 +8,8 @@ from django.views import generic
 from django.views.generic import FormView, DetailView
 from django.views.generic.edit import FormMixin
 
-from connect_therapy.forms import PatientSignUpForm, PatientLoginForm, PatientNotesBeforeForm
+from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm,\
+    PatientNotesBeforeForm
 from connect_therapy.models import Patient, Appointment
 
 

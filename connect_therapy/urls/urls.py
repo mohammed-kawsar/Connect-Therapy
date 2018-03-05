@@ -1,9 +1,8 @@
 from django.urls import path, reverse_lazy, include
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
-from connect_therapy import views
 
-from connect_therapy.views import *
+from connect_therapy.views.views import *
 
 app_name = 'connect_therapy'
 urlpatterns = [

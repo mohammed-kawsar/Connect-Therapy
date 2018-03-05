@@ -1,6 +1,7 @@
 from django.urls import path
+from django.views.generic import TemplateView
 
-from connect_therapy.views import *
+from connect_therapy.views.patient import *
 
 urlpatterns = [
     path('signup',
@@ -58,5 +59,9 @@ urlpatterns = [
     path('view-previous-notes/<int:pk>',
          PatientPreviousNotesView.as_view(),
          name='patient-appointment-notes',
+         ),
+    path('cancel-appointment/<int:pk>',
+         PatientCancelAppointmentView.as_view(),
+         name='patient-cancel-appointment'
          ),
 ]
