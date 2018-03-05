@@ -136,4 +136,8 @@ urlpatterns = [
          FileUploadView.as_view(),
          name='file-upload',
          ),
+    path('file-download',
+         FileUploadView.as_view(),
+         name='file-download',
+         ),
 ]

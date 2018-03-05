@@ -211,15 +211,10 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
 
 
 class FileUploadView(generic.TemplateView):
-    template_name = "connect_therapy/file_upload/file_upload.html"
+    template_name = "connect_therapy/file_transfer/file_upload.html"
 
     def get(self, request, *args, **kwargs):
         form = FileForm()
-        import boto3
-        s3 = boto3.resource("s3")
-        bucket = s3.Bucket("segwyn")
-        # bucket.download_file("merged.pdf", "test1.pdf")
-
         super().get(request, *args, **kwargs)
         return render(request, self.get_template_names(), {"form": form})
 
@@ -231,7 +226,54 @@ class FileUploadView(generic.TemplateView):
             s3 = boto3.resource("s3")
             name = str(form.cleaned_data['file_name'])
             file = form.cleaned_data['file']
-            s3.meta.client.put_object(Body=file, Bucket='segwyn', Key=name, ContentType=file.content_type)
+
+            # TODO: check if file name already exists
+
+            s3.meta.client.put_object(Body=file,
+                                      Bucket='segwyn',
+                                      Key="someFile/" + name, ContentType=file.content_type)
+
+            s3.meta.client.put_object_tagging(
+                Bucket='segwyn',
+                Key=name,
+                Tagging={
+                    'TagSet': [
+                        {
+                            'Key': 'Uploader',
+                            'Value': 'some guy'
+                        },
+                        {
+                            'Key': 'Appointment',
+                            'Value': 'some appointment'
+                        },
+                        {
+                            'Key': 'Practitioner',
+                            'Value': 'some practitioner'
+                        },
+                        {
+                            'Key': 'Patient',
+                            'Value': 'some patient'
+                        },
+                    ]
+                }
+            )
+
             return HttpResponse("Uploading " + form.cleaned_data['file_name'])
 
-        return HttpResponse("You're posted")
+        return HttpResponse("Failed to upload the file")
+
+
+class FileDownloadView(generic.TemplateView):
+    template_name = "connect_therapy/file_transfer/file_download.html"
+
+    def get(self, request, *args, **kwargs):
+        form = FileForm()
+        import boto3
+        s3 = boto3.resource("s3")
+        bucket = s3.Bucket("segwyn")
+
+        for obj in bucket.objects.all():
+            print(obj)
+
+        super().get(request, *args, **kwargs)
+        return render(request, self.get_template_names(), {"form": form})
