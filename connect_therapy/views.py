@@ -12,6 +12,7 @@ from django import forms
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
+from django.contrib.auth.decorators import user_passes_test
 
 
 class PatientSignUpView(FormView):
@@ -163,10 +164,13 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class PatientCancelAppointmentView(FormMixin, DetailView):
+class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
     model = Appointment
     form_class = forms.Form
     template_name = 'connect_therapy/appointment_detail.html'
+
+    def test_func(self):
+        return self.request.user.id == self.get_object().patient.user.id
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
@@ -178,7 +182,7 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
 
     def form_valid(self, form):
         # Here, we would record the user's interest using the message
-        # passed in form.cleaned_data['message']
+        # passed in form.cleaned_data['message']sss
         self.object.patient = None
         self.object.save()
 
