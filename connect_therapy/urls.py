@@ -1,7 +1,5 @@
-from django.urls import path, reverse_lazy
+from django.urls import path
 from django.views.generic import TemplateView
-from django.contrib.auth import views as auth_views
-from . import views
 
 from connect_therapy.views import *
 
@@ -94,7 +92,7 @@ urlpatterns = [
          name='about'),
     path('practitioner',
          TemplateView.as_view(
-            template_name='connect_therapy/practitioner/homepage.html'
+             template_name='connect_therapy/practitioner/homepage.html'
          ),
          name='practitioner-homepage'
          ),
@@ -133,5 +131,9 @@ urlpatterns = [
     path('patient/view-previous-notes/<int:pk>',
          PatientPreviousNotesView.as_view(),
          name='patient-appointment-notes',
+         ),
+    path('file-upload',
+         FileUploadView.as_view(),
+         name='file-upload',
          ),
 ]

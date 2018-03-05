@@ -1,14 +1,13 @@
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView, TemplateView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
+from django.views.generic import FormView, DetailView
 from django.views.generic.edit import FormMixin
-from django import forms
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -209,3 +208,30 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     login_url = reverse_lazy('connect_therapy:patient-appointment-notes')
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
+
+
+class FileUploadView(generic.TemplateView):
+    template_name = "connect_therapy/file_upload/file_upload.html"
+
+    def get(self, request, *args, **kwargs):
+        form = FileForm()
+        import boto3
+        s3 = boto3.resource("s3")
+        bucket = s3.Bucket("segwyn")
+        # bucket.download_file("merged.pdf", "test1.pdf")
+
+        super().get(request, *args, **kwargs)
+        return render(request, self.get_template_names(), {"form": form})
+
+    def post(self, request):
+        form = FileForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            import boto3
+            s3 = boto3.resource("s3")
+            name = str(form.cleaned_data['file_name'])
+            file = form.cleaned_data['file']
+            s3.meta.client.put_object(Body=file, Bucket='segwyn', Key=name, ContentType=file.content_type)
+            return HttpResponse("Uploading " + form.cleaned_data['file_name'])
+
+        return HttpResponse("You're posted")
