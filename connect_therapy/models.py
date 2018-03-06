@@ -1,8 +1,9 @@
-from django.core.exceptions import ValidationError
-from django.db import models
-from django.contrib.auth.models import User
-from functools import partial
 import hashlib
+from datetime import timedelta, datetime
+from functools import partial
+
+from django.contrib.auth.models import User
+from django.db import models
 
 
 class Patient(models.Model):
@@ -86,3 +87,82 @@ class Appointment(models.Model):
                                        str(self.start_date_and_time),
                                        str(self.length))
 
+    @classmethod
+    def _add_datetime_time(cls, date_time, time):
+        """This method expects the first arg to be a datetime object and the second to be a time object
+        It will then add the time to the date time object and return it
+        """
+        return date_time + timedelta(hours=time.hour, minutes=time.minute,
+                                     seconds=time.minute)
+
+    @classmethod
+    def _add_time(cls, start_date_and_time, time_1, time_2):
+        time_1 = timedelta(hours=time_1.hour, minutes=time_1.minute,
+                           seconds=time_1.minute)
+        time_2 = timedelta(hours=time_2.hour, minutes=time_2.minute,
+                           seconds=time_2.minute)
+
+        total = time_1 + time_2
+        seconds = total.total_seconds()
+        hour = seconds / 3600
+        minute = (seconds % 3600) / 60
+        datetime_format = datetime(year=start_date_and_time.year, month=start_date_and_time.month,
+                                   day=start_date_and_time.day,
+                                   hour=int(hour), minute=int(minute))
+
+        return datetime_format.time()
+
+    @classmethod
+    def get_appointment__practitioner_overlaps(cls, appointment, practitioner):
+        """
+        Will return
+                - True if no overlap
+                - Tuple:
+                        - First element false if overlap, second list of overlapping appointments
+        :param appointment: List of appointments to be booked
+        :param patient: The patient for which the appoints should be booked for
+        :return: Boolean - true if overlaps exist, if overlaps exist overlapping appointments original list otherwise
+        """
+
+        exisiting_appointments = Appointment.objects.filter(practitioner=practitioner)
+
+        if len(exisiting_appointments) == 0:
+            return True, []
+
+        merged_list = list(exisiting_appointments)
+        merged_list.append(appointment)
+
+        over_laps = cls._get_overlaps(merged_list)
+
+        if len(over_laps) > 0:
+            return False, over_laps
+        else:
+            return True, []
+
+    @classmethod
+    def _get_overlaps(cls, appointments):
+        """Passing in a list of appointments will allow this method to look for overlaps between appointments
+        """
+        list_of_appointments = sorted(appointments, key=lambda appointment: appointment.start_date_and_time)
+        overlapping_appointments = []
+        for i in range(0, len(list_of_appointments) - 1):
+            # TODO: Might need to change length to duration if model changes to DurationField from TimeField
+            cur_start_time = list_of_appointments[i].start_date_and_time
+            cur_end_time = cls._add_datetime_time(cur_start_time, list_of_appointments[i].length)
+
+            next_start_time = list_of_appointments[i + 1].start_date_and_time
+            next_end_time = cls._add_datetime_time(next_start_time, list_of_appointments[i + 1].length)
+
+            # limit to same day appointments
+            if cur_start_time.date() == next_end_time.date():
+                # first 2 clauses check for partial overlaps
+                # next 2 check for complete overlaps i.e. 1 app. covers another completely
+                if next_start_time < cur_end_time < next_end_time or \
+                        cur_start_time < next_end_time < cur_end_time or \
+                        next_start_time >= cur_start_time and next_end_time < cur_end_time or \
+                        cur_start_time >= next_start_time and cur_end_time < next_end_time or \
+                        cur_start_time == next_start_time:
+                    overlapping_appointments.append(
+                        [list_of_appointments[i], list_of_appointments[i + 1]])
+
+        return overlapping_appointments

@@ -1,13 +1,12 @@
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.views.generic import FormView, DetailView, DeleteView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
-from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-
+from django.views.generic import FormView, DetailView, DeleteView
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -155,11 +154,19 @@ class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
             start_date_and_time=form.cleaned_data['start_date_and_time'],
             length=form.cleaned_data['length']
         )
-        appointment.save()
-        return super().form_valid(form)
+
+        over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
+                                                                                      self.request.user.practitioner)
+        if not over_lap_free:
+            return HttpResponse("You have overlaps " + str(over_laps))
+        else:
+            appointment.save()
+            return super().form_valid(form)
+
 
 class PractitionerAppointmentDelete(DeleteView):
     model = Appointment
     template_name = 'connect_therapy/practitioner/appointment-cancel.html'
-    fields = ['practitioner','patient','start_date_and_time','length', 'practitioner_notes', 'patient_notes_by_practitioner']
+    fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
+              'patient_notes_by_practitioner']
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
