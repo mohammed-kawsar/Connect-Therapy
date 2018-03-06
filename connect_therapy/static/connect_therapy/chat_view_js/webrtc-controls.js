@@ -2,13 +2,6 @@
 var pauseButton, muteButton;
 var paused = false;
 var muted = false;
-window.onload = function () {
-    // hide video controls
-    document.getElementById("controls").style.visibility = "hidden";
-    document.getElementById("wait-for-peer-to-connect").style.visibility = "hidden";
-    pauseButton = document.getElementById("paused");
-    muteButton = document.getElementById("muted");
-}
 
 function pause() {
     if (paused) {

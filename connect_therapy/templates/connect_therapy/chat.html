@@ -5,9 +5,12 @@
     <script src="https://simplewebrtc.com/latest-v2.js"></script>
     {% load static %}
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <script src="{% static 'connect_therapy/webrtc.js' %}"></script>
-    <script src="{% static 'connect_therapy/webrtc-controls.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'connect_therapy/webrtc.css' %}" type="text/css">
+    <!-- Keep the order of js imports as is below -->
+    <script src="{% static 'connect_therapy/chat_view_js/main.js' %}"></script>
+    <script src="{% static 'connect_therapy/chat_view_js/webrtc.js' %}"></script>
+    <script src="{% static 'connect_therapy/chat_view_js/webrtc-controls.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/webrtc.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/s3_modal.css' %}" type="text/css">
 {% endblock %}
 
 {% block content %}
@@ -15,6 +18,18 @@
     <script>
         var session_id = "{{ object.session_id }}";
     </script>
+
+    </head>
+    <body>
+
+    <div id="s3-modal" class="modal">
+
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Some text in the Modal..</p>
+        </div>
+
+    </div>
 
     <div class="jumbotron">
         <h1>Web chat page. </h1>
@@ -28,7 +43,7 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-sm">
+            <div class="col-md">
                 <div id="remove-vid-wrapper">
                     <div id="remotesVideos"></div>
                     <div id="controls">
@@ -42,7 +57,7 @@
             <div class="col-md">
                 <div class="container">
                     <div class="row" id="local-video">
-                        <video height="300" id="localVideo"></video>
+                        <video height="280" id="localVideo"></video>
                     </div>
                     <div class="message">
                         <div class="row">
@@ -57,14 +72,17 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-11">
-                                <textarea class="form-control" rows="1" id="message-field" onkeypress="buttonPress(event)"></textarea>
+                            <div class="col-md-10">
+                                <textarea class="form-control" rows="1" id="message-field"
+                                          onkeypress="buttonPress(event)"></textarea>
                             </div>
                             <div class="col-md-1">
                                 <button onclick="sendMessage()" class="btn btn-light" type="button" id="send"><span
                                         class="emoji">✉</span> Send
                                 </button>
+                                <button class="btn btn-light" id="s3-modal-button">Upload/Download Files</button>
                             </div>
+
                         </div>
                     </div>
                 </div>

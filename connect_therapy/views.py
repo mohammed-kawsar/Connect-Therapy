@@ -227,7 +227,9 @@ class FileUploadView(generic.TemplateView):
             name = str(form.cleaned_data['file_name'])
             file = form.cleaned_data['file']
 
-            # TODO: check if file name already exists
+            """ TODO: check if file name already exists, will do once i intergrate this view with a detail view for 
+            appointment as I intend to put files for an appointment within a separate directory
+            """
 
             s3.meta.client.put_object(Body=file,
                                       Bucket='segwyn',
