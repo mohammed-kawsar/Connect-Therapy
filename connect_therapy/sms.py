@@ -12,7 +12,7 @@ from mysite.settings import TWILIO_ACC_SID, TWILIO_AUTH_TOKEN, \
 twilio_client = Client(TWILIO_ACC_SID, TWILIO_AUTH_TOKEN)
 
 
-def __send_sms(number, body):
+def _send_sms(number, body):
     number = clean_phone_number(number)
     twilio_client.api.account.messages.create(
         to=number,
@@ -36,7 +36,7 @@ def send_appointment_booked(recipient, appointment):
         'connect_therapy/sms/appointment-confirmation.txt',
         context
     )
-    __send_sms(recipient.mobile, body)
+    _send_sms(recipient.mobile, body)
 
 
 def send_appointment_cancelled(recipient, appointment):
@@ -48,7 +48,7 @@ def send_appointment_cancelled(recipient, appointment):
         'connect_therapy/sms/appointment-cancelled.txt',
         context
     )
-    __send_sms(recipient.mobile, body)
+    _send_sms(recipient.mobile, body)
 
 
 def send_appointment_reminder(recipient, appointment):
@@ -60,7 +60,7 @@ def send_appointment_reminder(recipient, appointment):
         'connect_therapy/sms/appointment-reminder.txt',
         context
     )
-    __send_sms(recipient.mobile, body)
+    _send_sms(recipient.mobile, body)
 
 
 def send_patient_appointment_reminders():
