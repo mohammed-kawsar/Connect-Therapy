@@ -4,7 +4,21 @@
 {% block content %}
 <form action="" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Sign up" />
+    <div class="form-group">
+        {{ form.as_p }}
+    </div>
+    <input type="submit" class="btn btn-primary" value="Sign up" />
 </form>
+{% endblock %}
+
+{% block styles %}
+
+    <style>
+        .container {
+            padding-top: 70px;
+        }
+
+
+    </style>
+
 {% endblock %}
