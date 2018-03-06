@@ -18,7 +18,7 @@ from django.contrib.auth.decorators import user_passes_test
 class PatientSignUpView(FormView):
     form_class = PatientSignUpForm
     template_name = 'connect_therapy/patient/signup.html'
-    success_url = reverse_lazy('connect_therapy:patient-signup-success')
+    success_url = reverse_lazy('connect_therapy:patient-login')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -42,7 +42,7 @@ class PatientLoginView(auth_views.LoginView):
     authentication_form = PatientLoginForm
 
     def get_success_url(self):
-        return reverse_lazy('connect_therapy:patient-login-success')
+        return reverse_lazy('connect_therapy:patient-homepage')
 
 
 class ChatView(UserPassesTestMixin, DetailView):
@@ -96,7 +96,7 @@ class PatientNotesBeforeView(LoginRequiredMixin, FormView):
 class PractitionerSignUpView(FormView):
     form_class = PractitionerSignUpForm
     template_name = 'connect_therapy/practitioner/signup.html'
-    success_url = reverse_lazy('connect_therapy:practitioner-signup-success')
+    success_url = reverse_lazy('connect_therapy:practitioner-login')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -123,7 +123,7 @@ class PractitionerLoginView(auth_views.LoginView):
     authentication_form = PractitionerLoginForm
 
     def get_success_url(self):
-        return reverse_lazy('connect_therapy:practitioner-login-success')
+        return reverse_lazy('connect_therapy:practitioner-homepage')
 
 
 class PractitionerNotesView(FormView):
