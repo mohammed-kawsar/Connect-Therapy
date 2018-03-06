@@ -9,8 +9,8 @@
     <script src="{% static 'connect_therapy/chat_view_js/main.js' %}"></script>
     <script src="{% static 'connect_therapy/chat_view_js/webrtc.js' %}"></script>
     <script src="{% static 'connect_therapy/chat_view_js/webrtc-controls.js' %}"></script>
+
     <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/webrtc.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/s3_modal.css' %}" type="text/css">
 {% endblock %}
 
 {% block content %}
@@ -19,20 +19,14 @@
         var session_id = "{{ object.session_id }}";
     </script>
 
-    </head>
-    <body>
-
-    <div id="s3-modal" class="modal">
-
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>Some text in the Modal..</p>
-        </div>
-
-    </div>
-
     <div class="jumbotron">
-        <h1>Web chat page. </h1>
+        <h1>Welcome to your appointment</h1>
+        <!-- Trigger the modal with a button -->
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">
+                Upload/Download files
+            </button>
+        </nav>
     </div>
 
     <div id="loading">
@@ -80,7 +74,6 @@
                                 <button onclick="sendMessage()" class="btn btn-light" type="button" id="send"><span
                                         class="emoji">✉</span> Send
                                 </button>
-                                <button class="btn btn-light" id="s3-modal-button">Upload/Download Files</button>
                             </div>
 
                         </div>
@@ -88,7 +81,39 @@
                 </div>
             </div>
             <div class="col-sm">
+                <!-- Modal -->
+                <div id="myModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
 
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">File Upload/Download</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" onclick="showUpload()">Upload</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" onclick="showDownload()">Download</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="form-group" id="upload-form">
+                                <h3>Upload</h3>
+                            </div>
+                            <div class="form-group" id="download-form">
+                                <h3>Download</h3>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>

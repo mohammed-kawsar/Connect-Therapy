@@ -1,33 +1,10 @@
 window.onload = function () {
     hideVideoControls()
-    setUpModal()
+    hideUploadDownloadControls()
 };
 
-function setUpModal() {
-    var modal = document.getElementById('s3-modal');
-
-
-    var btn = document.getElementById("s3-modal-button");
-
-
-    var span = document.getElementsByClassName("close")[0];
-
-
-    btn.onclick = function () {
-        modal.style.display = "block";
-    }
-
-
-    span.onclick = function () {
-        modal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
+function hideUploadDownloadControls() {
+    document.getElementById("download-form").style.display = "none";
 }
 
 function hideVideoControls() {
@@ -35,4 +12,18 @@ function hideVideoControls() {
     document.getElementById("wait-for-peer-to-connect").style.visibility = "hidden";
     pauseButton = document.getElementById("paused");
     muteButton = document.getElementById("muted");
+}
+
+$('#myModal').on('shown.bs.modal', function () {
+    $('#myInput').focus()
+})
+
+function showUpload() {
+    document.getElementById("upload-form").style.display = "block";
+    document.getElementById("download-form").style.display = "none";
+}
+
+function showDownload() {
+    document.getElementById("upload-form").style.display = "none";
+    document.getElementById("download-form").style.display = "block";
 }
