@@ -158,6 +158,7 @@ class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
         over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
                                                                                       self.request.user.practitioner)
         if not over_lap_free:
+            print(str(over_laps))
             return HttpResponse("You have overlaps " + str(over_laps))
         else:
             appointment.save()
