@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="{% static '/connect_therapy/css/global.css' %}" rel="stylesheet">
+    <title>{% block title %}{% endblock %}</title>
+    {% block header %}{% endblock %}
+</head>
+
+<body>
+<header>
+    {% if user.is_authenticated and user.patient %}
+        <!-- Logged in Patient navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top">
+            <a class="navbar-brand" href="#"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
+                    aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end pull-right" id="appNavBar">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item ">
+                        <a class="nav-link" href="#">About </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Book Appointment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Live Chat</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Profile
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="#">Manage Appointments</a>
+                            <a class="dropdown-item" href="#">Change Details</a>
+                            <a class="dropdown-item" href="#">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+        </nav>
+
+    {% else %}
+        {% if user.is_authenticated and user.practitioner %}
+            <!-- Logged in Practitioner navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top">
+                <a class="navbar-brand" href="#"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
+                        aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-end pull-right" id="appNavBar">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item ">
+                            <a class="nav-link" href="#">About </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Book Appointment</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Live Chat</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                Profile
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="#">Change Details</a>
+                                <a class="dropdown-item" href="#">Logout</a>
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
+            </nav>
+        {% else %}
+            <!-- Logged out navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top">
+                <a class="navbar-brand" href="#"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
+                        aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse justify-content-end pull-right" id="appNavBar">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item ">
+                            <a class="nav-link" href="#">About </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class=“btn btn-primary“ href="#">Login</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        {% endif %}
+    {% endif %}
+</header>
+
+<div class="container">
+
+</div>
+<div class="content">{% block content %}{% endblock %}</div>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+﻿
+<link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
+
+<!--FOOTER 2-->
+<footer class="footer2">
+
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="pull-left"> Copyright © ConnectTherapy 2018. All right reserved.</div>
+            <div class="pull-right">
+                <ul>
+                    <li><a href="">About Us</a></li>
+                    <li><a href="">Terms & Conditions</a></li>
+                    <li><a href="">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </div> <!--/.footer-bottom-->
+</footer>
+
+</body>
+</html>
