@@ -235,24 +235,16 @@ class FileUploadView(generic.TemplateView):
 
             s3.meta.client.put_object_tagging(
                 Bucket='segwyn',
-                Key=name,
+                Key="someFile/" + name,
                 Tagging={
                     'TagSet': [
                         {
-                            'Key': 'Uploader',
+                            'Key': 'Uploader_user_id',
                             'Value': 'some guy'
                         },
                         {
-                            'Key': 'Appointment',
+                            'Key': 'Appointment_ID',
                             'Value': 'some appointment'
-                        },
-                        {
-                            'Key': 'Practitioner',
-                            'Value': 'some practitioner'
-                        },
-                        {
-                            'Key': 'Patient',
-                            'Value': 'some patient'
                         },
                     ]
                 }
@@ -271,9 +263,71 @@ class FileDownloadView(generic.TemplateView):
         import boto3
         s3 = boto3.resource("s3")
         bucket = s3.Bucket("segwyn")
+        files = []
 
-        for obj in bucket.objects.all():
-            print(obj)
+        files.append(self.get_files_from_folder("someFile"))
 
         super().get(request, *args, **kwargs)
-        return render(request, self.get_template_names(), {"form": form})
+
+        return render(request, self.get_template_names(), {"files": files})
+
+    def get_files_from_folder(self, folder_name):
+        import boto3
+        s3 = boto3.resource("s3")
+        bucket = s3.Bucket("segwyn")
+        files = []
+        prefix = folder_name + "/"
+        file_not_found = True
+        for obj in bucket.objects.filter(Prefix=prefix):
+            file_not_found = False
+            files.append(obj.key)
+
+        if file_not_found:
+            print("ALERT", "No file in {0}/{1}".format(bucket, prefix))
+
+        return files
+
+    def generate_presigned_url(self, keys):
+        import boto3
+        urls = []
+        for key in keys:
+            url = boto3.client('s3', config=boto3.session.Config(signature_version='s3v4',
+                                                                 region_name='eu-west-2')).generate_presigned_url(
+                ClientMethod='get_object',
+                Params={
+                    'Bucket': 'segwyn',
+                    'Key': key
+                },
+                ExpiresIn=900
+            )
+            urls.append(str(url))
+
+        return urls
+
+    def get_objects_with_tag(self, uploader_user_id, appointment_id):
+        import boto3
+        s3 = boto3.resource("s3")
+        bucket = s3.Bucket("segwyn")
+        files = []
+        if len(uploader_user_id) > 0:
+            files.append(self._get_objects_with_key_value(bucket.objects.all(), "Uploader", uploader_user_id))
+        if len(appointment_id) > 0:
+            files.append(self._get_objects_with_key_value(bucket.objects.all(), "Appointment_ID", appointment_id))
+
+        return files
+
+    def _get_objects_with_key_value(self, objects, key, value):
+        import boto3
+        s3 = boto3.resource("s3")
+
+        files = []
+        for obj in objects:
+            tag_set = s3.meta.client.get_object_tagging(Bucket="segwyn",
+                                                        Key=obj.key)['TagSet']
+
+            if len(tag_set) > 0:
+                for x in range(0, len(tag_set)):
+                    if tag_set[x]['Key'] == str(key) and tag_set[x]['Value'] == str(value):
+                        files.append(obj.key)
+
+        return files
