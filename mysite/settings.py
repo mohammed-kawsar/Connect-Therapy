@@ -117,6 +117,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+TWILIO_PHONE_NUMBER = '+447480609981'
+
+TWILIO_ACC_SID = 'ACf767f56aa5caf9cc1677efac7f236ac8'
+
+TWILIO_AUTH_TOKEN = '35bf1c712ec3c9a758e8ef1ff6798226'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
