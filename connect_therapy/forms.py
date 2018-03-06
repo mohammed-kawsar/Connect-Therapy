@@ -126,6 +126,7 @@ class PractitionerNotesForm(forms.Form):
 
 
 class PractitionerDefineAppointmentForm(forms.Form):
+
     start_date_and_time = forms.DateTimeField(help_text=" Format: DD/MM/YYYY H:M",
                                               required=True,
                                               input_formats=['%d/%m/%Y %H:%M'])
@@ -147,9 +148,5 @@ class PractitionerDefineAppointmentForm(forms.Form):
                                         code='invalid'
                                         )
 
-        if Appointment.objects.filter(start_date_and_time=start_datetime).exists():
-            raise forms.ValidationError("Date and time already exists for an appointment, enter a different time",
-                                        code='exists'
-                                        )
-
         return start_datetime
+

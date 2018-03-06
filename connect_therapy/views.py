@@ -142,7 +142,7 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class SetAppointmentView(LoginRequiredMixin, FormView):
+class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
     login_url = reverse_lazy('connect_therapy:practitioner-login')
     form_class = PractitionerDefineAppointmentForm
     template_name = 'connect_therapy/practitioner/appointment-form-page.html'
@@ -155,10 +155,26 @@ class SetAppointmentView(LoginRequiredMixin, FormView):
             start_date_and_time=form.cleaned_data['start_date_and_time'],
             length=form.cleaned_data['length']
         )
+        if Appointment.objects.filter(start_date_and_time=appointment.start_date_and_time,practitioner=self.request.user.practitioner).exists():
+            raise forms.ValidationError("Already Exists",
+                                        code='exists'
+                                        )
+
+        elif Appointment.objects.filter(practitioner=self.request.user.practitioner).exists():
+            for apt in Appointment.objects.filter(practitioner=self.request.user.practitioner):
+                if (apt.length > appointment.start_date_and_time.time() and apt.length < appointment.length) or \
+                        (
+                                apt.start_date_and_time.time() > appointment.start_date_and_time.time() and apt.start_date_and_time.time() < appointment.length) or \
+                        (
+                                appointment.start_date_and_time.time() > apt.start_date_and_time.time() and appointment.start_date_and_time.time() < apt.length) or \
+                        (appointment.length > apt.start_date_and_time.time() and appointment.length < apt.length):
+                    raise forms.ValidationError("Overlap happens",
+                                                code='exists'
+                                                )
         appointment.save()
         return super().form_valid(form)
 
-class AppointmentDelete(DeleteView):
+class PractitionerAppointmentDelete(DeleteView):
     model = Appointment
     template_name = 'connect_therapy/practitioner/appointment-cancel.html'
     fields = ['practitioner','patient','start_date_and_time','length', 'practitioner_notes', 'patient_notes_by_practitioner']

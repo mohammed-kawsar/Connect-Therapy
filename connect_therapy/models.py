@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 from functools import partial
@@ -84,3 +85,4 @@ class Appointment(models.Model):
         return "{} - {} for {}".format(str(self.practitioner),
                                        str(self.start_date_and_time),
                                        str(self.length))
+

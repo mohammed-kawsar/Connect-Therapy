@@ -91,11 +91,11 @@ urlpatterns = [
          name='practitioner-my-appointments'
          ),
     path('practitioner/set-appointments',
-         SetAppointmentView.as_view(),
+         PractitionerSetAppointmentView.as_view(),
          name='practitioner-set-appointments'
          ),
-    path('practitioner/<int:pk>/cancel-appointment',
-         AppointmentDelete.as_view(),
+    path('practitioner/cancel-appointment/<int:pk>',
+         PractitionerAppointmentDelete.as_view(),
          name='practitioner-cancel-appointment'
          ),
 ]
