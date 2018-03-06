@@ -34,11 +34,11 @@
                         <a class="nav-link" href="">Live Chat</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">
                             Profile
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="{% url 'connect_therapy:patient-my-appointments' %}">Manage Appointments</a>
                             <a class="dropdown-item" href="#">Change Details</a>
                             <a class="dropdown-item" href="{% url 'connect_therapy:patient-logout' %}">Logout</a>
@@ -71,12 +71,12 @@
                             <a class="nav-link" href="">Live Chat</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
                                data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">
                                 Profile
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="#">Change Details</a>
                                 <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-logout' %}">Logout</a>
                             </div>
@@ -134,7 +134,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 ﻿
 <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
-<link href="{% static '/connect_therapy/css/global.css' %}" rel="stylesheet">
+
 <script>
 
     window.onscroll = function() { myFunction() };
@@ -177,6 +177,7 @@
         }
     })
 </script>
+
 
 <!--FOOTER 2-->
 <footer class="footer2">
