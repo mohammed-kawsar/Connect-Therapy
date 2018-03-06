@@ -60,6 +60,7 @@ class TestPatientCancel(TestCase):
                           date_of_birth=date(year=1995, month=1, day=1))
         patient.save()
         appointment = Appointment(practitioner=practitioner,
+                                  patient=patient,
                                   start_date_and_time=datetime(year=2018,
                                                                month=4,
                                                                day=17,
