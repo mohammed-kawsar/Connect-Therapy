@@ -214,6 +214,7 @@
     left: 0;
     right: 0;
     margin: auto;
+
 }
 
 /* Style the button and place it in the middle of the container/image */
@@ -235,3 +236,4 @@
 .container .btn:hover {
     background-color: black;
 }
+
