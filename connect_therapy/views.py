@@ -198,7 +198,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
 
 
 class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
-    login_url = reverse_lazy('connect_therapy:practitioner-appointment-notes')
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
     model = Appointment
     template_name = 'connect_therapy/practitioner/appointment-notes.html'
 
@@ -207,7 +207,7 @@ class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
 
 
 class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
-    login_url = reverse_lazy('connect_therapy:practitioner-before-meeting-notes')
+    login_url = reverse_lazy('connect_therapy:login')
     model = Appointment
     template_name = 'connect_therapy/practitioner/before-meeting-notes.html'
 
@@ -216,9 +216,9 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
 
 
 class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
-    login_url = reverse_lazy('connect_therapy:patient-appointment-notes')
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
+    login_url = reverse_lazy('connect_therapy:patient-login')
 
     def test_func(self):
         return self.request.user.id == self.get_object().patient.user.id
