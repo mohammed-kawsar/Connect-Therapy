@@ -2,12 +2,17 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
+
+from connect_therapy.forms.patient import PatientLoginForm, PatientSignUpForm
+from connect_therapy.forms.practitioner import PractitionerLoginForm, PractitionerNotesForm, PractitionerSignUpForm
 from connect_therapy.models import *
 from connect_therapy.forms import *
 from connect_therapy.admin import *
 from datetime import date, datetime, time
 import pytz
 from connect_therapy.views import *
+from connect_therapy.views.patient import PatientCancelAppointmentView
+from connect_therapy.views.practitioner import PractitionerNotesView
 
 
 class PatientModelTests(TestCase):

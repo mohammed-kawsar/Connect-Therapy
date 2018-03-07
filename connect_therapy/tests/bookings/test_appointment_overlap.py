@@ -3,6 +3,7 @@ from datetime import datetime, time
 import pytz
 from django.test import TestCase
 
+from connect_therapy.models import Appointment
 from connect_therapy.views import *
 
 

@@ -63,3 +63,11 @@ class PatientNotesBeforeForm(forms.Form):
         label="notes before appointment",
         widget=forms.Textarea
     )
+
+
+class AppointmentDateSelectForm(forms.Form):
+    date = forms.DateField(widget=forms.SelectDateWidget())
+
+    def is_valid(self):
+        valid = super(AppointmentDateSelectForm, self).is_valid()
+        return valid
