@@ -17,12 +17,16 @@
         </ol>
         <div class="carousel-inner" style=" margin-bottom: 1.5%; margin-top: 5%; padding: 0%">
             <div class="item1 carousel-item active">
-                <div class="container">
+
                     <img src="{% static '/connect_therapy/images/cup.jpeg' %}" alt="Snow">
-                    <button class="btn">Sign Up</button>
+                    <div class="carousel-caption"><h3>C O N N E C T &nbsp; &nbsp;T H E R A P Y</h3>
+                        <br>
+                    <button type="button" class="btn btn-default">Sign Up</button>
+                    </div>
+
                 </div>
-                <div class="caption"><h3>C O N N E C T &nbsp; &nbsp;T H E R A P Y</h3></div>
-            </div>
+
+
             <div class="item2 carousel-item">
                 <img class="black-back" src="{% static '/connect_therapy/images/notes2.jpg' %}" alt="Second slide">
                 <div class="clinic">
@@ -56,42 +60,61 @@
         </div>
     </div>
 
-    <section id="feature-one" class="feature-dark">
-        <div class="container">
-            <div class="feature-content">
 
-                <div class="row">
-                    <div class="col-lg-6 col-md-6 feature-caption">
-                        <h6> Incredible feature</h6>
-                        <h2>Totally incredible website</h2>
-                        <p class="lead">
-                            Niduci tisa suyofos natenix po, nute ieros dorurij ofodu na nomer begora imil
-                            dit be. Cili wihidi ludelu nonihie bugil.
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-sm-6">
+                <h6> Incredible feature</h6>
+                <h2>Totally incredible website</h2>
+                <p class="lead">
+                           Niduci tisa suyofos natenix po, nute ieros dorurij ofodu na nomer begora imil
+                           dit be. Cili wihidi ludelu nonihie bugil.
                             Ugurot ivah co erevun tieleret lar. Royaru usacinen lodie lo reteri. Fape lite lono une
                             seto. Ilefi gut sonoyis oyora l
                             imebe rur. Sielore ener honuz yikete pe sehi. Ci sase nicot rat nuted temiv sepuhi
                             telalos
                             sosofa! Kosit orietino ehire?
-                        </p>
-                    </div>
-                    <div class="col-lg-6 col-md-6 float-sm-right">
-                        <img class="d-block float-right" id="feature-image"
+             </p>
+            </div>
+            <div class="col-sm-6">
+                <img class="d-block float-right" id="feature-image img-responsive"
                              src="{% static '/connect_therapy/images/slide.png' %}">
-                    </div>
-                </div>
             </div>
         </div>
+    </div>
+
+{#    <section id="feature-one" class="feature-dark">#}
+{#        <div class="container text-center">#}
+{#            <div class="feature-content">#}
+{##}
+{#                <div class="row">#}
+{#                    <div class="col-lg-6 col-md-6 feature-caption">#}
+{#                        <h6> Incredible feature</h6>#}
+{#                        <h2>Totally incredible website</h2>#}
+{#                        <p class="lead">#}
+{#                            Niduci tisa suyofos natenix po, nute ieros dorurij ofodu na nomer begora imil#}
+{#                            dit be. Cili wihidi ludelu nonihie bugil.#}
+{#                            Ugurot ivah co erevun tieleret lar. Royaru usacinen lodie lo reteri. Fape lite lono une#}
+{#                            seto. Ilefi gut sonoyis oyora l#}
+{#                            imebe rur. Sielore ener honuz yikete pe sehi. Ci sase nicot rat nuted temiv sepuhi#}
+{#                            telalos#}
+{#                            sosofa! Kosit orietino ehire?#}
+{#                        </p>#}
+{#                    </div>#}
+{#                    <div class="col-lg-6 col-md-6 float-sm-right">#}
+{#                        <img class="d-block float-right" id="feature-image"#}
+{#                             src="{% static '/connect_therapy/images/slide.png' %}">#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{##}
+{#    </section>#}
 
 
-    </section>
 
 
-
-    <script>
-        $('#myCarousel').carousel({
-            interval: false
-        });
-    </script>
 
     </body>
 {% endblock %}
