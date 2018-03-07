@@ -48,8 +48,9 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
         form = FileForm(request.POST, request.FILES)
         self.object = self.get_object()
         is_valid = False
+        uploaded_files = []
         if form.is_valid():
-            print(str(request.FILES))
+            print("called once")
             import boto3
             s3 = boto3.resource("s3")
             file = form.cleaned_data['file']
@@ -57,11 +58,12 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
             """ TODO: check if file name already exists, will do once i intergrate this view with a detail view for 
             appointment as I intend to put files for an appointment within a separate directory
             """
-
+            # push to S3
             s3.meta.client.put_object(Body=file,
                                       Bucket='segwyn',
                                       Key=str(self.object.id) + "/" + str(file.name), ContentType=file.content_type)
 
+            # add tags to file in s3
             s3.meta.client.put_object_tagging(
                 Bucket='segwyn',
                 Key=str(self.object.id) + "/" + str(file.name),
@@ -78,11 +80,14 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
                     ]
                 }
             )
+
+            # get file to return to view
+
+            uploaded_files.append((str(file.name), FileDownloadView.generate_presigned_url(self, str(file.name))))
+
             is_valid = True
 
-        # TODO: Return a list of files uploaded with pregen links
-
-        return JsonResponse({'is_valid': is_valid})
+        return JsonResponse({'is_valid': is_valid, 'uploaded_files': uploaded_files})
 
 
 class FileDownloadView(generic.TemplateView):
