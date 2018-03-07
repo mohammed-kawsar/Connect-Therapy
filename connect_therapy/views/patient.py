@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django import forms
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views
@@ -13,7 +15,7 @@ from django.views.generic.edit import FormMixin
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, AppointmentDateSelectForm
 from connect_therapy.models import Patient, Appointment, Practitioner
-from connect_therapy.notifications import multiple_appointments_booked
+from connect_therapy import notifications
 
 
 class PatientSignUpView(FormView):
@@ -100,6 +102,11 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
     def form_valid(self, form):
         # Here, we would record the user's interest using the message
         # passed in form.cleaned_data['message']
+        notifications.appointment_cancelled_by_patient(
+            self.object.patient,
+            self.object,
+            self.object.start_date_and_time < timezone.now() + timedelta(hours=24)
+        )
         self.object.patient = None
         self.object.save()
 
@@ -283,7 +290,7 @@ class Checkout(UserPassesTestMixin, TemplateView):
 
             # go ahead and book those appointments
             if Appointment.book_appointments(appointments_to_book, self.patient):
-                multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
+                notifications.multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
                 return render(request, "connect_therapy/patient/bookings/booking-success.html", {})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
