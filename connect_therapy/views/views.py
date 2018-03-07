@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import DetailView
 
+from connect_therapy.forms.forms import FileForm
 from connect_therapy.models import Appointment
 
 
@@ -12,6 +13,12 @@ class ChatView(UserPassesTestMixin, DetailView):
     model = Appointment
     template_name = 'connect_therapy/chat.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
+
+    def get(self, request, *args, **kwargs):
+        form = FileForm()
+        super().get(request, *args, **kwargs)
+        return render(request, self.get_template_names(), {"upload_form": form,
+                                                           "object": self.get_object()})
 
     def test_func(self):
         return (self.request.user.id == self.get_object().patient.user.id) \
@@ -26,7 +33,7 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
     def get(self, request, *args, **kwargs):
         form = FileForm()
         super().get(request, *args, **kwargs)
-        return render(request, self.get_template_names(), {"form": form})
+        return render(request, self.get_template_names(), {"upload_form": form})
 
     def post(self, request, *args, **kwargs):
         form = FileForm(request.POST, request.FILES)

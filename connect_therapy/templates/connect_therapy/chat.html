@@ -2,6 +2,9 @@
 {% block title %}Chat{% endblock %}
 
 {% block header %}
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
     <script src="https://simplewebrtc.com/latest-v2.js"></script>
     {% load static %}
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -102,7 +105,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            <form enctype="multipart/form-data"
+                            <form enctype="multipart/form-data" id="upload-form"
                                   action="{% url 'connect_therapy:file-upload' pk=object.id %}" id="upload-form"
                                   method="post">
                                 <div class="form-group">
@@ -110,8 +113,9 @@
                                     {% csrf_token %}
                                     {{ upload_form.as_p }}
                                 </div>
-                                <input type="submit" name="Upload">
+                                <input id="submit" type="submit" value="Submit">
                             </form>
+
                             <div class="form-group" id="download-form">
                                 <h3>Download</h3>
                             </div>
