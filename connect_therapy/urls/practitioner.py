@@ -44,7 +44,7 @@ urlpatterns = [
          ),
          name='practitioner-homepage'
          ),
-    path('notes/<int:appointment_id>',
+    path('notes/<int:pk>',
          PractitionerNotesView.as_view(),
          name='practitioner-notes'
          ),
