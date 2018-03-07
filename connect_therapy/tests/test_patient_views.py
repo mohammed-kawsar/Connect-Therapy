@@ -42,7 +42,7 @@ class TestPatientCancel(TestCase):
                                         )
         user.save()
         practitioner = Practitioner(user=user,
-                                    mobile="+44848482732",
+                                    mobile="+447476605233",
                                     bio="ABC",
                                     address_line_1="XXX",
                                     address_line_2="XXXXX",
@@ -56,10 +56,11 @@ class TestPatientCancel(TestCase):
         user2.save()
         patient = Patient(user=user2,
                           gender='M',
-                          mobile="+447476666555",
+                          mobile="+447476605233",
                           date_of_birth=date(year=1995, month=1, day=1))
         patient.save()
         appointment = Appointment(practitioner=practitioner,
+                                  patient=patient,
                                   start_date_and_time=datetime(year=2018,
                                                                month=4,
                                                                day=17,
