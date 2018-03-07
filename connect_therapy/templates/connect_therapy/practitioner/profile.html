@@ -12,5 +12,5 @@
     <p>Bio: {{ user.practitioner.bio }}</p>
     <a class='btn btn-primary'
        href={% url 'connect_therapy:practitioner-profile-edit' user.practitioner.id %}>Edit</a>
-    <a href="{% url 'connect_therapy:practitioner-change-password'%}" class="btn btn-warning">change password</a>
+    <a href="{% url 'connect_therapy:practitioner-change-password'%}" class="btn btn-primary">change password</a>
 {% endblock %}
