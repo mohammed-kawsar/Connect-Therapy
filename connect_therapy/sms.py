@@ -23,7 +23,9 @@ def _send_sms(number, body):
 
 def clean_phone_number(number):
     number = number.replace(' ', '')
-    if number[0] == '0':
+    if number[0:2] == '00':
+        number = '+' + number[2:]
+    elif number[0] == '0':
         number = '+44' + number[1:]
     return number
 
