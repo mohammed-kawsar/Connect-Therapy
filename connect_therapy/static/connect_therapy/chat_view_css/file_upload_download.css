@@ -1,3 +1,7 @@
-#upload-form {
-    margin: 15px;
+#form-container {
+    margin-left: 20px;
+}
+
+#file-upload {
+    margin: 10px;
 }

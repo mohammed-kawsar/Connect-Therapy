@@ -5,6 +5,7 @@ window.onload = function () {
 
 function hideUploadDownloadControls() {
     document.getElementById("download-form").style.display = "none";
+    document.getElementById("upload-success").style.display = "none";
 }
 
 function hideVideoControls() {

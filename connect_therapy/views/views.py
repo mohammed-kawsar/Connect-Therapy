@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
@@ -15,10 +15,19 @@ class ChatView(UserPassesTestMixin, DetailView):
     login_url = reverse_lazy('connect_therapy:patient-login')
 
     def get(self, request, *args, **kwargs):
+        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.get_object().id))
+
+        downloadable_file_list = []
+        for file in files_for_appointment:
+            downloadable_file_list.append(
+                [file.split("/")[1], FileDownloadView.generate_presigned_url(self, file)]
+            )
+
         form = FileForm()
         super().get(request, *args, **kwargs)
         return render(request, self.get_template_names(), {"upload_form": form,
-                                                           "object": self.get_object()})
+                                                           "object": self.get_object(),
+                                                           "downloadable_files": downloadable_file_list})
 
     def test_func(self):
         return (self.request.user.id == self.get_object().patient.user.id) \
@@ -38,10 +47,11 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
     def post(self, request, *args, **kwargs):
         form = FileForm(request.POST, request.FILES)
         self.object = self.get_object()
+        is_valid = False
         if form.is_valid():
+            print(str(request.FILES))
             import boto3
             s3 = boto3.resource("s3")
-            name = str(form.cleaned_data['file_name'])
             file = form.cleaned_data['file']
 
             """ TODO: check if file name already exists, will do once i intergrate this view with a detail view for 
@@ -50,11 +60,11 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
 
             s3.meta.client.put_object(Body=file,
                                       Bucket='segwyn',
-                                      Key=str(self.object.id) + "/" + str(name), ContentType=file.content_type)
+                                      Key=str(self.object.id) + "/" + str(file.name), ContentType=file.content_type)
 
             s3.meta.client.put_object_tagging(
                 Bucket='segwyn',
-                Key=str(self.object.id) + "/" + str(name),
+                Key=str(self.object.id) + "/" + str(file.name),
                 Tagging={
                     'TagSet': [
                         {
@@ -68,10 +78,11 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
                     ]
                 }
             )
+            is_valid = True
 
-            return HttpResponse("Uploading " + form.cleaned_data['file_name'])
+        # TODO: Return a list of files uploaded with pregen links
 
-        return HttpResponse("Failed to upload the file")
+        return JsonResponse({'is_valid': is_valid})
 
 
 class FileDownloadView(generic.TemplateView):
@@ -83,11 +94,8 @@ class FileDownloadView(generic.TemplateView):
         s3 = boto3.resource("s3")
         bucket = s3.Bucket("segwyn")
         files = []
-
         files.append(self.get_files_from_folder("someFile"))
-
         super().get(request, *args, **kwargs)
-
         return render(request, self.get_template_names(), {"files": files})
 
     def get_files_from_folder(self, folder_name):
@@ -106,47 +114,45 @@ class FileDownloadView(generic.TemplateView):
 
         return files
 
-    def generate_presigned_url(self, keys):
+    def generate_presigned_url(self, key):
         import boto3
-        urls = []
-        for key in keys:
-            url = boto3.client('s3', config=boto3.session.Config(signature_version='s3v4',
-                                                                 region_name='eu-west-2')).generate_presigned_url(
-                ClientMethod='get_object',
-                Params={
-                    'Bucket': 'segwyn',
-                    'Key': key
-                },
-                ExpiresIn=900
-            )
-            urls.append(str(url))
+        url = boto3.client('s3', config=boto3.session.Config(signature_version='s3v4',
+                                                             region_name='eu-west-2')).generate_presigned_url(
+            ClientMethod='get_object',
+            Params={
+                'Bucket': 'segwyn',
+                'Key': key
+            },
+            ExpiresIn=1800
+        )
+        return str(url)
 
-        return urls
 
-    def get_objects_with_tag(self, uploader_user_id, appointment_id):
-        import boto3
-        s3 = boto3.resource("s3")
-        bucket = s3.Bucket("segwyn")
-        files = []
-        if len(uploader_user_id) > 0:
-            files.append(self._get_objects_with_key_value(bucket.objects.all(), "Uploader", uploader_user_id))
-        if len(appointment_id) > 0:
-            files.append(self._get_objects_with_key_value(bucket.objects.all(), "Appointment_ID", appointment_id))
+def get_objects_with_tag(self, uploader_user_id, appointment_id):
+    import boto3
+    s3 = boto3.resource("s3")
+    bucket = s3.Bucket("segwyn")
+    files = []
+    if len(uploader_user_id) > 0:
+        files.append(self._get_objects_with_key_value(bucket.objects.all(), "Uploader", uploader_user_id))
+    if len(appointment_id) > 0:
+        files.append(self._get_objects_with_key_value(bucket.objects.all(), "Appointment_ID", appointment_id))
 
-        return files
+    return files
 
-    def _get_objects_with_key_value(self, objects, key, value):
-        import boto3
-        s3 = boto3.resource("s3")
 
-        files = []
-        for obj in objects:
-            tag_set = s3.meta.client.get_object_tagging(Bucket="segwyn",
-                                                        Key=obj.key)['TagSet']
+def _get_objects_with_key_value(self, objects, key, value):
+    import boto3
+    s3 = boto3.resource("s3")
 
-            if len(tag_set) > 0:
-                for x in range(0, len(tag_set)):
-                    if tag_set[x]['Key'] == str(key) and tag_set[x]['Value'] == str(value):
-                        files.append(obj.key)
+    files = []
+    for obj in objects:
+        tag_set = s3.meta.client.get_object_tagging(Bucket="segwyn",
+                                                    Key=obj.key)['TagSet']
 
-        return files
+        if len(tag_set) > 0:
+            for x in range(0, len(tag_set)):
+                if tag_set[x]['Key'] == str(key) and tag_set[x]['Value'] == str(value):
+                    files.append(obj.key)
+
+    return files

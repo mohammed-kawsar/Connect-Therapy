@@ -2,9 +2,21 @@
 {% block title %}Chat{% endblock %}
 
 {% block header %}
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
             crossorigin="anonymous"></script>
+
+    {% load static %}
+
+    {# JQUERY FILE UPLOAD SCRIPTS #}
+    <script src="{% static 'connect_therapy/file_picker/jquery-file-upload/js/vendor/jquery.ui.widget.js' %}"></script>
+    <script src="{% static 'connect_therapy/file_picker/jquery-file-upload/js/jquery.iframe-transport.js' %}"></script>
+    <script src="{% static 'connect_therapy/file_picker/jquery-file-upload/js/jquery.fileupload.js' %}"></script>
+
+    {# PHOTOS PAGE SCRIPTS #}
+    <script src="{% static 'connect_therapy/file_picker/basic-upload.js' %}"></script>
+
+
     <script src="https://simplewebrtc.com/latest-v2.js"></script>
     {% load static %}
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -105,19 +117,34 @@
                                     </li>
                                 </ul>
                             </div>
-                            <form enctype="multipart/form-data" id="upload-form"
-                                  action="{% url 'connect_therapy:file-upload' pk=object.id %}" id="upload-form"
-                                  method="post">
-                                <div class="form-group">
-                                    <h3>Upload</h3>
-                                    {% csrf_token %}
-                                    {{ upload_form.as_p }}
-                                </div>
-                                <input id="submit" type="submit" value="Submit">
-                            </form>
+                            <div id="form-container">
+                                <div id="upload-form">
+                                    <input id="fileupload" type="file" name="file" multiple
+                                           style="display: none;"
+                                           data-url="{% url 'connect_therapy:file-upload' object.id %}"
+                                           data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
 
-                            <div class="form-group" id="download-form">
-                                <h3>Download</h3>
+                                    <button type="button" class="btn btn-primary js-upload-photos">
+                                        Upload files
+                                    </button>
+                                    <p id="upload-success">
+                                        Done!
+                                    </p>
+                                </div>
+                                <div class="form-group" id="download-form">
+                                    <table class="table">
+                                        <thead>
+                                        <th>File</th>
+                                        </thead>
+                                        <tbody>
+                                        {% for i,j in downloadable_files %}
+                                            <tr>
+                                                <td><a target="_blank" href="{{ j }}">{{ i }}</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
