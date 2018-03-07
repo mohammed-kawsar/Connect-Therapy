@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.contrib.auth.models import User
+from betterforms.multiform import MultiModelForm
 
 from connect_therapy.models import Patient
 
@@ -63,3 +64,49 @@ class PatientNotesBeforeForm(forms.Form):
         label="notes before appointment",
         widget=forms.Textarea
     )
+
+
+class PatientForm(forms.ModelForm):
+    date_of_birth = forms.DateField(help_text=" Format: YYYY-MM-DD",
+                                    input_formats=[
+                                        '%d/%m/%Y', '%Y-%m-%d'
+                                    ])
+    gender = forms.ChoiceField(choices=Patient.gender_choices)
+    mobile = forms.CharField(max_length=20)
+
+    class Meta:
+        model = Patient
+        fields = ('gender',
+                  'date_of_birth',
+                  'mobile')
+
+    # Prevents a user from editing these fields in the form.
+    def __init__(self, *args, **kwargs):
+        super(PatientForm, self).__init__(*args, **kwargs)
+        self.fields['gender'].widget.attrs['readonly'] = True
+        self.fields['date_of_birth'].widget.attrs['readonly'] = True
+
+
+class PatientUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name',
+                  'last_name',
+                  'email')
+
+        widgets = {
+            'email': forms.TextInput(attrs={'size': 35})
+        }
+
+    # Prevents a user from editing these fields in the form.
+    def __init__(self, *args, **kwargs):
+        super(PatientUserForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs['readonly'] = True
+        self.fields['last_name'].widget.attrs['readonly'] = True
+
+
+class PatientEditMultiForm(MultiModelForm):
+    form_classes = {
+            'user': PatientUserForm,
+            'patient': PatientForm
+    }
