@@ -2,19 +2,23 @@
 {% block title %}Practitioner appointments{% endblock %}
 
 {% block content %}
-<h1>Your Appointments</h1></br>
+    <h1>Your Appointments</h1></br>
     <h2>Current Bookings</h2>
     {% for appointment in future_appointments %}
         <tr class="current">
             <td> {{ appointment.start_date_and_time }} </td>
             <td>Duration: {{ appointment.length }}</td>
             <td>Patient: {{ appointment.patient }}</td>
-            <td> <a href="">View Notes</a> </td>
+            <td>
+                <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}">
+                    View Notes
+                </a>
+            </td>
             <td><a href="">Cancel Appointment</a></td>
         </tr>
-        {% empty %}
+    {% empty %}
         <p> No upcoming appointments yet. </p>
-    {%  endfor %}
+    {% endfor %}
 
     <h2>Previous Bookings</h2>
     {% for appointment in past_appointments %}
@@ -22,9 +26,9 @@
             <td> {{ appointment.start_date_and_time }} </td>
             <td>Duration: {{ appointment.length }}</td>
             <td>Patient: {{ appointment.patient }}</td>
-            <td> <a href="">View Notes</a> </td>
+            <td><a href="">View Notes</a></td>
         </tr>
-        {% empty %}
+    {% empty %}
         <p> No previous appointments. </p>
     {% endfor %}
 {% endblock %}
