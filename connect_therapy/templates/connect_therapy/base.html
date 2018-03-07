@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <meta name="viewport" content=""width="device-width", initial-scale="1.0">
+    <meta name="viewport" content=""width="device-width", initial-scale="1.0", user-scalable, maximum-scale="1.0">
     <meta charset="UTF-8">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -102,9 +102,26 @@
                         <li class="nav-item ">
                             <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Login</a>
-                        </li>
+                        <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Login
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-my-appointments' %}">Patient Login</a>
+                            <a class="dropdown-item" href="#">Practitioner Login</a>
+                        </div>
+                    </li>
+                     <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Sign-up
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-my-appointments' %}">Patient Sign-up</a>
+                            <a class="dropdown-item" href="#">Practitioner Sign-up</a>
+                        </div>
+                    </li>
                     </ul>
                 </div>
             </nav>

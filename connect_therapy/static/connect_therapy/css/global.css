@@ -9,6 +9,9 @@ html,
     top: 0 !important;
 }
 
+.container {
+    padding-top: 80px !important;
+}
 
 .navbar-brand {
     padding: 8px !important;

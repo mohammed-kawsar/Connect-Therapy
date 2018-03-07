@@ -2,28 +2,45 @@
 {% block title %}Patient appointments{% endblock %}
 
 {% block content %}
-<h1>Your Appointments</h1></br>
+
+    <h1 class="text-center">Your Appointments</h1></br>
     <h2>Current Bookings</h2>
-    {% for appointment in future_appointments %}
-        <tr class="current">
-            <td> {{ appointment.start_date_and_time }} </td>
-            <td> Duration: {{ appointment.length }} </td>
-            <td>Practitioner: {{ appointment.practitioner }} </td>
-            <td> <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"> Cancel Appointment</a> </td>
-        </tr>
-        {% empty %}
-        <p> No upcoming appointments yet. </p>
-    {%  endfor %}
+    <div class="container-fluid">
+        <div class="row">
+
+            {% for appointment in future_appointments %}
+                <div class="col col-sm-12 col-lg-4 col-md-4">
+                    <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
+                        <div class="card-block">
+                            <h4 class="card-title">{{ appointment.start_date_and_time }}</h4>
+                            <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
+                            <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
+                            <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}" class="btn btn-info"> Cancel Appointment</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <br> <br> <br>
 
     <h2>Previous Bookings</h2>
-    {% for appointment in past_appointments %}
-        <tr class="previous">
-            <td> {{ appointment.start_date_and_time }} </td>
-            <td>Duration: {{ appointment.length }}</td>
-            <td>Practitioner: {{ appointment.practitioner }}</td>
-            <td> <a href="{% url 'connect_therapy:patient-appointment-notes' appointment.id %}">View Notes</a> </td>
-        </tr>
-        {% empty %}
-        <p>No previous appointments.</p>
-    {% endfor %}
+    <div class="container-fluid">
+        <div class="row">
+            {% for appointment in past_appointments %}
+                <div class="col col-xs-12 col-lg-4 col-md-4">
+                    <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
+                        <div class="card-block">
+                            <h4 class="card-title" style="white-space: nowrap;">{{ appointment.start_date_and_time }}</h4>
+                            <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
+                            <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
+                            <a href="{% url 'connect_therapy:patient-appointment-notes' appointment.id %}" class="btn btn-info"> View Notes</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
 {% endblock %}

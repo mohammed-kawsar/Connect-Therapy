@@ -11,9 +11,14 @@ class PatientSignUpForm(UserCreationForm):
                                         '%d/%m/%Y'
                                     ])
     gender = forms.ChoiceField(choices=Patient.gender_choices,
-                               widget=forms.Select(attrs={'class': 'form-control', 'placeholder': 'F'}))
-    mobile = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'class': 'form-control', \
-                                                                         'placeholder': 'Mobile'}))
+                               widget=forms.Select(
+                                   attrs={'class': 'form-control',
+                                          'placeholder': 'F'
+                                          }))
+    mobile = forms.CharField(max_length=20,
+                             widget=forms.TextInput(
+                                 attrs={'class': 'form-control',
+                                        'placeholder': 'Mobile'}))
 
     def clean_email(self):
         email = self.cleaned_data['email']
