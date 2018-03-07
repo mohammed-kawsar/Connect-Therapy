@@ -61,10 +61,16 @@ class PatientMyAppointmentsView(generic.TemplateView):
         return context
 
 
-class PatientNotesBeforeView(LoginRequiredMixin, FormView):
+class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
     form_class = PatientNotesBeforeForm
     template_name = 'connect_therapy/patient/notes-before-appointment.html'
     success_url = reverse_lazy('connect_therapy:patient-my-appointments')
+    login_url = reverse_lazy('connect_therapy:patient-my-appointments')
+    redirect_field_name = None
+    model = Appointment
+
+    def test_func(self):
+        return self.request.user.id == self.get_object().patient.user.id
 
     def form_valid(self, form):
         self.appointment.patient_notes_before_meeting = \
@@ -72,13 +78,13 @@ class PatientNotesBeforeView(LoginRequiredMixin, FormView):
         self.appointment.save()
         return super().form_valid(form)
 
-    def get(self, request, appointment_id):
-        self.appointment = get_object_or_404(Appointment, pk=appointment_id)
-        return super.get(request)
-
-    def post(self, request, appointment_id):
-        self.appointment = get_object_or_404(Appointment, pk=appointment_id)
-        return super().post(request)
+    def post(self, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid()
+        else:
+            return self.form_invalid()
 
 
 class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):

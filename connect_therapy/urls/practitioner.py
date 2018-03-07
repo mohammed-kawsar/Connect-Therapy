@@ -28,7 +28,7 @@ urlpatterns = [
          auth_views.logout,
          {
              'next_page':
-                 reverse_lazy('connect_therapy:practitioner-logout-success'),
+                 reverse_lazy('connect_therapy:index'),
          },
          name='practitioner-logout'
          ),
