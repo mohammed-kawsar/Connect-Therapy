@@ -197,7 +197,14 @@ class PractitionerViewPatients(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['appointments'] = Appointment.objects.filter(
+        appointments = Appointment.objects.filter(
                 practitioner=self.request.user.practitioner
             ).order_by('-start_date_and_time')
+        patients_already_seen = []
+        appointments_unique_patient = []
+        for appointment in appointments:
+            if appointment.patient not in patients_already_seen:
+                appointments_unique_patient.append(appointment)
+                patients_already_seen.append(appointment.patient)
+        context['appointments'] = appointments_unique_patient
         return context
