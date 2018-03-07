@@ -10,5 +10,9 @@
     <p>Email: {{ user.email }}</p>
     <p>Mobile: {{ user.patient.mobile }}</p>
     <a class='btn btn-primary'
-       href={% url 'connect_therapy:patient-profile-edit' user.id %}>Edit</a>
+       href={% url 'connect_therapy:patient-profile-edit' user.patient.id %}>Edit</a>
+    <a class='btn btn-primary'
+       href={% url 'connect_therapy:patient-change-password'%}>
+        Change Password
+    </a>
 {% endblock %}
