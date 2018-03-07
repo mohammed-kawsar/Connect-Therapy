@@ -2,12 +2,15 @@
 {% block title %}Practitioner profile{% endblock %}
 
 {% block content %}
-    <p>{{ user.id }}</p>
-    <p>{{ user.first_name }}</p>
-    <p>{{ user.last_name }}</p>
-    <p>{{ user.email }}</p>
-    <p>{{ user.practitioner.mobile }}</p>
-    <p>{{ user.practitioner.address_line_1 }}</p>
-    <p>{{ user.practitioner.address_line_2 }}</p>
-    <p>{{ user.practitioner.bio }}</p>
+    <h1>Profile</h1>
+    <p>First Name: {{ user.first_name }}</p>
+    <p>Last Name: {{ user.last_name }}</p>
+    <p>Email: {{ user.email }}</p>
+    <p>address line 1: {{ user.practitioner.address_line_1 }}</p>
+    <p>address line 2: {{ user.practitioner.address_line_2 }}</p>
+    <p>Mobile: {{ user.practitioner.mobile }}</p>
+    <p>Bio: {{ user.practitioner.bio }}</p>
+    <a class='btn btn-primary'
+       href={% url 'connect_therapy:practitioner-profile-edit' user.practitioner.id %}>Edit</a>
+    <a href="{% url 'connect_therapy:practitioner-change-password'%}" class="btn btn-warning">change password</a>
 {% endblock %}
