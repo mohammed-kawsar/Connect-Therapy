@@ -12,6 +12,14 @@ urlpatterns = [
          ChatView.as_view(),
          name="chat"
          ),
+    path('file-upload/<int:pk>',
+         FileUploadView.as_view(),
+         name='file-upload',
+         ),
+    path('file-download',
+         FileDownloadView.as_view(),
+         name='file-download',
+         ),
     path('about',
          TemplateView.as_view(
              template_name='connect_therapy/about.html'
