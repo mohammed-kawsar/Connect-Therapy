@@ -9,3 +9,11 @@
 .progress {
     margin: 10px;
 }
+
+a:hover {
+    color: cadetblue;
+}
+
+a {
+    color: black;
+}

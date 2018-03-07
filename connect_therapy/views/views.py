@@ -48,7 +48,7 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
         form = FileForm(request.POST, request.FILES)
         self.object = self.get_object()
         is_valid = False
-        uploaded_files = []
+        uploaded_file = ()
         if form.is_valid():
             print("called once")
             import boto3
@@ -59,9 +59,10 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
             appointment as I intend to put files for an appointment within a separate directory
             """
             # push to S3
+            key = str(self.object.id) + "/" + str(file.name)
             s3.meta.client.put_object(Body=file,
                                       Bucket='segwyn',
-                                      Key=str(self.object.id) + "/" + str(file.name), ContentType=file.content_type)
+                                      Key=key, ContentType=file.content_type)
 
             # add tags to file in s3
             s3.meta.client.put_object_tagging(
@@ -83,11 +84,11 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
 
             # get file to return to view
 
-            uploaded_files.append((str(file.name), FileDownloadView.generate_presigned_url(self, str(file.name))))
+            uploaded_file = (key.split('/')[1], FileDownloadView.generate_presigned_url(self, key))
 
             is_valid = True
 
-        return JsonResponse({'is_valid': is_valid, 'uploaded_files': uploaded_files})
+        return JsonResponse({'is_valid': is_valid, 'uploaded_files': uploaded_file})
 
 
 class FileDownloadView(generic.TemplateView):
