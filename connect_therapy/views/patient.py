@@ -146,6 +146,8 @@ class PatientEditDetailsView(LoginRequiredMixin, UpdateView):
         form = self.get_form()
         try:
             user = User.objects.get(username=form.cleaned_data['user']['email'])
+            if user == self.object.user:
+                return self.form_valid(form)
         except User.DoesNotExist:
             if form.is_valid():
                 return self.form_valid(form)
