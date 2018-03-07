@@ -132,7 +132,7 @@ urlpatterns = [
          PatientPreviousNotesView.as_view(),
          name='patient-appointment-notes',
          ),
-    path('file-upload',
+    path('file-upload/<int:pk>',
          FileUploadView.as_view(),
          name='file-upload',
          ),

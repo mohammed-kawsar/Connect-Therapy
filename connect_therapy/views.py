@@ -48,6 +48,11 @@ class ChatView(UserPassesTestMixin, DetailView):
     template_name = 'connect_therapy/chat.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
 
+    def get(self, request, *args, **kwargs):
+        upload_form = FileForm
+        return render(request, self.get_template_names(), {"upload_form": upload_form,
+                                                           "object": self.get_object()})
+
     def test_func(self):
         return (self.request.user.id == self.get_object().patient.user.id) \
                or (self.request.user.id == self.get_object().practitioner.user.id)
@@ -210,17 +215,19 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     template_name = 'connect_therapy/patient/appointment-notes.html'
 
 
-class FileUploadView(generic.TemplateView):
+class FileUploadView(LoginRequiredMixin, generic.DetailView):
+    login_url = reverse_lazy('connect_therapy:patient-login')
     template_name = "connect_therapy/file_transfer/file_upload.html"
+    model = Appointment
 
     def get(self, request, *args, **kwargs):
         form = FileForm()
         super().get(request, *args, **kwargs)
         return render(request, self.get_template_names(), {"form": form})
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         form = FileForm(request.POST, request.FILES)
-
+        self.object = self.get_object()
         if form.is_valid():
             import boto3
             s3 = boto3.resource("s3")
@@ -233,20 +240,20 @@ class FileUploadView(generic.TemplateView):
 
             s3.meta.client.put_object(Body=file,
                                       Bucket='segwyn',
-                                      Key="someFile/" + name, ContentType=file.content_type)
+                                      Key=str(self.object.id) + "/" + str(name), ContentType=file.content_type)
 
             s3.meta.client.put_object_tagging(
                 Bucket='segwyn',
-                Key="someFile/" + name,
+                Key=str(self.object.id) + "/" + str(name),
                 Tagging={
                     'TagSet': [
                         {
                             'Key': 'Uploader_user_id',
-                            'Value': 'some guy'
+                            'Value': str(request.user.id)
                         },
                         {
                             'Key': 'Appointment_ID',
-                            'Value': 'some appointment'
+                            'Value': str(self.object.id)
                         },
                     ]
                 }

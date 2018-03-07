@@ -14,10 +14,6 @@ function hideVideoControls() {
     muteButton = document.getElementById("muted");
 }
 
-$('#myModal').on('shown.bs.modal', function () {
-    $('#myInput').focus()
-})
-
 function showUpload() {
     document.getElementById("upload-form").style.display = "block";
     document.getElementById("download-form").style.display = "none";
