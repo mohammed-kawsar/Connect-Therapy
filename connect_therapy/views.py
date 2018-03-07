@@ -84,7 +84,51 @@ class PatientProfile(LoginRequiredMixin, generic.TemplateView):
         return render(request, args)
 
 
-class PatientEditDetails(LoginRequiredMixin, UpdateView):
+class PatientEditDetails(UpdateView):
+    model = Patient
+    template_name = 'connect_therapy/patient/edit-profile.html'
+    form_class = PatientUserForm
+    second_form_class = PatientForm
+    success_url = reverse_lazy('connect_therapy:patient-profile')
+
+    def get_context_data(self, **kwargs):
+        context = super(PatientEditDetails, self).get_context_data(**kwargs)
+        context['user'] = self.request.user
+        context['patient'] = self.request.user.patient
+        if 'form' not in context:
+            context['form'] = self.form_class(self.request.GET,
+                                              instance=self.request.user)
+        if 'form2' not in context:
+            context['form2'] = self.second_form_class(self.request.GET,
+                                                      instance=self.request.user.patient)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        super(PatientEditDetails, self).get(request, *args, **kwargs)
+        form = self.form_class
+        form2 = self.second_form_class
+        return self.render_to_response(self.get_context_data(
+            object=self.object, form=form, form2=form2))
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.form_class(request.POST)
+        form2 = self.second_form_class(request.POST)
+
+        if form.is_valid() and form2.is_valid():
+            user_data = form.save(commit=False)
+            user_data.save()
+            user_data.username = user_data.email
+            user_data.save()
+            patient_data = form2.save(commit=False)
+            patient_data.user = user_data
+            patient_data.save()
+        else:
+            return self.render_to_response(
+                self.get_context_data(form=form, form2=form2))
+
+
+class PatientEditDetailsView(LoginRequiredMixin, UpdateView):
     model = Patient
     form_class = PatientEditDetailsForm
     success_url = reverse_lazy('connect_therapy:patient-profile')
@@ -105,6 +149,8 @@ class PatientEditDetails(LoginRequiredMixin, UpdateView):
         if request.method == 'POST':
             if form.is_valid():
                 form.save()
+                user.username = user.email
+                user.save()
         else:
             form = PatientEditDetailsForm
 

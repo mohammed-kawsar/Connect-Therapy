@@ -9,5 +9,6 @@
     <p>DoB: {{ user.patient.date_of_birth }}</p>
     <p>Email: {{ user.email }}</p>
     <p>Mobile: {{ user.patient.mobile }}</p>
-    <a href="/patient/profile/edit" class="btn btn-primary">Edit</a>
+    <a class='btn btn-primary'
+       href={% url 'connect_therapy:patient-profile-edit' user.id %}>Edit</a>
 {% endblock %}

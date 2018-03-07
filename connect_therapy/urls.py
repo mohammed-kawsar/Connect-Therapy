@@ -53,7 +53,7 @@ urlpatterns = [
          PatientProfile.as_view(),
          name='patient-profile'
          ),
-    path('patient/profile/edit',
+    path('patient/profile/edit/<int:pk>',
          PatientEditDetails.as_view(),
          name='patient-profile-edit'
          ),

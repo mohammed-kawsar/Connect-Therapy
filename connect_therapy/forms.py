@@ -58,6 +58,45 @@ class PatientLoginForm(AuthenticationForm):
         super().confirm_login_allowed(user)
 
 
+class PatientForm(forms.ModelForm):
+    date_of_birth = forms.DateField(help_text=" Format: YYYY-MM-DD",
+                                    input_formats=[
+                                        '%d/%m/%Y', '%Y-%m-%d'
+                                    ])
+    gender = forms.ChoiceField(choices=Patient.gender_choices)
+    mobile = forms.CharField(max_length=20)
+
+    class Meta:
+        model = Patient
+        fields = ('gender',
+                  'date_of_birth',
+                  'mobile')
+
+    # Prevents a user from editing these fields in the form.
+    def __init__(self, *args, **kwargs):
+        super(PatientForm, self).__init__(*args, **kwargs)
+        # self.fields['gender'].widget.attrs['readonly'] = True
+        # self.fields['date_of_birth'].widget.attrs['readonly'] = True
+
+
+class PatientUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name',
+                  'last_name',
+                  'email')
+
+        widgets = {
+            'email': forms.TextInput(attrs={'size': 35})
+        }
+
+    # Prevents a user from editing these fields in the form.
+    def __init__(self, *args, **kwargs):
+        super(PatientUserForm, self).__init__(*args, **kwargs)
+        # self.fields['first_name'].widget.attrs['readonly'] = True
+        # self.fields['last_name'].widget.attrs['readonly'] = True
+
+
 class PatientEditDetailsForm(forms.ModelForm):
     # Added extra regex for date of birth as output is in a different format.
     date_of_birth = forms.DateField(help_text=" Format: YYYY-MM-DD",
