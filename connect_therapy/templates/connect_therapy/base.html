@@ -55,7 +55,7 @@
     {% else %}
         {% if user.is_authenticated and user.practitioner %}
             <!-- Logged in Practitioner navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top" id="sticky_navbar">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top fixed-top" id="sticky_navbar">
                 <a class="navbar-brand" href="{% url 'connect_therapy:practitioner-homepage' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                         aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,7 +90,7 @@
             </nav>
         {% else %}
             <!-- Logged out navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top" id="sticky_navbar">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top fixed-top" id="sticky_navbar">
                 <a class="navbar-brand" href="{% url 'connect_therapy:index' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                         aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
