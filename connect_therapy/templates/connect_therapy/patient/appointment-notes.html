@@ -3,10 +3,15 @@
 
 {% block content %}
     <div class="jumbotron">
-        <h3 class="">Previous Patient Notes</h3>
+        <h3 class="">Practitioner Notes</h3>
         <hr class="my-4">
         <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_by_practitioner }}</p>
-        <hr class="my-4">
-    <a href="{% url 'connect_therapy:patient-my-appointments' %}" class="btn btn-primary"> Go Back</a>
     </div>
+
+    <div class="jumbotron">
+        <h3>Your Notes</h3>
+        <hr class="my-4">
+        <p class="lead">{{ appointment.patient_notes_before_meeting }}</p>
+    </div>
+    <a href="{% url 'connect_therapy:patient-my-appointments' %}" class="btn btn-primary"> Go Back</a>
 {% endblock %}
