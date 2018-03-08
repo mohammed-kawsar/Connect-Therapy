@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, time
 
 from django import forms
 from django.contrib.auth import authenticate, login, views as auth_views
@@ -11,7 +11,7 @@ from django.views.generic import FormView, DetailView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
-from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm,\
+from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm
 from connect_therapy.models import Patient, Appointment
 
@@ -107,6 +107,7 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
         )
         self.object.patient = None
         self.object.save()
+        self.split_merged_appointment()
 
         return super(PatientCancelAppointmentView, self).form_valid(form)
 
@@ -117,6 +118,23 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+    def split_merged_appointment(self):
+        original_length = self.object.length
+        self.object.length = time(minute=30)
+        self.object.patient = None
+        number_of_appointments = \
+            (original_length.hour * 60 + original_length.minute) // 30
+        for i in range(1, number_of_appointments):
+            appointment = Appointment(
+                practitioner=self.object.practitioner,
+                patient=None,
+                length=time(minute=30),
+                start_date_and_time=self.object.start_date_and_time
+                                    + timedelta(minutes=30 * i)
+            )
+            appointment.save()
+            self.object.save()
 
 
 class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
