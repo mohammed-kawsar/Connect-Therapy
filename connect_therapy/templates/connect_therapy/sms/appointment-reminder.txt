@@ -1,0 +1,1 @@
+We're sorry, your appointment on {{ appointment.start_date_and_time }} for {{ appointment.length }} on Connect Therapy has been cancelled, check your email for more details
