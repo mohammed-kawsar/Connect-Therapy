@@ -6,5 +6,7 @@ This is copyright of the IoPPN
 
 ## Reused code
 https://github.com/leemunroe/responsive-html-email-template
+
 https://github.com/blueimp/jQuery-File-Upload
+
 https://github.com/andyet/SimpleWebRTC -- The Web RTC API we used.
