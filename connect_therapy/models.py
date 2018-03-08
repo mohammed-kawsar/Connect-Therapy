@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from functools import partial
 import hashlib
+from django.db.models.signals import post_save
 
 
 class Patient(models.Model):

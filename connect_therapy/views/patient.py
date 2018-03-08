@@ -3,16 +3,18 @@ from datetime import timedelta, time
 from django import forms
 from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, UpdateView
 from django.views.generic.edit import FormMixin
 
-from connect_therapy import notifications
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
-    PatientNotesBeforeForm
+    PatientNotesBeforeForm, PatientForm, PatientUserForm, PatientEditMultiForm
+from connect_therapy import notifications
 from connect_therapy.models import Patient, Appointment
 
 
@@ -145,3 +147,47 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     login_url = reverse_lazy('connect_therapy:patient-appointment-notes')
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
+
+    
+class PatientProfile(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'connect_therapy/patient/profile.html'
+
+    @login_required
+    def view_profile(self, request):
+        user = request.user
+        args = {'user': user}
+        return render(request, args)
+
+
+class PatientEditDetailsView(UpdateView):
+    model = Patient
+    template_name = 'connect_therapy/patient/edit-profile.html'
+    form_class = PatientEditMultiForm
+    success_url = reverse_lazy('connect_therapy:patient-profile')
+
+    def form_valid(self, form):
+        self.object.user.username = form.cleaned_data['user']['email']
+        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        try:
+            user = User.objects.get(username=form.cleaned_data['user']['email'])
+            if form.is_valid():
+                return self.form_valid(form)
+        except User.DoesNotExist:
+            # if User.objects.get(email=user.email) == user.email:
+            #     return self.form_valid(form)
+            if form.is_valid():
+                return self.form_valid(form)
+
+        return self.form_invalid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super(PatientEditDetailsView, self).get_form_kwargs()
+        kwargs.update(instance={
+            'user': self.object.user,
+            'patient': self.object,
+        })
+        return kwargs

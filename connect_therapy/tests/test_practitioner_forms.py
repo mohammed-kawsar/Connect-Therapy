@@ -161,3 +161,62 @@ class PractitionerLoginFormTests(TestCase):
             'password': 'woofwoof12'
         })
         self.assertFalse(form.is_valid())
+
+
+class PractitionerEditProfileTests(TestCase):
+    # Test that a patient can successfully update their mobile.
+    def test_edit_fields(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='testpassword',
+                                        first_name='John',
+                                        last_name='Smith'
+                                        )
+        practitioner = Practitioner(user=user,
+                                    address_line_1='19 Langham Gardens',
+                                    address_line_2='Ealing',
+                                    postcode='W13 8PZ',
+                                    mobile='+447476565333',
+                                    bio='text'
+                                    )
+        practitioner.save()
+        practitioner = PractitionerForm(instance=user.practitioner, data={
+            'first_name': 'John',
+            'last_name': 'Smith',
+            'email': 'test1@example.com',
+            'mobile': '+447075593323',
+            'address_line_1': '39 buckingham Avenue',
+            'address_line_2': 'Ealing',
+            'postcode': 'UB6 7RD',
+            'bio': 'more text'
+        })
+        practitioner.save()
+        self.assertTrue(practitioner.is_valid())
+        self.assertEqual(str(user.practitioner.mobile), '+447075593323')
+        self.assertEqual(str(user.practitioner.address_line_1), '39 buckingham Avenue')
+        self.assertEqual(str(user.practitioner.postcode), 'UB6 7RD')
+        self.assertEqual(str(user.practitioner.bio), 'more text')
+
+    # Test that a practitioner can successfully update their email.
+    def test_edit_email(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='testpassword',
+                                        first_name='John',
+                                        last_name='Smith'
+                                        )
+        practitioner = Practitioner(user=user,
+                                    address_line_1='19 Langham Gardens',
+                                    address_line_2='ealing',
+                                    postcode='W13 8PZ',
+                                    mobile='+447476565333',
+                                    bio='text',
+                                    is_approved=True
+                                    )
+        practitioner.save()
+        practitioner = PractitionerUserForm(instance=user, data={
+            'first_name': 'John',
+            'last_name': 'Smith',
+            'email': 'test1@example.com',
+        })
+        practitioner.save()
+        self.assertTrue(practitioner.is_valid())
+        self.assertEqual(str(user.email), 'test1@example.com')
