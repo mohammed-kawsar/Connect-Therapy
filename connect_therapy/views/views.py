@@ -91,18 +91,23 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
         return JsonResponse({'is_valid': is_valid, 'uploaded_files': uploaded_file})
 
 
-class FileDownloadView(generic.TemplateView):
-    template_name = "connect_therapy/file_transfer/file_download.html"
+# TODO: Add a refresh button which allows users to refresh the list of downloadable files
+
+class FileDownloadView(DetailView):
+    model = Appointment
 
     def get(self, request, *args, **kwargs):
         form = FileForm()
         import boto3
         s3 = boto3.resource("s3")
         bucket = s3.Bucket("segwyn")
-        files = []
-        files.append(self.get_files_from_folder("someFile"))
-        super().get(request, *args, **kwargs)
-        return render(request, self.get_template_names(), {"files": files})
+        files = {}
+        self.object = self.get_object()
+
+        for file in self.get_files_from_folder(str(self.object.id)):
+            files[file] = self.generate_presigned_url(file)
+
+        return JsonResponse({'downloadable_files': files})
 
     def get_files_from_folder(self, folder_name):
         import boto3
@@ -133,32 +138,30 @@ class FileDownloadView(generic.TemplateView):
         )
         return str(url)
 
+    def get_objects_with_tag(self, uploader_user_id, appointment_id):
+        import boto3
+        s3 = boto3.resource("s3")
+        bucket = s3.Bucket("segwyn")
+        files = []
+        if len(uploader_user_id) > 0:
+            files.append(self._get_objects_with_key_value(bucket.objects.all(), "Uploader", uploader_user_id))
+        if len(appointment_id) > 0:
+            files.append(self._get_objects_with_key_value(bucket.objects.all(), "Appointment_ID", appointment_id))
 
-def get_objects_with_tag(self, uploader_user_id, appointment_id):
-    import boto3
-    s3 = boto3.resource("s3")
-    bucket = s3.Bucket("segwyn")
-    files = []
-    if len(uploader_user_id) > 0:
-        files.append(self._get_objects_with_key_value(bucket.objects.all(), "Uploader", uploader_user_id))
-    if len(appointment_id) > 0:
-        files.append(self._get_objects_with_key_value(bucket.objects.all(), "Appointment_ID", appointment_id))
+        return files
 
-    return files
+    def _get_objects_with_key_value(self, objects, key, value):
+        import boto3
+        s3 = boto3.resource("s3")
 
+        files = []
+        for obj in objects:
+            tag_set = s3.meta.client.get_object_tagging(Bucket="segwyn",
+                                                        Key=obj.key)['TagSet']
 
-def _get_objects_with_key_value(self, objects, key, value):
-    import boto3
-    s3 = boto3.resource("s3")
+            if len(tag_set) > 0:
+                for x in range(0, len(tag_set)):
+                    if tag_set[x]['Key'] == str(key) and tag_set[x]['Value'] == str(value):
+                        files.append(obj.key)
 
-    files = []
-    for obj in objects:
-        tag_set = s3.meta.client.get_object_tagging(Bucket="segwyn",
-                                                    Key=obj.key)['TagSet']
-
-        if len(tag_set) > 0:
-            for x in range(0, len(tag_set)):
-                if tag_set[x]['Key'] == str(key) and tag_set[x]['Value'] == str(value):
-                    files.append(obj.key)
-
-    return files
+        return files

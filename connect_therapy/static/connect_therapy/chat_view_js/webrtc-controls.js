@@ -3,6 +3,8 @@ var pauseButton, muteButton;
 var paused = false;
 var muted = false;
 
+// used to pause the video stream. Also flips the icon on the pause button to indicate what the button
+// will do
 function pause() {
     if (paused) {
         paused = false;
@@ -16,6 +18,7 @@ function pause() {
     }
 }
 
+// controls sound and handles the flipping of the buttons
 function mute() {
     if (muted) {
         muted = false;
@@ -28,10 +31,13 @@ function mute() {
     }
 }
 
+// if the user presses the enter button, then we will send a message and reset the message field
 function buttonPress(e) {
     if (e.keyCode == 13) {
+        e.preventDefault(); // stop the line break being added
         sendMessage();
-        document.getElementById("message-field").value = "";
+        var messageField = document.getElementById("message-field");
+        messageField = messageField.value = "";
     }
 }
 

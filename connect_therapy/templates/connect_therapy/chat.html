@@ -24,22 +24,27 @@
     <script src="{% static 'connect_therapy/chat_view_js/main.js' %}"></script>
     <script src="{% static 'connect_therapy/chat_view_js/webrtc.js' %}"></script>
     <script src="{% static 'connect_therapy/chat_view_js/webrtc-controls.js' %}"></script>
+    <script src="{% static 'connect_therapy/chat_view_js/get-downloads.js' %}"></script>
 
     <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/webrtc.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/file_upload_download.css' %}" type="text/css">
 {% endblock %}
 
 {% block content %}
-
+    <noscript><h3>This page won't work properly without JavaScript. Please enable it via your browser settings</h3>
+    </noscript>
     <script>
+        // declare some variable which will be needed in other JavaScript files
         var session_id = "{{ object.session_id }}";
+
+        var ajax_download_url = "{% url 'connect_therapy:file-download' object.id %}"
     </script>
 
     <div class="jumbotron">
         <h1>Welcome to your appointment</h1>
         <!-- Trigger the modal with a button -->
         <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">
+            <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
                 Upload/Download files
             </button>
         </nav>
@@ -110,10 +115,11 @@
                             <div class="modal-body">
                                 <ul class="nav nav-tabs">
                                     <li class="nav-item">
-                                        <a class="nav-link active" onclick="showUpload()">Upload</a>
+                                        <a class="nav-link active" id="upload-tab" onclick="showUpload()">Upload</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link active" onclick="showDownload()">Download</a>
+                                        <a class="nav-link active" id="download-tab"
+                                           onclick="showDownload()">Download</a>
                                     </li>
                                 </ul>
                             </div>
@@ -124,7 +130,7 @@
                                            data-url="{% url 'connect_therapy:file-upload' object.id %}"
                                            data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
 
-                                    <button type="button" class="btn btn-primary js-upload-photos">
+                                    <button type="button" class="btn btn-primary js-upload-photos" id="upload-button">
                                         Upload files
                                     </button>
                                     <div class="progress">
@@ -145,7 +151,11 @@
                                 </div>
                                 <div class="form-group" id="download-form">
                                     {% if downloadable_files|length > 0 %}
-                                        <table class="table">
+                                        <button class="btn btn-primary" onclick="getDownloadsAJAX() "
+                                                id="download-refresh-button">
+                                            🔃 Refresh List
+                                        </button>
+                                        <table class="table" id="download-table">
                                             <thead>
                                             <th>File</th>
                                             </thead>

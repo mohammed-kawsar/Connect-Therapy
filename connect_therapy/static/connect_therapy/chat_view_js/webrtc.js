@@ -9,7 +9,9 @@ var webrtc = new SimpleWebRTC({
     autoRequestMedia: true
 });
 
-// we have to wait until it's ready
+/* we have to wait until the video stream is ready, once it is, we will join the room and
+make the controls visible
+*/
 webrtc.on('readyToCall', function () {
     // you can name it anything
     webrtc.joinRoom(session_id);
@@ -18,13 +20,15 @@ webrtc.on('readyToCall', function () {
     document.getElementById("wait-for-peer-to-connect").style.visibility = "visible";
 });
 
-webrtc.on('videoAdded', function() {
+// once the video feed from the other side has been added, the loading sign can disappear
+webrtc.on('videoAdded', function () {
     document.getElementById("loading").style.display = "none";
 });
 
+// if we receive a message data with the tag 'chat', it is a text message received from the other user
 webrtc.connection.on("message", function (data) {
     if (data.type === "chat") {
-        // message, table, sent?
+        // message, table, sent(=true)? (or recieved(=false)?)
         addMessageToTable(data.payload.message, document.getElementById("message-table"), false);
     }
 });
@@ -37,6 +41,7 @@ function sendMessage() {
         // messageToAdd, tableToAddTo, sent?
         addMessageToTable(messageToSend, document.getElementById("message-table"), true);
 
+        // send the message using tag 'chat' to allow us to identify at the other end
         webrtc.sendToAll("chat", {
             message: messageToSend
         });
