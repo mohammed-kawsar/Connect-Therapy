@@ -2,6 +2,7 @@
 {% block title %}Patient signup{% endblock %}
 
 {% block content %}
+    <div class="container-fluid">
 <form action="" method="post">
     {% csrf_token %}
     <div class="form-group">
@@ -9,14 +10,20 @@
     </div>
     <input type="submit" class="btn btn-success" value="Sign up" />
 </form>
+    </div>
 {% endblock %}
 
 {% block styles %}
 
     <style>
-        .container {
-            padding-top: 70px;
-        }
+
+    {#.container {#}
+    {#    display: none !important;#}
+    {#}#}
+
+    .container-fluid {
+        margin-top: 1%;
+    }
 
 
     </style>
