@@ -113,7 +113,7 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
-        if form.is_valid():
+        if form.is_valid() and self.object.start_date_and_time > timezone.now():
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
