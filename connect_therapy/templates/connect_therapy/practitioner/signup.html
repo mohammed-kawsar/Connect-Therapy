@@ -5,6 +5,27 @@
 <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Sign up" />
+    <br>
+    <input type="submit" class="btn btn-primary" value="Sign up" />
 </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.getElementById("id_mobile").className = "form-control";
+        document.getElementById("id_address_line_1").className = "form-control";
+        document.getElementById("id_address_line_2").className = "form-control";
+        document.getElementById("id_postcode").className = "form-control";
+        document.getElementById("id_bio").className = "form-control";
+        document.getElementById("id_password1").className = "form-control";
+        document.getElementById("id_password2").className = "form-control";
+    </script>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        textarea{
+            resize: none;
+        }
+    </style>
 {% endblock %}

@@ -34,7 +34,9 @@ class PractitionerSignUpForm(UserCreationForm):
                   'password2')
 
         widgets = {
-            'email': forms.TextInput(attrs={'size': 35})
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.TextInput(attrs={'size': 35, 'class': 'form-control'}),
         }
 
 
