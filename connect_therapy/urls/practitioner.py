@@ -60,4 +60,8 @@ urlpatterns = [
          PractitionerPreviousNotesView.as_view(),
          name='practitioner-before-meeting-notes'
          ),
+    path('view-patients',
+         PractitionerAllPatientsView.as_view(),
+         name='practitioner-view-patients'
+         ),
 ]
