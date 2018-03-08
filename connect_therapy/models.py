@@ -15,6 +15,7 @@ class Patient(models.Model):
     gender = models.CharField(max_length=1, choices=gender_choices)
     mobile = models.CharField(max_length=20)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email_confirmed = models.BooleanField(default=False)
 
     def __str__(self):
         """Return the Patient's full name"""
@@ -28,6 +29,7 @@ class Practitioner(models.Model):
     postcode = models.CharField(max_length=10)
     mobile = models.CharField(max_length=20)
     is_approved = models.BooleanField(default=False)
+    email_confirmed = models.BooleanField(default=False)
     bio = models.TextField()
 
     def __str__(self):

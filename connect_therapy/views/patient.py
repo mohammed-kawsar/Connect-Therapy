@@ -1,3 +1,5 @@
+from datetime import timedelta, time
+
 from django import forms
 from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,6 +14,7 @@ from django.views.generic.edit import FormMixin
 
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, PatientForm, PatientUserForm, PatientEditMultiForm
+from connect_therapy import notifications
 from connect_therapy.models import Patient, Appointment
 
 
@@ -99,18 +102,45 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
     def form_valid(self, form):
         # Here, we would record the user's interest using the message
         # passed in form.cleaned_data['message']
+        notifications.appointment_cancelled_by_patient(
+            self.object.patient,
+            self.object,
+            self.object.start_date_and_time < timezone.now() + timedelta(hours=24)
+        )
         self.object.patient = None
         self.object.save()
+        self.split_merged_appointment()
 
         return super(PatientCancelAppointmentView, self).form_valid(form)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
-        if form.is_valid():
+        if form.is_valid() and self.object.start_date_and_time > timezone.now():
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+    def split_merged_appointment(self):
+        original_length = self.object.length
+
+        if original_length.minute == 30:
+            return
+
+        self.object.length = time(minute=30)
+        self.object.patient = None
+        number_of_appointments = \
+            (original_length.hour * 60 + original_length.minute) // 30
+        for i in range(1, number_of_appointments):
+            appointment = Appointment(
+                practitioner=self.object.practitioner,
+                patient=None,
+                length=time(minute=30),
+                start_date_and_time=self.object.start_date_and_time
+                                    + timedelta(minutes=30 * i)
+            )
+            appointment.save()
+            self.object.save()
 
 
 class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
@@ -118,7 +148,7 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
 
-
+    
 class PatientProfile(LoginRequiredMixin, generic.TemplateView):
     template_name = 'connect_therapy/patient/profile.html'
 
