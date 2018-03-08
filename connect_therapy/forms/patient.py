@@ -13,7 +13,6 @@ class PatientSignUpForm(UserCreationForm):
     gender = forms.ChoiceField(choices=Patient.gender_choices,
                                widget=forms.Select(
                                    attrs={'class': 'form-control',
-                                          'placeholder': 'F'
                                           }))
     mobile = forms.CharField(max_length=20,
                              widget=forms.TextInput(
@@ -46,17 +45,17 @@ class PatientSignUpForm(UserCreationForm):
             'email': forms.TextInput(attrs={'size': 35, 'class': 'form-control'}),
             'mobile': forms.TextInput(attrs={'class': 'form-control'}),
             'password1': forms.TextInput(attrs={'class': 'form-control'}),
-            'password2': forms.TextInput(attrs={'class': 'form-control'}),
+            'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
 
         }
 
 class PatientLoginForm(AuthenticationForm):
     username = UsernameField(
         max_length=254,
-        widget=forms.TextInput(attrs={
-            'autofocus': True,
-            'size': 35,
-        }, ),
+        widget=forms.TextInput(
+            attrs={'autofocus': True,
+                   'size': 35,
+                   'class': 'form-control'}, ),
         label="Email"
     )
 
