@@ -367,11 +367,26 @@ class PatientEditDetailsView(UpdateView):
         return kwargs
 
 
-class ViewPractitioners(LoginRequiredMixin,generic.ListView):
+class ViewPractitioners(UserPassesTestMixin, generic.ListView):
     login_url = reverse_lazy('connect_therapy:patient-login')
     model = Practitioner
-    template_name = 'connect_therapy/patient/list-practitioners.html'
+    template_name = 'connect_therapy/patient/bookings/list-practitioners.html'
     context_object_name = "practitioners"
+
+    def test_func(self):
+        logged_in = self.request.user.is_authenticated
+
+        if not logged_in:
+            return False
+
+        from django.core.exceptions import ObjectDoesNotExist
+        try:
+            Practitioner.objects.get(user=self.request.user)
+            not_practitioner = False
+        except ObjectDoesNotExist:
+            not_practitioner = True
+
+        return not_practitioner and logged_in;
 
     def get_queryset(self):
         return Practitioner.objects.all()

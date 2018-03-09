@@ -13,7 +13,7 @@ class TestSMS(TestCase):
     def test__send_sms(self):
         error = False
         try:
-            _send_sms("+447476605233", "Hello")
+            _send_sms("+447940236488", "Hello")
         except Exception:
             error = True
 

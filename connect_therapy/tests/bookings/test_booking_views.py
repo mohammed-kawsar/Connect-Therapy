@@ -107,3 +107,24 @@ class AppointmentBookingViewTest(TestCase):
         resp = self.client.get(reverse_lazy('connect_therapy:checkout'))
 
         self.assertRedirects(resp, '/patient/login?next=/patient/checkout')
+
+    def test_correct_page_if_user_visits_list_practitioner_page(self):
+        login = self.client.login(username="testuser1", password="12345")
+        resp = self.client.get(reverse_lazy('connect_therapy:view-practitioners'))
+
+        # Check our user is logged in
+        self.assertEqual(str(resp.context['user']), 'testuser1')
+        # Check that we got a response "success"
+        self.assertEqual(resp.status_code, 200)
+
+        # Check we used correct template
+        self.assertTemplateUsed(resp, 'connect_therapy/patient/bookings/list-practitioners.html')
+
+    def test_redirect_if_anonymous_visits_list_practitioner_page(self):
+        resp = self.client.get(reverse_lazy('connect_therapy:view-practitioners'))
+        self.assertRedirects(resp, '/patient/login?next=/patient/view-practitioners')
+
+    def test_redirect_if_practitioner_visits_list_practitioner_page(self):
+        login = self.client.login(username="testuser3", password="12345")
+        resp = self.client.get(reverse_lazy('connect_therapy:view-practitioners'))
+        self.assertRedirects(resp, '/patient/login?next=/patient/view-practitioners')
