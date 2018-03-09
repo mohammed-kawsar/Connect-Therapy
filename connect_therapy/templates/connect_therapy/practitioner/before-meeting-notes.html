@@ -2,8 +2,11 @@
 {% block title %}Practitioner Notes{% endblock %}
 
 {% block content %}
+<div class="jumbotron">
     <h3>Notes Before Meeting</h3>
-    <div class="practitionerMeetingNotes">
-        {{ appointment.patient_notes_before_meeting }}
+    <hr class="my-4">
+        <p class="lead">{{ appointment.patient_notes_before_meeting }}</p>
+        <a href="{% url 'connect_therapy:practitioner-my-appointments' %}" class="btn btn-primary"> Go Back</a>
     </div>
+    <br><br>
 {% endblock %}

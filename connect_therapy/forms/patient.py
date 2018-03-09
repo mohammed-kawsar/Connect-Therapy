@@ -16,8 +16,7 @@ class PatientSignUpForm(UserCreationForm):
                                           }))
     mobile = forms.CharField(max_length=20,
                              widget=forms.TextInput(
-                                 attrs={'class': 'form-control',
-                                        'placeholder': 'Mobile'}))
+                                 attrs={'class': 'form-control'}))
 
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -39,8 +38,8 @@ class PatientSignUpForm(UserCreationForm):
                   'password2')
 
         widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'gender': forms.Select(attrs={'class': 'form-control'}),
             'email': forms.TextInput(attrs={'size': 35, 'class': 'form-control'}),
             'mobile': forms.TextInput(attrs={'class': 'form-control'}),

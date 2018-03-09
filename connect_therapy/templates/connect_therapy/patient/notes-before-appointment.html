@@ -2,9 +2,11 @@
 {% block title %}Patient notes before appointment{% endblock %}
 
 {% block content %}
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="submit" />
-</form>
+<div class="jumbotron">
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-primary" value="submit" />
+    </form>
+</div>
 {% endblock %}

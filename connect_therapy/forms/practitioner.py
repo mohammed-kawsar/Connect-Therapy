@@ -43,10 +43,9 @@ class PractitionerSignUpForm(UserCreationForm):
 class PractitionerLoginForm(AuthenticationForm):
     username = UsernameField(
         max_length=254,
-        widget=forms.TextInput(attrs={
-            'autofocus': True,
-            'size': 35,
-        }, ),
+        widget=forms.TextInput(attrs={'autofocus': True,
+                                      'size': 35,
+                                      'class': 'form-control'}, ),
         label="Email"
     )
 
@@ -68,5 +67,10 @@ class PractitionerLoginForm(AuthenticationForm):
 
 
 class PractitionerNotesForm(forms.Form):
-    practitioner_notes = forms.CharField(label="notes for practitioner", widget=forms.Textarea)
-    patient_notes_by_practitioner = forms.CharField(label="notes for patient", widget=forms.Textarea)
+    practitioner_notes = forms.CharField(label="Notes for Practitioner",
+                                         widget=forms.Textarea(
+                                             attrs={'class': 'form-control'}))
+    patient_notes_by_practitioner = forms.CharField(label="Notes for Patient",
+                                                    widget=forms.Textarea(
+                                                        attrs={'class': 'form-control'}
+                                                    ))
