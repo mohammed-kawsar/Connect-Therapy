@@ -1,4 +1,5 @@
 import hashlib
+
 from datetime import datetime, timedelta
 from functools import partial
 
@@ -7,6 +8,9 @@ from dateutil import parser
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+
+from django.db.models.signals import post_save
+
 
 
 class Patient(models.Model):
@@ -19,6 +23,7 @@ class Patient(models.Model):
     gender = models.CharField(max_length=1, choices=gender_choices)
     mobile = models.CharField(max_length=20)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email_confirmed = models.BooleanField(default=False)
 
     def __str__(self):
         """Return the Patient's full name"""
@@ -32,6 +37,7 @@ class Practitioner(models.Model):
     postcode = models.CharField(max_length=10)
     mobile = models.CharField(max_length=20)
     is_approved = models.BooleanField(default=False)
+    email_confirmed = models.BooleanField(default=False)
     bio = models.TextField()
 
     def __str__(self):

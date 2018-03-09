@@ -1,19 +1,26 @@
+from datetime import timedelta, time
+
 from django import forms
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from django.views.generic import FormView, DetailView, TemplateView
+from django.views.generic import FormView, DetailView, UpdateView
+from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin
 
+from connect_therapy import notifications
+from connect_therapy.forms.patient import AppointmentDateSelectForm
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
-    PatientNotesBeforeForm, AppointmentDateSelectForm
-from connect_therapy.models import Patient, Appointment, Practitioner
-from connect_therapy.notifications import multiple_appointments_booked
+    PatientNotesBeforeForm, PatientEditMultiForm
+from connect_therapy.models import Patient, Appointment
+from connect_therapy.models import Practitioner
 
 
 class PatientSignUpView(FormView):
@@ -100,18 +107,45 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
     def form_valid(self, form):
         # Here, we would record the user's interest using the message
         # passed in form.cleaned_data['message']
+        notifications.appointment_cancelled_by_patient(
+            self.object.patient,
+            self.object,
+            self.object.start_date_and_time < timezone.now() + timedelta(hours=24)
+        )
         self.object.patient = None
         self.object.save()
+        self.split_merged_appointment()
 
         return super(PatientCancelAppointmentView, self).form_valid(form)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
-        if form.is_valid():
+        if form.is_valid() and self.object.start_date_and_time > timezone.now():
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+    def split_merged_appointment(self):
+        original_length = self.object.length
+
+        if original_length.minute == 30:
+            return
+
+        self.object.length = time(minute=30)
+        self.object.patient = None
+        number_of_appointments = \
+            (original_length.hour * 60 + original_length.minute) // 30
+        for i in range(1, number_of_appointments):
+            appointment = Appointment(
+                practitioner=self.object.practitioner,
+                patient=None,
+                length=time(minute=30),
+                start_date_and_time=self.object.start_date_and_time
+                                    + timedelta(minutes=30 * i)
+            )
+            appointment.save()
+            self.object.save()
 
 
 class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
@@ -283,7 +317,51 @@ class Checkout(UserPassesTestMixin, TemplateView):
 
             # go ahead and book those appointments
             if Appointment.book_appointments(appointments_to_book, self.patient):
-                multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
+                notifications.multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
                 return render(request, "connect_therapy/patient/bookings/booking-success.html", {})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
+
+
+class PatientProfile(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'connect_therapy/patient/profile.html'
+
+    @login_required
+    def view_profile(self, request):
+        user = request.user
+        args = {'user': user}
+        return render(request, args)
+
+
+class PatientEditDetailsView(UpdateView):
+    model = Patient
+    template_name = 'connect_therapy/patient/edit-profile.html'
+    form_class = PatientEditMultiForm
+    success_url = reverse_lazy('connect_therapy:patient-profile')
+
+    def form_valid(self, form):
+        self.object.user.username = form.cleaned_data['user']['email']
+        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        try:
+            user = User.objects.get(username=form.cleaned_data['user']['email'])
+            if form.is_valid():
+                return self.form_valid(form)
+        except User.DoesNotExist:
+            # if User.objects.get(email=user.email) == user.email:
+            #     return self.form_valid(form)
+            if form.is_valid():
+                return self.form_valid(form)
+
+        return self.form_invalid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super(PatientEditDetailsView, self).get_form_kwargs()
+        kwargs.update(instance={
+            'user': self.object.user,
+            'patient': self.object,
+        })
+        return kwargs
