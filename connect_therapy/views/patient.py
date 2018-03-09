@@ -365,3 +365,13 @@ class PatientEditDetailsView(UpdateView):
             'patient': self.object,
         })
         return kwargs
+
+
+class ViewPractitioners(LoginRequiredMixin,generic.ListView):
+    login_url = reverse_lazy('connect_therapy:patient-login')
+    model = Practitioner
+    template_name = 'connect_therapy/patient/list-practitioners.html'
+    context_object_name = "practitioners"
+
+    def get_queryset(self):
+        return Practitioner.objects.all()

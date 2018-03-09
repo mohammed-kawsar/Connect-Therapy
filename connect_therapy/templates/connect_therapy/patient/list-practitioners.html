@@ -1,0 +1,26 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}List of Therapists{% endblock %}
+{% block header %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'connect_therapy/css/list-practitoners.css' %}" type="text/css">
+{% endblock %}
+{% block content %}
+    <table class="table table-hover">
+        <tr>
+            <th>Practitioner</th>
+            <th></th>
+        </tr>
+        {% for practitioner in practitioners %}
+            <tr>
+                <td>Dr. {{ practitioner.user.get_full_name }}</td>
+                <td>
+                    <button class="btn"><a style="text-decoration: none"
+                                                    href="{% url 'connect_therapy:book-appointment' practitioner.id %}">
+                        View Appointments
+                    </a></button>
+                </td>
+            </tr>
+        {% endfor %}
+
+    </table>
+{% endblock %}

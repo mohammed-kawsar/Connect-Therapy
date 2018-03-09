@@ -1,5 +1,4 @@
 from django.urls import path
-from django.views.generic import TemplateView
 
 from connect_therapy.views.patient import *
 
@@ -64,7 +63,6 @@ urlpatterns = [
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'
          ),
-
     path('book-appointment/<int:pk>',
          ViewBookableAppointments.as_view(),
          name='book-appointment'
@@ -75,7 +73,6 @@ urlpatterns = [
     path('checkout',
          Checkout.as_view(),
          name='checkout'),
-
     path('profile',
          PatientProfile.as_view(),
          name='patient-profile'
@@ -83,6 +80,10 @@ urlpatterns = [
     path('profile/edit/<int:pk>',
          PatientEditDetailsView.as_view(),
          name='patient-profile-edit'
+         ),
+    path('view-practitioners',
+         ViewPractitioners.as_view(),
+         name='view-practitioners'
          ),
 
 ]
