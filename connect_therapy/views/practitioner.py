@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.views import generic
 from django.views.generic import FormView
 
-from connect_therapy.forms.practitioner import PractitionerSignUpForm,\
+from connect_therapy.forms.practitioner import PractitionerSignUpForm, \
     PractitionerLoginForm, PractitionerNotesForm
 from connect_therapy.models import Practitioner, Appointment
 
