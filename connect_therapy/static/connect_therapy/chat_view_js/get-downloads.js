@@ -1,9 +1,10 @@
 function getDownloadsAJAX() {
-    // Disable the button for 10 seconds to prevent the user from constantly sending AJAX requests to the server
+    // Disable the refresh button for 15 seconds to prevent the user
+    // from constantly sending AJAX requests to the server
     document.getElementById("download-refresh-button").disabled = true;
     setTimeout(function () {
         document.getElementById("download-refresh-button").disabled = false;
-    }, 10000);
+    }, 15000);
     $.ajax({
         url: ajax_download_url, // use the global variable we defined in chat.html
         type: "get", //send it through get method
