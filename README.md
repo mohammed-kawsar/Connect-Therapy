@@ -17,6 +17,7 @@ You MUST set up `python manage.py reminders` to run at 9am every day using
 
 You must change the twilio keys in settings.py they are test keys
 
+### AWS
 You MUST also add the following:
 
 ```[default]```
