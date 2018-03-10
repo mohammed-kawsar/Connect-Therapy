@@ -1,7 +1,8 @@
-from django.db import models
-from django.contrib.auth.models import User
-from functools import partial
 import hashlib
+from functools import partial
+
+from django.contrib.auth.models import User
+from django.db import models
 
 
 class Patient(models.Model):
@@ -84,3 +85,7 @@ class Appointment(models.Model):
         return "{} - {} for {}".format(str(self.practitioner),
                                        str(self.start_date_and_time),
                                        str(self.length))
+
+
+class File(models.Model):
+    file = models.FileField()
