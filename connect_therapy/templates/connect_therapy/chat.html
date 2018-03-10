@@ -2,11 +2,15 @@
 {% block title %}Chat{% endblock %}
 
 {% block header %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    {% load static %}
+
+    {# FILE DOWNLOAD SCRIPTS START -------------------------------------------------------------------------------- #}
+    {# NEED THE FULL JQUERY LIBRARY #}
     <script src="https://code.jquery.com/jquery-3.3.1.js"
             integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
             crossorigin="anonymous"></script>
-
-    {% load static %}
 
     {# JQUERY FILE UPLOAD SCRIPTS #}
     <script src="{% static 'connect_therapy/file_picker/jquery-file-upload/js/vendor/jquery.ui.widget.js' %}"></script>
@@ -16,27 +20,36 @@
     {# OUR UPLOAD SCRIPTS #}
     <script src="{% static 'connect_therapy/file_picker/basic-upload.js' %}"></script>
 
+    {# THIS WILL HANDLE THE VISUAL DOWNLOAD COMPONENTS #}
+    <script src="{% static 'connect_therapy/file_picker/set-components.js' %}"></script>
+    <script src="{% static '/connect_therapy/file_picker/get-downloads.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'connect_therapy/file_picker/file_upload_download.css' %}" type="text/css">
 
+    {# FILE DOWNLOAD SCRIPTS END -------------------------------------------------------------------------------- #}
+
+    {# WEB CHAT RELATED SCRIPTS BELOW #}
     <script src="https://simplewebrtc.com/latest-v2.js"></script>
-    {% load static %}
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <!-- Keep the order of js imports as is below -->
     <script src="{% static 'connect_therapy/chat_view_js/main.js' %}"></script>
     <script src="{% static 'connect_therapy/chat_view_js/webrtc.js' %}"></script>
     <script src="{% static 'connect_therapy/chat_view_js/webrtc-controls.js' %}"></script>
-    <script src="{% static 'connect_therapy/chat_view_js/get-downloads.js' %}"></script>
+
 
     <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/webrtc.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/file_upload_download.css' %}" type="text/css">
 {% endblock %}
 
 {% block content %}
-    <noscript><h3>This page won't work properly without JavaScript. Please enable it via your browser settings</h3>
+    <noscript>
+        <div class="jumbotron">
+            <h2>This page will not work fully without JavaScript enabled</h2>
+            <h3>Please enable JavaScript via your browser settings to be able to use all the features of this page</h3>
+        </div>
     </noscript>
+
     <script>
         // declare some variable which will be needed in other JavaScript files
+        // need these as we cannot access template data in other .js files
         var session_id = "{{ object.session_id }}";
-
         var ajax_download_url = "{% url 'connect_therapy:file-download' object.id %}"
     </script>
 
@@ -102,7 +115,7 @@
                 </div>
             </div>
             <div class="col-sm">
-                <!-- Modal -->
+                <!-- Modal Start -->
                 <div id="myModal" class="modal fade" role="dialog">
                     <div class="modal-dialog modal-lg">
 
@@ -150,11 +163,11 @@
                                     </table>
                                 </div>
                                 <div class="form-group" id="download-form">
+                                    <button class="btn btn-primary" onclick="getDownloadsAJAX() "
+                                            id="download-refresh-button">
+                                        🔃 Refresh List
+                                    </button>
                                     {% if downloadable_files|length > 0 %}
-                                        <button class="btn btn-primary" onclick="getDownloadsAJAX() "
-                                                id="download-refresh-button">
-                                            🔃 Refresh List
-                                        </button>
                                         <table class="table" id="download-table">
                                             <thead>
                                             <th>File</th>
@@ -177,8 +190,11 @@
                             </div>
                         </div>
 
+
                     </div>
+
                 </div>
+                <!-- Model end -->
             </div>
         </div>
     </div>

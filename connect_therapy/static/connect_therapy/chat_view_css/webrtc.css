@@ -86,7 +86,7 @@ span.emoji {
     }
 }
 
-@media screen and (max-width: 1220px) {
+@media screen and (max-width: 800px) {
     #localVideo {
         visibility: hidden;
     }

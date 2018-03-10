@@ -16,12 +16,7 @@ class ChatView(UserPassesTestMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.get_object().id))
-
-        downloadable_file_list = []
-        for file in files_for_appointment:
-            downloadable_file_list.append(
-                [file.split("/")[1], FileDownloadView.generate_presigned_url(self, file)]
-            )
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self,files_for_appointment)
 
         form = FileForm()
         super().get(request, *args, **kwargs)
@@ -125,7 +120,15 @@ class FileDownloadView(DetailView):
 
         return files
 
-    def generate_presigned_url(self, key):
+    def generate_pre_signed_url_for_each(self, files):
+        downloadable_file_list = []
+        for file in files:
+            downloadable_file_list.append(
+                [file.split("/")[1], FileDownloadView._generate_presigned_url(self, file)]
+            )
+        return downloadable_file_list
+
+    def _generate_presigned_url(self, key):
         import boto3
         url = boto3.client('s3', config=boto3.session.Config(signature_version='s3v4',
                                                              region_name='eu-west-2')).generate_presigned_url(
