@@ -1,6 +1,12 @@
 from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.shortcuts import get_object_or_404
+from django import forms
+from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
@@ -9,6 +15,10 @@ from django.views.generic.edit import FormMixin
 
 from connect_therapy.forms.practitioner import PractitionerSignUpForm,\
     PractitionerLoginForm, PractitionerNotesForm
+from django.contrib.auth.forms import PasswordChangeForm
+from django.views.generic import FormView, DetailView, UpdateView
+from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
+    PractitionerNotesForm, PractitionerEditMultiForm, PractitionerForm, PractitionerUserForm
 from connect_therapy.models import Practitioner, Appointment
 
 
@@ -107,3 +117,63 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
 
     def test_func(self):
         return self.request.user.id == self.get_object().practitioner.user.id
+
+
+
+class PractitionerProfile(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'connect_therapy/practitioner/profile.html'
+
+    @login_required
+    def view_profile(self, request):
+        user = request.user
+        args = {'user': user}
+        return render(request, args)
+
+
+class PractitionerEditDetailsView(UpdateView):
+    model = Practitioner
+    template_name = 'connect_therapy/practitioner/edit-profile.html'
+    form_class = PractitionerEditMultiForm
+    success_url = reverse_lazy('connect_therapy:practitioner-profile')
+
+    def form_valid(self, form):
+        self.object.user.username = form.cleaned_data['user']['email']
+        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        try:
+            user = User.objects.get(username=form.cleaned_data['user']['email'])
+            if user == self.object.user:
+                return self.form_valid(form)
+        except User.DoesNotExist:
+            if form.is_valid():
+                return self.form_valid(form)
+
+        return self.form_invalid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super(PractitionerEditDetailsView, self).get_form_kwargs()
+        kwargs.update(instance={
+            'user': self.object.user,
+            'practitioner': self.object,
+        })
+        return kwargs
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('/practitioner/profile')
+        else:
+            return redirect('/practitioner/profile/change-password')
+    else:
+        form = PasswordChangeForm(user=request.user)
+        args = {'form': form}
+        return render(request, 'connect_therapy/practitioner/change-password.html', args)
