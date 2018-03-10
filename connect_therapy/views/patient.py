@@ -166,7 +166,6 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
         return self.request.user.id == self.get_object().patient.user.id
 
 
-
 class PatientProfile(LoginRequiredMixin, generic.TemplateView):
     template_name = 'connect_therapy/patient/profile.html'
 
@@ -177,11 +176,16 @@ class PatientProfile(LoginRequiredMixin, generic.TemplateView):
         return render(request, args)
 
 
-class PatientEditDetailsView(UpdateView):
+class PatientEditDetailsView(UserPassesTestMixin,UpdateView):
     model = Patient
     template_name = 'connect_therapy/patient/edit-profile.html'
     form_class = PatientEditMultiForm
     success_url = reverse_lazy('connect_therapy:patient-profile')
+    login_url = reverse_lazy('connect_therapy:patient-profile')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.id == self.get_object().user.id
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']

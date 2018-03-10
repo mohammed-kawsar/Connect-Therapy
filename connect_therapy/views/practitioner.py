@@ -119,7 +119,6 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
         return self.request.user.id == self.get_object().practitioner.user.id
 
 
-
 class PractitionerProfile(LoginRequiredMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/profile.html'
 
@@ -130,11 +129,16 @@ class PractitionerProfile(LoginRequiredMixin, generic.TemplateView):
         return render(request, args)
 
 
-class PractitionerEditDetailsView(UpdateView):
+class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
     model = Practitioner
     template_name = 'connect_therapy/practitioner/edit-profile.html'
     form_class = PractitionerEditMultiForm
     success_url = reverse_lazy('connect_therapy:practitioner-profile')
+    login_url = reverse_lazy('connect_therapy:practitioner-profile')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.id == self.get_object().user.id
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
