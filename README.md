@@ -10,3 +10,10 @@ https://github.com/leemunroe/responsive-html-email-template
 https://github.com/blueimp/jQuery-File-Upload
 
 https://github.com/andyet/SimpleWebRTC -- The Web RTC API we used.
+
+## Setup
+You MUST set up `python manage.py reminders` to run at 9am every day using
+`at` on Windows, or `cron` on UNIX-like operating systems
+
+You must change the twilio keys in settings.py they are test keys
+
