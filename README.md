@@ -20,7 +20,9 @@ You must change the twilio keys in settings.py they are test keys
 You MUST also add the following:
 
 `[default]
+
 aws_access_key_id = AKIAI2LWWJECKZ6F56YA
+
 aws_secret_access_key = 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`
 
 to ~/.aws/credentials
