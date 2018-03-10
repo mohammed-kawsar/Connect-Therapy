@@ -16,6 +16,7 @@ from connect_therapy import notifications
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, PatientEditMultiForm
 from connect_therapy.models import Patient, Appointment
+from connect_therapy.views.views import FileDownloadView
 
 
 class PatientSignUpView(FormView):
@@ -155,6 +156,16 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     login_url = reverse_lazy('connect_therapy:patient-appointment-notes')
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.object.id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
+
+        context['downloadable_files'] = downloadable_file_list
+
+        return context
 
 
 class PatientProfile(LoginRequiredMixin, generic.TemplateView):
