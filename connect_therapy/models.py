@@ -12,7 +12,6 @@ from django.db import models
 from django.db.models.signals import post_save
 
 
-
 class Patient(models.Model):
     date_of_birth = models.DateField()
     gender_choices = (
@@ -93,9 +92,10 @@ class Appointment(models.Model):
     def __str__(self):
         """Return a string representation of Appointment"""
         return "{} - {} for {}".format(str(self.practitioner),
-                                            str(self.start_date_and_time),
-                                            str(self.length))
+                                       str(self.start_date_and_time),
+                                       str(self.length))
 
+     
     @classmethod
     def book_appointments(cls, appointments, patient):
         """
@@ -303,3 +303,7 @@ class Appointment(models.Model):
                     appointments.remove(other_app)
 
         return appointments
+      
+      
+class File(models.Model):
+    file = models.FileField()

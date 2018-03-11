@@ -21,6 +21,7 @@ from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, PatientEditMultiForm
 from connect_therapy.models import Patient, Appointment
 from connect_therapy.models import Practitioner
+from connect_therapy.views.views import FileDownloadView
 
 
 class PatientSignUpView(FormView):
@@ -75,6 +76,7 @@ class PatientNotesBeforeView(LoginRequiredMixin, FormView):
     form_class = PatientNotesBeforeForm
     template_name = 'connect_therapy/patient/notes-before-appointment.html'
     success_url = reverse_lazy('connect_therapy:patient-my-appointments')
+    appointment = Appointment
 
     def form_valid(self, form):
         self.appointment.patient_notes_before_meeting = \
@@ -84,7 +86,14 @@ class PatientNotesBeforeView(LoginRequiredMixin, FormView):
 
     def get(self, request, appointment_id):
         self.appointment = get_object_or_404(Appointment, pk=appointment_id)
-        return super.get(request)
+
+        from connect_therapy.views.views import FileDownloadView
+        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.appointment.id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
+
+        return render(request, self.get_template_names(), {'appointment': self.appointment,
+                                                           'form': self.get_form(),
+                                                           "downloadable_files": downloadable_file_list})
 
     def post(self, request, appointment_id):
         self.appointment = get_object_or_404(Appointment, pk=appointment_id)
@@ -153,6 +162,16 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.object.id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
+
+        context['downloadable_files'] = downloadable_file_list
+
+        return context
 
 class ViewBookableAppointments(UserPassesTestMixin, DetailView):
     template_name = "connect_therapy/patient/bookings/view-available.html"
