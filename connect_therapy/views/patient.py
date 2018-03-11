@@ -171,9 +171,11 @@ def change_password(request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-            return redirect('/patient/profile')
+            return redirect(reverse_lazy('connect_therapy:patient-profile'))
         else:
-            return redirect('/patient/profile/change-password')
+            return redirect(reverse_lazy(
+                'connect_therapy:patient-change-password')
+            )
     else:
         form = PasswordChangeForm(user=request.user)
         args = {'form': form}
