@@ -1,21 +1,26 @@
 from datetime import timedelta, time
 
 from django import forms
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
 from django.views.generic import FormView, DetailView, UpdateView
+from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
+from connect_therapy.forms.patient import AppointmentDateSelectForm
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, PatientEditMultiForm
 from connect_therapy.models import Patient, Appointment
+from connect_therapy.models import Practitioner
 from connect_therapy.views.views import FileDownloadView
 
 
@@ -157,6 +162,7 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
 
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -166,6 +172,174 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
         context['downloadable_files'] = downloadable_file_list
 
         return context
+
+class ViewBookableAppointments(UserPassesTestMixin, DetailView):
+    template_name = "connect_therapy/patient/bookings/view-available.html"
+    model = Practitioner
+    login_url = reverse_lazy('connect_therapy:patient-login')
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            patient = Patient.objects.get(user=self.request.user)
+            return True
+        except Patient.DoesNotExist:
+            return False
+
+    def get(self, request, pk):
+        # define the object for the detail view
+        self.object = self.get_object()
+        form = AppointmentDateSelectForm
+        return render(self.request,
+                      self.template_name,
+                      context={"form": form,
+                               "object": self.object})
+
+    def post(self, request, pk):
+        self.object = self.get_object()
+        practitioner = Practitioner.objects.filter(pk=pk)
+        form = AppointmentDateSelectForm(request.POST)
+        if form.is_valid():
+            date = form.cleaned_data['date']
+            # pk = practitioner id
+            appointments = Appointment.get_valid_appointments(date, pk)
+
+            return render(self.request,
+                          self.template_name,
+                          context={"form": form,
+                                   "appointments": appointments,
+                                   "object": self.get_object()})
+        else:
+            return self.get(request)
+
+
+class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
+    template_name = 'connect_therapy/patient/bookings/review-selection.html'
+    login_url = reverse_lazy('connect_therapy:patient-login')
+    patient = Patient()
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            self.patient = Patient.objects.get(user=self.request.user)
+            return True
+        except Patient.DoesNotExist:
+            return False
+
+    def post(self, request, *args, **kwargs):
+        app_ids = request.POST.getlist('app_id')
+        practitioner_id = kwargs['pk']
+
+        if len(app_ids) == 0:
+            messages.warning(request, "You haven't selected any appointments")
+            return ViewBookableAppointments.get(self, request, practitioner_id)
+
+        return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id)
+
+    def _deal_with_appointments(self, request, app_ids, practitioner_id):
+        valid_appointments = Appointment.check_validity(selected_appointments_id=app_ids,
+                                                        selected_practitioner=practitioner_id)
+
+        if valid_appointments is not False:
+            overlap_free, appointments_to_book = Appointment.get_appointment_overlaps(valid_appointments,
+                                                                                      patient=self.patient)
+            if overlap_free is False:
+                # valid appointments but overlap exists
+                clashes = appointments_to_book
+                return render(request, self.get_template_names(), context={"clashes": clashes})
+            else:
+                # all valid
+                bookable_appointments, merged_appointments = Appointment.merge_appointments(appointments_to_book)
+
+                # show user message about merged appointments
+                if len(merged_appointments) == 1:
+                    messages.success(request, str(len(merged_appointments)) + " appointment was merged")
+                elif len(merged_appointments) > 1:
+                    messages.success(request, str(len(merged_appointments)) + " appointments were merged")
+
+                # add to session data - used by the checkout
+                request.session['bookable_appointments'] = self._appointments_to_dictionary_list(bookable_appointments)
+                request.session['merged_appointments'] = self._appointments_to_dictionary_list(merged_appointments)
+                request.session['patient_id'] = self.patient.id
+                return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments,
+                                                                   "merged_appointments": merged_appointments,
+                                                                   "practitioner_id": practitioner_id})
+        else:
+            # appointments not valid
+            invalid_appointments = True
+            return render(request, self.get_template_names(), context={"invalid_appointments": invalid_appointments})
+
+    @staticmethod
+    def _appointments_to_dictionary_list(appointments):
+        dict_list = []
+        for app in appointments:
+            appointment_dict = {'id': app.id, 'practitioner_id': app.practitioner.id,
+                                'start_date_and_time': str(app.start_date_and_time), 'length': str(app.length),
+                                'session_id': str(app.session_id), 'session_salt': str(app.session_salt)}
+            dict_list.append(appointment_dict)
+        return dict_list
+
+
+class Checkout(UserPassesTestMixin, TemplateView):
+    login_url = reverse_lazy('connect_therapy:patient-login')
+    template_name = "connect_therapy/patient/bookings/checkout.html"
+    patient = Patient()
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            self.patient = Patient.objects.get(user=self.request.user)
+            return True
+        except Patient.DoesNotExist:
+            return False
+
+    def get(self, request, *args, **kwargs):
+        appointments_to_book = []
+        try:
+            appointment_dictionary = request.session['bookable_appointments']
+        except KeyError:
+            return render(request, self.get_template_names(), {"appointments": appointments_to_book})
+        if appointment_dictionary is None:
+            return render(request, self.get_template_names(), {"appointments": appointments_to_book})
+        appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
+        return render(request, self.get_template_names(), {"appointments": appointments_to_book})
+
+    def post(self, request, *args, **kwargs):
+        # session_id would only be passed in to identify an appointment to delete
+        if 'session_id' in request.POST:
+            list_of_appointments = request.session['bookable_appointments']
+            if list_of_appointments is None:
+                return self.get(request, *args, **kwargs)
+            for app in list_of_appointments:
+                if app['session_id'] == request.POST['session_id']:
+                    request.session['bookable_appointments'] = list_of_appointments.remove(app)
+                    return self.get(request, *args, *kwargs)
+        elif 'checkout' in request.POST:
+            # TODO: Add payment gateway stuff here...probably
+
+            appointment_dictionary = request.session['bookable_appointments']
+            if appointment_dictionary is None:
+                return self.get(request, *args, **kwargs)
+            appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
+
+            # first delete the appointments we merged, if any
+            merged_dictionary = request.session['merged_appointments']
+            if merged_dictionary is None:
+                # no merges where made so we dont need to do anything with them
+                pass
+            else:
+                merged_appointment_list = Appointment.convert_dictionaries_to_appointments(merged_dictionary)
+                Appointment.delete_appointments(merged_appointment_list)
+
+            # go ahead and book those appointments
+            if Appointment.book_appointments(appointments_to_book, self.patient):
+                notifications.multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
+                return render(request, "connect_therapy/patient/bookings/booking-success.html", {})
+            else:
+                return HttpResponse("Failed to book. Patient object doesnt exist.")
 
 
 class PatientProfile(LoginRequiredMixin, generic.TemplateView):
@@ -210,3 +384,28 @@ class PatientEditDetailsView(UpdateView):
             'patient': self.object,
         })
         return kwargs
+
+
+class ViewPractitioners(UserPassesTestMixin, generic.ListView):
+    login_url = reverse_lazy('connect_therapy:patient-login')
+    model = Practitioner
+    template_name = 'connect_therapy/patient/bookings/list-practitioners.html'
+    context_object_name = "practitioners"
+
+    def test_func(self):
+        logged_in = self.request.user.is_authenticated
+
+        if not logged_in:
+            return False
+
+        from django.core.exceptions import ObjectDoesNotExist
+        try:
+            Practitioner.objects.get(user=self.request.user)
+            not_practitioner = False
+        except ObjectDoesNotExist:
+            not_practitioner = True
+
+        return not_practitioner and logged_in;
+
+    def get_queryset(self):
+        return Practitioner.objects.all()

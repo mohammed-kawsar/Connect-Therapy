@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import DetailView
@@ -19,12 +21,22 @@ class ChatView(UserPassesTestMixin, DetailView):
         downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self,files_for_appointment)
 
         form = FileForm()
+        
+        if self.get_object().patient is None:
+            messages.info(request, "You should book an appointment to access this page")
+            return redirect(reverse_lazy('connect_therapy:book-appointment',
+                                         kwargs={'pk': self.get_object().practitioner.id}))
+
         super().get(request, *args, **kwargs)
         return render(request, self.get_template_names(), {"upload_form": form,
                                                            "object": self.get_object(),
                                                            "downloadable_files": downloadable_file_list})
 
     def test_func(self):
+        # if the patient is empty, we will let the user pass only to redirect them to the book appointment page
+        # for this appointment in the get method above
+        if self.get_object().patient is None:
+            return True
         return (self.request.user.id == self.get_object().patient.user.id) \
                or (self.request.user.id == self.get_object().practitioner.user.id)
 
