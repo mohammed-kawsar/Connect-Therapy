@@ -16,6 +16,9 @@
                 <td> {{ appointment.start_date_and_time }} </td>
                 <td> {{ appointment.length }} </td>
                 <td> {{ appointment.patient }} </td>
+                {% if appointment.patient != none %}
+                     <td>Patient: {{ appointment.patient.date_of_birth }}</td>
+                {%  endif %}
                 <td><a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"> Cancel Appointment</a> | <a href=""> View Notes</a></td>
             </tr>
         {% endfor %}
