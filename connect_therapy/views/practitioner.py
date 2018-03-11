@@ -97,6 +97,25 @@ class PractitionerCurrentNotesView(LoginRequiredMixin, generic.DetailView):
     template_name = 'connect_therapy/practitioner/before-meeting-notes.html'
 
 
+class PractitionerAllPatientsView(generic.TemplateView):
+    template_name = 'connect_therapy/practitioner/view-patients.html'
+    model = Appointment
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        appointments = Appointment.objects.filter(
+                practitioner=self.request.user.practitioner
+            ).order_by('-start_date_and_time')
+        patients_already_seen = []
+        appointments_unique_patient = []
+        for appointment in appointments:
+            if appointment.patient not in patients_already_seen:
+                appointments_unique_patient.append(appointment)
+                patients_already_seen.append(appointment.patient)
+        context['appointments'] = appointments_unique_patient
+        return context
+
+
 class PractitionerProfile(LoginRequiredMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/profile.html'
 
