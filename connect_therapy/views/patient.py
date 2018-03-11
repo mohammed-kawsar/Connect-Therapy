@@ -173,7 +173,8 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
 
         return context
 
-class ViewBookableAppointments(UserPassesTestMixin, DetailView):
+
+class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
     template_name = "connect_therapy/patient/bookings/view-available.html"
     model = Practitioner
     login_url = reverse_lazy('connect_therapy:patient-login')
@@ -214,7 +215,7 @@ class ViewBookableAppointments(UserPassesTestMixin, DetailView):
             return self.get(request)
 
 
-class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
+class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
     template_name = 'connect_therapy/patient/bookings/review-selection.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
     patient = Patient()
@@ -234,7 +235,7 @@ class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
 
         if len(app_ids) == 0:
             messages.warning(request, "You haven't selected any appointments")
-            return ViewBookableAppointments.get(self, request, practitioner_id)
+            return ViewBookableAppointmentsView.get(self, request, practitioner_id)
 
         return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id)
 
@@ -282,7 +283,7 @@ class ReviewSelectedAppointments(UserPassesTestMixin, TemplateView):
         return dict_list
 
 
-class Checkout(UserPassesTestMixin, TemplateView):
+class CheckoutView(UserPassesTestMixin, TemplateView):
     login_url = reverse_lazy('connect_therapy:patient-login')
     template_name = "connect_therapy/patient/bookings/checkout.html"
     patient = Patient()
@@ -342,7 +343,7 @@ class Checkout(UserPassesTestMixin, TemplateView):
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
 
 
-class PatientProfile(LoginRequiredMixin, generic.TemplateView):
+class PatientProfileView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'connect_therapy/patient/profile.html'
 
     @login_required
@@ -386,7 +387,7 @@ class PatientEditDetailsView(UpdateView):
         return kwargs
 
 
-class ViewPractitioners(UserPassesTestMixin, generic.ListView):
+class ViewAllPractitionersView(UserPassesTestMixin, generic.ListView):
     login_url = reverse_lazy('connect_therapy:patient-login')
     model = Practitioner
     template_name = 'connect_therapy/patient/bookings/list-practitioners.html'

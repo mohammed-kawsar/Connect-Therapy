@@ -64,17 +64,17 @@ urlpatterns = [
          name='patient-cancel-appointment'
          ),
     path('book-appointment/<int:pk>',
-         ViewBookableAppointments.as_view(),
+         ViewBookableAppointmentsView.as_view(),
          name='book-appointment'
          ),
     path('book-appointment/<int:pk>/review',
-         ReviewSelectedAppointments.as_view(),
+         ReviewSelectedAppointmentsView.as_view(),
          name='book-appointment-review'),
     path('checkout',
-         Checkout.as_view(),
+         CheckoutView.as_view(),
          name='checkout'),
     path('profile',
-         PatientProfile.as_view(),
+         PatientProfileView.as_view(),
          name='patient-profile'
          ),
     path('profile/edit/<int:pk>',
@@ -82,7 +82,7 @@ urlpatterns = [
          name='patient-profile-edit'
          ),
     path('view-practitioners',
-         ViewPractitioners.as_view(),
+         ViewAllPractitionersView.as_view(),
          name='view-practitioners'
          ),
 
