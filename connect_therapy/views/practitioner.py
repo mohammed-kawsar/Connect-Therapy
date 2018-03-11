@@ -191,3 +191,10 @@ class PractitionerAppointmentDelete(DeleteView):
     fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
               'patient_notes_by_practitioner']
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        notifications.appointment_cancelled_by_practitioner(self.object)
+        success_url = self.get_success_url()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
