@@ -64,4 +64,15 @@ urlpatterns = [
          PractitionerAllPatientsView.as_view(),
          name='practitioner-view-patients'
          ),
+    path('profile',
+         PractitionerProfile.as_view(),
+         name='practitioner-profile'
+         ),
+    path('profile/edit/<int:pk>',
+         PractitionerEditDetailsView.as_view(),
+         name='practitioner-profile-edit'
+         ),
+    path('practitioner/profile/change-password',
+         change_password,
+         name='practitioner-change-password'),
 ]

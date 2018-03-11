@@ -64,4 +64,12 @@ urlpatterns = [
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'
          ),
+    path('profile',
+         PatientProfile.as_view(),
+         name='patient-profile'
+         ),
+    path('profile/edit/<int:pk>',
+         PatientEditDetailsView.as_view(),
+         name='patient-profile-edit'
+         ),
 ]
