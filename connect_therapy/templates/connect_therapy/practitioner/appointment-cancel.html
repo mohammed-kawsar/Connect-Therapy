@@ -5,7 +5,8 @@
     <h1>Cancel your appointment</h1></br>
     <form action="" method="post">
         {% csrf_token %}
-        <p>Are you sure you want to cancel your appointment? "{{ object }}"?</p>
+        <h5>Are you sure you want to cancel the following appointment?</h5><br>
+        <p>{{ object }}</p>
         <input type="submit" value="Confirm" />
         <a href="{% url 'connect_therapy:practitioner-my-appointments'%}" class="btn btn-default">Back</a>
     </form>
