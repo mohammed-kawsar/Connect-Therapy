@@ -1,7 +1,8 @@
 {% extends 'connect_therapy/base.html' %}
-{% block title %}Cancel your appointment{% endblock %}
+{% block title %}Cancel appointment{% endblock %}
 
 {% block content %}
+    <h1>Cancel your appointment</h1></br>
     <form action="" method="post">
         {% csrf_token %}
         <p>Are you sure you want to cancel your appointment? "{{ object }}"?</p>

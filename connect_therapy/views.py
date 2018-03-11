@@ -1,12 +1,15 @@
+import re
+
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, request
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
 from django.views.generic import FormView, DetailView, DeleteView
+from django.template import Template, Context
 
 from connect_therapy.forms import *
 from connect_therapy.models import Patient, Practitioner, Appointment
@@ -158,14 +161,23 @@ class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
         over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
                                                                                       self.request.user.practitioner)
         if not over_lap_free:
-            print(str(over_laps))
-            return HttpResponse("You have overlaps " + str(over_laps))
+            over_laps_str = re.sub("<|>|\[\[|\]\]", "",str(over_laps))
+            over_laps_str = over_laps_str.replace(",", " and ")
+            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html', context={"overlaps": over_laps_str})
         else:
             appointment.save()
             return super().form_valid(form)
 
 
+
 class PractitionerAppointmentDelete(DeleteView):
+    model = Appointment
+    template_name = 'connect_therapy/practitioner/appointment-cancel.html'
+    fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
+              'patient_notes_by_practitioner']
+    success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+
+class PractitionerAppointmentOverlap(generic.TemplateView):
     model = Appointment
     template_name = 'connect_therapy/practitioner/appointment-cancel.html'
     fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
