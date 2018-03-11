@@ -1,0 +1,23 @@
+#form-container {
+    margin-left: 20px;
+}
+
+#upload-form #download-form {
+    margin: 10px 10px 5px;
+}
+
+#upload-button #download-refresh-button {
+    margin-bottom: 5px;
+}
+
+.progress {
+    margin: 10px;
+}
+
+a:hover {
+    color: cadetblue;
+}
+
+a {
+    color: black;
+}

@@ -1,0 +1,160 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Patient Notes{% endblock %}
+{% block header %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    {% load static %}
+    {# FILE DOWNLOAD SCRIPTS START -------------------------------------------------------------------------------- #}
+    {# NEED THE FULL JQUERY LIBRARY #}
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous"></script>
+
+    {# JQUERY FILE UPLOAD SCRIPTS #}
+    <script src="{% static 'connect_therapy/file_picker/jquery-file-upload/js/vendor/jquery.ui.widget.js' %}"></script>
+    <script src="{% static 'connect_therapy/file_picker/jquery-file-upload/js/jquery.iframe-transport.js' %}"></script>
+    <script src="{% static 'connect_therapy/file_picker/jquery-file-upload/js/jquery.fileupload.js' %}"></script>
+
+    {# OUR UPLOAD SCRIPTS #}
+    <script src="{% static 'connect_therapy/file_picker/basic-upload.js' %}"></script>
+
+    {# THIS WILL HANDLE THE VISUAL DOWNLOAD COMPONENTS #}
+    <script src="{% static 'connect_therapy/file_picker/set-components.js' %}"></script>
+    <script src="{% static '/connect_therapy/file_picker/get-downloads.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'connect_therapy/file_picker/file_upload_download.css' %}" type="text/css">
+
+    {# FILE DOWNLOAD SCRIPTS END -------------------------------------------------------------------------------- #}
+{% endblock %}
+{% block content %}
+
+    <script>
+        window.onload = function () {
+            hideUploadDownloadControls()
+        };
+        var ajax_download_url = "{% url 'connect_therapy:file-download' appointment.id %}"
+    </script>
+
+    <noscript>
+        <div class="container" style="margin: 10px">
+            <h3>This page will not work fully without JavaScript enabled</h3>
+            <h4>Please enable JavaScript via your browser settings to be able to use all the features of this page</h4>
+        </div>
+    </noscript>
+
+    <div class="notes">
+        <div class="jumbotron" style="margin-top: 10px;">
+            <h2>Review your appointment with {{ appointment.practitioner.user.get_full_name }} </h2>
+            <hr>
+            <h4>Which was on {{ appointment.start_date_and_time|date }} at {{ appointment.start_date_and_time|time }}</h4>
+            <hr>
+            <p>You can also upload or download (if some files were added) any files related to the appointment.</p>
+            <!-- Trigger the modal with a button -->
+            <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+                <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                    Upload/Download files
+                </button>
+            </nav>
+        </div>
+
+        <!-- Modal Start -->
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">File Upload/Download</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="upload-tab" onclick="showUpload()">Upload</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" id="download-tab"
+                                   onclick="showDownload()">Download</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="form-container">
+                        <div id="upload-form">
+                            <input id="fileupload" type="file" name="file" multiple
+                                   style="display: none;"
+                                   data-url="{% url 'connect_therapy:file-upload' appointment.id %}"
+                                   data-form-data='{"csrfmiddlewaretoken": "{{ csrf_token }}"}'>
+
+                            <button type="button" class="btn btn-primary js-upload-photos" id="upload-button">
+                                Upload files
+                            </button>
+                            <div class="progress">
+                                <div class="progress-bar" id="upload-progress" role="progressbar"
+                                     aria-valuenow="0" aria-valuemin="0"
+                                     aria-valuemax="100"></div>
+                            </div>
+
+                            <table class="table" id="uploaded-table">
+                                <thead>
+                                <th>Files uploaded</th>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-group" id="download-form">
+                            <button class="btn btn-primary" onclick="getDownloadsAJAX() "
+                                    id="download-refresh-button">
+                                🔃 Refresh List
+                            </button>
+                            {% if downloadable_files|length > 0 %}
+                                <table class="table" id="download-table">
+                                    <thead>
+                                    <th>File</th>
+                                    </thead>
+                                    <tbody>
+                                    {% for i,j in downloadable_files %}
+                                        <tr>
+                                            <td><a target="_blank" href="{{ j }}">{{ i }}</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <h3>Nothing has been uploaded yet.</h3>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+        <!-- Modal end -->
+        <div class="container">
+            {% if appointment.patient_notes_by_practitioner|length > 0 %}
+                <div class="container" style="margin: 10px;">
+                    <div class="row">
+                        <h3>Here are the notes added by your therapist at the end of this appointment:</h3>
+                        <p>{{ appointment.patient_notes_by_practitioner }}</p>
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="container" style="margin: 10px;">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <h3>It seems that {{ appointment.practitioner.user.get_full_name }} hasn't added any notes
+                                yet.</h3>
+                        </div>
+                    </div>
+                </div>
+
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

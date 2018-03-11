@@ -1,0 +1,12 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}File Download{% endblock %}
+
+{% block content %}
+    <h1>You're in the download page</h1>
+
+    <ul>
+        {% for file in files %}
+            <li>{{ file }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

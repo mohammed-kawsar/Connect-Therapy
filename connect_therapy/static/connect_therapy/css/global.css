@@ -1,0 +1,121 @@
+html,
+.navbar-nav {
+
+    width: 100%;
+    margin-top: 0;
+}
+
+body {
+
+    /*height: 100%;*/
+    /*width: 100%;*/
+    /*-webkit-font-smoothing: antialiased;*/
+    /*text-rendering: optimizeLegibility;*/
+    /*color: #6c6f73;*/
+}
+
+.content {
+
+    margin-right: 13px;
+    margin-left: 13px;
+    max-width: 100%;
+    max-height: 100%;
+
+}
+
+h1, h2, h3, h4, h5 {
+
+    color: #333;
+
+}
+
+h6 {
+
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 0.8rem;
+    letter-spacing: 0.1rem;
+
+}
+
+img {
+
+    max-width: 100%;
+
+}
+
+.blockquote {
+
+    font-size: 1.6rem;
+    color: #333;
+    border: none;
+    padding: 0;
+}
+
+.blockquote-footer {
+
+    margin: 1rem 0 0;
+
+}
+
+#main-footer {
+
+    background: #c4c0c0;
+    color: white;
+    padding: 5em 0;
+    font-size: 1.2rem;
+    right: 0;
+    left: 0;
+
+    position: fixed;
+    bottom: 0;
+    height: 25%;
+    line-height: 20px;
+    width: 100%;
+
+}
+
+.footer-bottom {
+    background-color: #222728;
+    padding-top: 5px;
+    padding: 50px 0px;
+    padding-bottom: 100px;
+    color: #DDD;
+    font-family: Cuprum-Bold;
+    font-size: 15px;
+
+    right: 0;
+    left: 0;
+    bottom: 0;
+    position: -ms-device-fixed;
+    height: 60px;
+    line-height: 20px;
+
+    position: relative;
+    width: 100%;
+
+}
+
+.footer-bottom ul li {
+    display: inline-block;
+}
+
+.footer-bottom ul li a {
+    display: block;
+    padding-left: 8px;
+}
+
+.footer-bottom ul li a:after {
+    content: "-";
+    padding-left: 8px;
+}
+
+.footer-bottom ul li:last-child a:after {
+    content: "";
+}
+
+.pull-right a {
+
+    color: #FFFFFF;
+
+}
