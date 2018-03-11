@@ -98,7 +98,6 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
         return JsonResponse({'is_valid': is_valid, 'uploaded_files': uploaded_file})
 
 
-# TODO: Add a refresh button which allows users to refresh the list of downloadable files
 
 class FileDownloadView(DetailView):
     model = Appointment
@@ -112,7 +111,7 @@ class FileDownloadView(DetailView):
         self.object = self.get_object()
 
         for file in self.get_files_from_folder(str(self.object.id)):
-            files[file] = self.generate_presigned_url(file)
+            files[file] = self._generate_presigned_url(file)
 
         return JsonResponse({'downloadable_files': files})
 
