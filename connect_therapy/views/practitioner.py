@@ -1,16 +1,16 @@
-from django import forms
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from django.contrib.auth.forms import PasswordChangeForm
-from django.views.generic import FormView, DetailView, UpdateView
+from django.views.generic import FormView, UpdateView
+
 from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
-    PractitionerNotesForm, PractitionerEditMultiForm, PractitionerForm, PractitionerUserForm
+    PractitionerNotesForm, PractitionerEditMultiForm
 from connect_therapy.models import Practitioner, Appointment
 
 

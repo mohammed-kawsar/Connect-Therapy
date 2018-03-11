@@ -1,0 +1,49 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Patient | Checkout{% endblock %}
+{% block header %}
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">{% endblock %}
+{% block content %}
+    <h1>Checkout</h1>
+    <div class="container">
+
+
+        {% if appointments|length == 0 %}
+
+            <h4>Your basket seems to be empty, go and select some appointments and then come back.</h4>
+
+        {% elif appointments|length > 0 %}
+
+            <table class="table table-hover">
+                <tr>
+                    <th>Practitioner</th>
+                    <th>Date and time</th>
+                    <th>Duration</th>
+                    <th>Remove from basket</th>
+                </tr>
+                {% for app in appointments %}
+                    <tr>
+                        <form action="{% url 'connect_therapy:checkout' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="session_id" value="{{ app.session_id }}">
+                            <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
+                            <td>{{ app.start_date_and_time }}</td>
+                            <td>{{ app.length }}</td>
+                            <td>
+                                <input type="submit" class="btn btn-warning" value="Delete">
+                            </td>
+                        </form>
+                    </tr>
+                {% endfor %}
+
+            </table>
+
+            <form action="{% url 'connect_therapy:checkout' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="checkout" value="checkout">
+                <input type="submit" class="btn btn-success" value="Book">
+            </form>
+
+        {% endif %}
+    </div>
+{% endblock %}
