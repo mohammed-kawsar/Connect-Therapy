@@ -1,32 +1,72 @@
 <!DOCTYPE html>
-{% load static %}
+{% load staticfiles %}
 <html lang="en">
 
 <head>
-    <meta name="viewport" content=""width="device-width", initial-scale="1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta charset="UTF-8">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <link href="{% static '/connect_therapy/css/global.css' %}" rel="stylesheet">
     <title>{% block title %}{% endblock %}</title>
     {% block header %}{% endblock %}
+
+<style>
+
+
+    @media (max-width: 600px) {
+        #stickyFooter h5 {
+            font-size: 14px;
+            font-weight: 100;
+        }
+
+        #stickyFooter a {
+            font-size: 15px;
+            font-weight: 100;
+        }
+    }
+
+    body {
+     padding-top: 59px;
+    }
+
+     @media (max-width: 600px) {
+        .fixed-top {
+            position: relative !important;
+
+     }
+        body {
+            padding-top: 0px;
+     }
+    }
+
+    @media (max-width: 800px) {
+        .fixed-top {
+            position: relative !important;
+
+     }
+        body {
+            padding-top: 0px;
+     }
+    }
+</style>
+
 </head>
 
 <body>
 <header>
     {% if user.is_authenticated and user.patient %}
         <!-- Logged in Patient navbar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top img-responsive">
             <a class="navbar-brand" href="{% url 'connect_therapy:patient-homepage' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                     aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse justify-content-end pull-right" id="appNavBar">
-                <ul class="navbar-nav ml-auto">
+            <div class="collapse navbar-collapse" id="appNavBar">
+                <ul class="navbar-nav">
                     <li class="nav-item ">
                         <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                     </li>
@@ -62,8 +102,8 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse justify-content-end pull-right" id="appNavBar">
-                    <ul class="navbar-nav ml-auto">
+                <div class="collapse navbar-collapse" id="appNavBar">
+                    <ul class="navbar-nav">
                         <li class="nav-item ">
                             <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                         </li>
@@ -97,8 +137,8 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse justify-content-end pull-right" id="appNavBar">
-                    <ul class="navbar-nav ml-auto">
+                <div class="collapse navbar-collapse" id="appNavBar">
+                    <ul class="navbar-nav">
                         <li class="nav-item ">
                             <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                         </li>
@@ -132,7 +172,7 @@
 <div class="container">
 
 </div>
-<div class="content">{% block content %}{% endblock %}</div>
+<div class="content container-fluid">{% block content %}{% endblock %}</div>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
@@ -199,43 +239,38 @@
 </script>
 
 
+<script>
+
+    if ($(document).height() <= $(window).height()) {
+        document.getElementById('stickyFooter').className = 'fixed-bottom';
+    }
+
+</script>
+
+
+
 <!--FOOTER 2-->
 
-<footer class="container-width text-center footer-bottom mt-4" id="stickyFooter" style="background-color: #262f36; padding: 10px; width: 100%; display: block; position: fixed">
+<footer class="container-width text-center footer-bottom mt-4 container-fluid align-text-bottom" id="stickyFooter" style="background-color: #262f36; padding: 10px; width: 100%; display: block; position: fixed; bottom: 0;">
     <div class="row">
 
-            <div class="col-sm-4 col-lg-4">
+            <div class="col-sm-4 col-lg-4 text-center">
                 <a href="{% url 'connect_therapy:about' %}" style="color:white; text-decoration: none">About Us</a>
             </div>
-            <div class="col-sm-4 col-lg-4">
+            <div class="col-sm-4 col-lg-4 text-center">
                <a href="" style="color:white; text-decoration: none">Terms & Conditions</a>
             </div>
-            <div class="col-sm-4 col-lg-4">
+            <div class="col-sm-4 col-lg-4 text-center">
                 <a href="" style="color:white; text-decoration: none">Contact Us</a>
             </div>
     </div>
     <br>
     <div class="row text-center">
-        <div class="col-sm-12">
+        <div class="col-sm-12 text-center">
             <h5 style="color: white;">Copyright © ConnectTherapy 2018. All right reserved.</h5>
         </div>
     </div>
 </footer>
-{#<footer class="footer2">#}
-{##}
-{#    <div class="footer-bottom" id="stickyFooter">#}
-{#        <div class="container">#}
-{#            <div class="pull-left"> Copyright © ConnectTherapy 2018. All right reserved.</div>#}
-{#            <div class="pull-right">#}
-{#                <ul>#}
-{#                    <li><a href="{% url 'connect_therapy:about' %}">About Us</a></li>#}
-{#                    <li><a href="">Terms & Conditions</a></li>#}
-{#                    <li><a href="">Contact Us</a></li>#}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div> <!--/.footer-bottom-->#}
-{#</footer>#}
 
 </body>
 {% block styles %}{% endblock %}

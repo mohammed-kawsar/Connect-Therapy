@@ -1,8 +1,16 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Patient Notes{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
-    <div class="jumbotron">
+    <div class="jumbotron col-sm-12">
         <h3 class="">Practitioner Notes</h3>
         <hr class="my-4">
         <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_by_practitioner }}</p>
@@ -11,7 +19,40 @@
     <div class="jumbotron">
         <h3>Your Notes</h3>
         <hr class="my-4">
-        <p class="lead">{{ appointment.patient_notes_before_meeting }}</p>
+        <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_before_meeting }}</p>
     </div>
     <a href="{% url 'connect_therapy:patient-my-appointments' %}" class="btn btn-primary"> Go Back</a>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        @media (max-width: 600px) {
+            .container-fluid {
+                padding-top: 20px;
+            }
+
+            h3 {
+                font-size: 25px;
+            }
+
+            .lead{
+                font-size: 17px;
+            }
+        }
+
+    .jumbotron {
+        padding-top: 15px;
+    }
+    .container-fluid {
+        padding-top: 20px;
+    }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
 {% endblock %}

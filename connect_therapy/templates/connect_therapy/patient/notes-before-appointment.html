@@ -1,6 +1,14 @@
 {{% extends 'connect_therapy/base.html' %}
 {% block title %}Patient notes before appointment{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
 <div class="jumbotron">
     <form action="" method="post">
@@ -10,3 +18,13 @@
     </form>
 </div>
 {% endblock %}
+
+{% block scripts %}
+    <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
+{% endblock %}
+
+

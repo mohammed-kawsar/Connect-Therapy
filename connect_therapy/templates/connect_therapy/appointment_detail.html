@@ -1,12 +1,20 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Cancel Appointment{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
 
     <div class="jumbotron">
         <h1 class="display-4">Are you sure you want to cancel your appointment?</h1>
         <p class="lead">IF YOU ARE CANCELLING YOUR APPOINTMENT WITHIN 24HRS YOU WILL STILL BE CHARGED OTHERWISE YOU WILL BE REFUNDED</p>
-       <br><br><br><br><br><br><br><br>
+
         <hr class="my-4">
         <p class="lead"><b>Click <em>confirm</em> to cancel your appointment</b></p>
         <form action="" method="post">
@@ -17,6 +25,40 @@
         </form>
     </div>
 
+{% endblock %}
+
+{% block styles %}
+    <style>
+        @media (max-width: 600px) {
+            .container-fluid {
+                padding-top: 20px;
+            }
+            .display-4 {
+                font-size: 30px;
+    }
+
+            .lead{
+                font-size: 15px;
+    }
+        }
+
+    .jumbotron {
+        padding-top: 15px;
+    }
+    .container-fluid {
+        padding-top: 20px;
+    }
+
+
+    </style>
+{% endblock %}
+{% block scripts %}
+<script>
+
+    if ($(document).height() <= $(window).height()) {
+        document.getElementById('stickyFooter').className = 'fixed-bottom';
+    }
+</script>
 {% endblock %}
 
 

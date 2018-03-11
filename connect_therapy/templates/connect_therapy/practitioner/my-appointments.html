@@ -1,8 +1,17 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Practitioner appointments{% endblock %}
 
+{% block header %}
+
+    <header>
+       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 
 {% block content %}
+    <div class="container" style="min-width: 100%">
 <h1 class="text-center">Your Appointments</h1></br>
     <h2>Current Bookings</h2>
     <div class="container-fluid">
@@ -45,7 +54,7 @@
       </div>
     </div>
 {% endblock %}
-
+</div>
 {% block styles %}
     <style>
         @media (max-width: 600px) {
@@ -65,5 +74,25 @@
                 font-size: 20px;
             }
         }
+
+        .content {
+            width: 100%;
+            padding-left: 0%;
+            padding-right: 0%;
+            display: block;
+        }
+
     </style>
+
+
 {% endblock %}
+
+{% block scripts %}
+    <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
+{% endblock %}
+
+

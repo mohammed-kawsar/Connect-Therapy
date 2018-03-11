@@ -1,6 +1,14 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Practitioner Login{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
 <form action="" method="post">
     {% csrf_token %}
@@ -13,5 +21,18 @@
 {% block scripts %}
     <script>
         document.getElementById("id_password").className = "form-control";
+
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+
     </script>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .container-fluid {
+            padding-top: 20px !important;
+        }
+    </style>
 {% endblock %}

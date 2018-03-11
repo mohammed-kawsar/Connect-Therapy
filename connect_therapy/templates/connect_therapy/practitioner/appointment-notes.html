@@ -1,6 +1,14 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Practitioner Notes{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
 <div class="jumbotron">
     <h3>Practitioner Notes</h3>
@@ -18,3 +26,35 @@
 {% endblock %}
 
 
+{% block styles %}
+    <style>
+        @media (max-width: 600px) {
+            .container-fluid {
+                padding-top: 20px;
+            }
+
+            h3 {
+                font-size: 25px;
+            }
+
+            .lead{
+                font-size: 17px;
+            }
+        }
+
+    .jumbotron {
+        padding-top: 15px;
+    }
+    .container-fluid {
+        padding-top: 20px;
+    }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
+{% endblock %}
