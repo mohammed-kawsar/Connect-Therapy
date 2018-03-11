@@ -68,7 +68,15 @@ urlpatterns = [
          PractitionerEditDetailsView.as_view(),
          name='practitioner-profile-edit'
          ),
-    path('practitioner/profile/change-password',
+    path('profile/change-password',
          change_password,
          name='practitioner-change-password'),
+    path('set-appointments',
+         PractitionerSetAppointmentView.as_view(),
+         name='practitioner-set-appointments'
+         ),
+    path('cancel-appointment/<int:pk>',
+         PractitionerAppointmentDelete.as_view(),
+         name='practitioner-cancel-appointment'
+         ),
 ]
