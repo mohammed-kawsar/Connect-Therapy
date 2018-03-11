@@ -1,13 +1,14 @@
 from datetime import timedelta, time
 
 from django import forms
+from django.contrib.auth import authenticate, login, views as auth_views, \
+    update_session_auth_hash
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.forms import PasswordChangeForm
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
@@ -353,7 +354,7 @@ class PatientProfileView(LoginRequiredMixin, generic.TemplateView):
         return render(request, args)
 
 
-class PatientEditDetailsView(UpdateView):
+class PatientEditDetailsView(LoginRequiredMixin, UpdateView):
     model = Patient
     template_name = 'connect_therapy/patient/edit-profile.html'
     form_class = PatientEditMultiForm
@@ -368,7 +369,7 @@ class PatientEditDetailsView(UpdateView):
         form = self.get_form()
         try:
             user = User.objects.get(username=form.cleaned_data['user']['email'])
-            if form.is_valid():
+            if user == self.object.user:
                 return self.form_valid(form)
         except User.DoesNotExist:
             # if User.objects.get(email=user.email) == user.email:
@@ -410,3 +411,22 @@ class ViewAllPractitionersView(UserPassesTestMixin, generic.ListView):
 
     def get_queryset(self):
         return Practitioner.objects.all()
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect(reverse_lazy('connect_therapy:patient-profile'))
+        else:
+            return redirect(reverse_lazy(
+                'connect_therapy:patient-change-password')
+            )
+    else:
+        form = PasswordChangeForm(user=request.user)
+        args = {'form': form}
+        return render(request, 'connect_therapy/patient/change-password.html', args)

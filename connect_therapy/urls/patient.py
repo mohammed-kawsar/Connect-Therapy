@@ -81,6 +81,9 @@ urlpatterns = [
          PatientEditDetailsView.as_view(),
          name='patient-profile-edit'
          ),
+    path('profile/change-password',
+         change_password,
+         name='patient-change-password'),
     path('view-practitioners',
          ViewAllPractitionersView.as_view(),
          name='view-practitioners'
