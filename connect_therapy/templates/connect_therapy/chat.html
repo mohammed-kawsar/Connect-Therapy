@@ -75,12 +75,45 @@
         </div>
     </div>
 
+
+    <!--Modal Window for Safari (Only opens if the used browser is Safari)-->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Browser Warning</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="">We have detected you using Safari, the Chat feature is not supported in <b>Safari</b></p>
+            <p class="">Please use <b>Chrome</b> or <b>Mozilla Firefox</b></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
     <script>
         if ($(document).height() <= $(window).height()) {
             document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
+
+    <script>
+
+    $("#myModal").modal({
+        show: false
+    });
+        if ((!!window.safari) == true) {
+            $("#myModal").modal('show');
+
         }
     </script>
 {% endblock %}
