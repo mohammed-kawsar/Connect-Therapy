@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.contrib.auth.models import User
@@ -114,3 +116,29 @@ class PractitionerEditMultiForm(MultiModelForm):
             'user': PractitionerUserForm,
             'practitioner': PractitionerForm
     }
+
+
+class PractitionerDefineAppointmentForm(forms.Form):
+
+    start_date_and_time = forms.DateTimeField(help_text=" Format: DD/MM/YYYY H:M",
+                                              required=True,
+                                              input_formats=['%d/%m/%Y %H:%M'])
+
+    length = forms.TimeField(help_text=" Format: H:M",
+                             required=True,
+                             input_formats=['%H:%M'])
+
+    def clean_start_date_and_time(self):
+        start_datetime = self.cleaned_data['start_date_and_time']
+
+        # Check appointment date is not in past.
+        if start_datetime.date() < datetime.date.today():
+            raise forms.ValidationError("Invalid date, cannot enter a past date!",
+                                        code='invalid'
+                                        )
+        if start_datetime.date() > datetime.date.today() + datetime.timedelta(weeks=12):
+            raise forms.ValidationError("Invalid date, cannot enter a date more than 3 months ahead!",
+                                        code='invalid'
+                                        )
+
+        return start_datetime
