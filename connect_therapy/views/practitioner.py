@@ -4,14 +4,14 @@ from django import forms
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from django.views.generic import FormView, UpdateView, DeleteView
+from django.views.generic import FormView, UpdateView, DeleteView, DetailView
 from connect_therapy import notifications
 from django.views.generic.edit import FormMixin
 from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
@@ -114,6 +114,7 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
 
     def test_func(self):
         return self.request.user.id == self.get_object().practitioner.user.id
+
 
 class PractitionerAllPatientsView(generic.TemplateView):
     template_name = 'connect_therapy/practitioner/view-patients.html'

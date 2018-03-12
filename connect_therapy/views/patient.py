@@ -105,6 +105,7 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
         downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
         context['downloadable_files'] = downloadable_file_list
 
+
 class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
     model = Appointment
     form_class = forms.Form
