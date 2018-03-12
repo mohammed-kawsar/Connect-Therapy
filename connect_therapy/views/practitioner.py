@@ -224,12 +224,17 @@ class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
             return super().form_valid(form)
 
 
-class PractitionerAppointmentDelete(DeleteView):
+class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
     model = Appointment
     template_name = 'connect_therapy/practitioner/appointment-cancel.html'
     fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
               'patient_notes_by_practitioner']
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+    login_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.id == self.get_object().practitioner.user.id
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
