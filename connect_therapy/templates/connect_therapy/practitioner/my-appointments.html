@@ -8,15 +8,26 @@
         <tr>
             <th>Date and time</th>
             <th>Duration</th>
-            <th>Patient</th>
+            <th>Patient Name</th>
+            <th>Patient D.O.B</th>
             <th>Actions</th>
         </tr>
         {% for appointment in future_appointments %}
             <tr class="current">
                 <td> {{ appointment.start_date_and_time }} </td>
                 <td> {{ appointment.length }} </td>
-                <td> {{ appointment.patient }} </td>
-                <td><a href=""> Cancel Appointment</a> | <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}"> View Notes</a></td>
+                <td>
+                    {% if appointment.patient %}
+                        {{ appointment.patient.user.get_full_name }}
+                    {% else %}
+                    Unbooked
+                    {% endif %}
+                </td>
+                <td>
+                {% if appointment.patient %}
+                     {{ appointment.patient.date_of_birth }}
+                {%  endif %}
+                <td><a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"> Cancel Appointment</a> | <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}"> View Notes</a></td>
             </tr>
         {% endfor %}
     </table>

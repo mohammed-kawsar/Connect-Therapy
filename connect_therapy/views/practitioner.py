@@ -1,16 +1,21 @@
+import re
+import csv
 from django import forms
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
+from django.views.generic import FormView, UpdateView, DeleteView
+from connect_therapy import notifications
 from django.views.generic.edit import FormMixin
 from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
-    PractitionerNotesForm, PractitionerEditMultiForm
+    PractitionerNotesForm, PractitionerEditMultiForm, PractitionerDefineAppointmentForm
 from connect_therapy.models import Practitioner, Appointment
 
 
@@ -191,3 +196,44 @@ def change_password(request):
         form = PasswordChangeForm(user=request.user)
         args = {'form': form}
         return render(request, 'connect_therapy/practitioner/change-password.html', args)
+
+
+class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
+    form_class = PractitionerDefineAppointmentForm
+    template_name = 'connect_therapy/practitioner/appointment-form-page.html'
+    success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+
+    def form_valid(self, form):
+        appointment = Appointment(
+            patient=None,
+            practitioner=self.request.user.practitioner,
+            start_date_and_time=form.cleaned_data['start_date_and_time'],
+            length=form.cleaned_data['length']
+        )
+
+        over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
+                                                                                      self.request.user.practitioner)
+        if not over_lap_free:
+            over_laps_str = re.sub("<|>|\[\[|\]\]", "",str(over_laps))
+            over_laps_str = over_laps_str.replace(",", " and ")
+            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html', context={"overlaps": over_laps_str})
+        else:
+            appointment.save()
+            return super().form_valid(form)
+
+
+class PractitionerAppointmentDelete(DeleteView):
+    model = Appointment
+    template_name = 'connect_therapy/practitioner/appointment-cancel.html'
+    fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
+              'patient_notes_by_practitioner']
+    success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        notifications.appointment_cancelled_by_practitioner(self.object)
+        success_url = self.get_success_url()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
+

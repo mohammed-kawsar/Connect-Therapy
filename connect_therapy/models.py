@@ -227,6 +227,33 @@ class Appointment(models.Model):
             return True, sorted(appointments_to_book, key=lambda appointment: appointment.start_date_and_time)
 
     @classmethod
+    def get_appointment__practitioner_overlaps(cls, appointment, practitioner):
+        """
+        Will return
+                - True if no overlap
+                - Tuple:
+                        - First element false if overlap, second list of overlapping appointments
+        :param appointment: List of appointments to be booked
+        :param practitioner: The practitioner who will be taking the appointment
+        :return: Boolean - true if overlaps exist, if overlaps exist overlapping appointments original list otherwise
+        """
+
+        exisiting_appointments = Appointment.objects.filter(practitioner=practitioner)
+
+        if len(exisiting_appointments) == 0:
+            return True, []
+
+        merged_list = list(exisiting_appointments)
+        merged_list.append(appointment)
+
+        over_laps = cls._get_overlaps(merged_list)
+
+        if len(over_laps) > 0:
+            return False, over_laps
+        else:
+            return True, []
+
+    @classmethod
     def _get_overlaps(cls, appointments):
         """Passing in a list of appointments will allow this method to look for overlaps between appointments
         """
