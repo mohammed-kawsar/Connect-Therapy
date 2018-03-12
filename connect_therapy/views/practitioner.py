@@ -1,16 +1,18 @@
 import re
-
+import csv
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
 from django.views.generic import FormView, UpdateView, DeleteView
 
+from connect_therapy import notifications
 from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
     PractitionerNotesForm, PractitionerEditMultiForm, PractitionerDefineAppointmentForm
 from connect_therapy.models import Practitioner, Appointment
@@ -209,10 +211,10 @@ class PractitionerAppointmentDelete(DeleteView):
               'patient_notes_by_practitioner']
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        notifications.appointment_cancelled_by_practitioner(self.object)
+        success_url = self.get_success_url()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
 
-class PractitionerAppointmentOverlap(generic.TemplateView):
-    model = Appointment
-    template_name = 'connect_therapy/practitioner/appointment-cancel.html'
-    fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
-              'patient_notes_by_practitioner']
-    success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
