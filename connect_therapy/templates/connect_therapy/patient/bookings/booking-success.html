@@ -1,0 +1,16 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Booking Success{% endblock %}
+{% block header %}
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">{% endblock %}
+{% block content %}
+
+    <div class="jumbotron">
+        <div class="container">
+
+            <h1>Great! That's been booked</h1>
+            <p>View all your booking <a href="{% url 'connect_therapy:patient-my-appointments' %}">here</a></p>
+        </div>
+    </div>
+
+{% endblock %}

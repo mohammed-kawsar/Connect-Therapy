@@ -1,24 +1,16 @@
-from django.contrib.auth import authenticate, login, views as auth_views
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-from django.shortcuts import get_object_or_404
 from django import forms
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from django.views.generic import FormView, DetailView
 from django.views.generic.edit import FormMixin
-
-from connect_therapy.forms.practitioner import PractitionerSignUpForm,\
-    PractitionerLoginForm, PractitionerNotesForm
-from django.contrib.auth.forms import PasswordChangeForm
-from django.views.generic import FormView, DetailView, UpdateView
 from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
-    PractitionerNotesForm, PractitionerEditMultiForm, PractitionerForm, PractitionerUserForm
+    PractitionerNotesForm, PractitionerEditMultiForm
 from connect_therapy.models import Practitioner, Appointment
 
 
@@ -118,6 +110,24 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
     def test_func(self):
         return self.request.user.id == self.get_object().practitioner.user.id
 
+class PractitionerAllPatientsView(generic.TemplateView):
+    template_name = 'connect_therapy/practitioner/view-patients.html'
+    model = Appointment
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        appointments = Appointment.objects.filter(
+                practitioner=self.request.user.practitioner
+            ).order_by('-start_date_and_time')
+        patients_already_seen = []
+        appointments_unique_patient = []
+        for appointment in appointments:
+            if appointment.patient not in patients_already_seen:
+                appointments_unique_patient.append(appointment)
+                patients_already_seen.append(appointment.patient)
+        context['appointments'] = appointments_unique_patient
+        return context
+
 
 class PractitionerProfile(LoginRequiredMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/profile.html'
@@ -174,9 +184,9 @@ def change_password(request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-            return redirect('/practitioner/profile')
+            return redirect(reverse_lazy('connect_therapy:practitioner-profile'))
         else:
-            return redirect('/practitioner/profile/change-password')
+            return redirect(reverse_lazy('connect_therapy:practitioner-change-password'))
     else:
         form = PasswordChangeForm(user=request.user)
         args = {'form': form}

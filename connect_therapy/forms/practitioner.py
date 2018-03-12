@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from betterforms.multiform import MultiModelForm
 from connect_therapy.models import Practitioner
 
+from connect_therapy.models import Practitioner
 
 class PractitionerSignUpForm(UserCreationForm):
     address_line_1 = forms.CharField(max_length=100)
