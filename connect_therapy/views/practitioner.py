@@ -224,7 +224,7 @@ class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
             return super().form_valid(form)
 
 
-class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
+class PractitionerAppointmentDelete(DeleteView,UserPassesTestMixin):
     model = Appointment
     template_name = 'connect_therapy/practitioner/appointment-cancel.html'
     fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
