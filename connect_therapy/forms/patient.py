@@ -79,7 +79,9 @@ class PatientNotesBeforeForm(forms.Form):
 
 
 class AppointmentDateSelectForm(forms.Form):
-    date = forms.DateField(widget=forms.SelectDateWidget())
+    date = forms.DateField(widget=forms.SelectDateWidget(
+                            attrs={'class': 'form-control'}
+    ), label="Select Date")
 
     def is_valid(self):
         valid = super(AppointmentDateSelectForm, self).is_valid()
