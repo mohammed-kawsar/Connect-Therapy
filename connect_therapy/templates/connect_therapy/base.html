@@ -40,7 +40,7 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="{% url 'connect_therapy:patient-my-appointments' %}">Manage Appointments</a>
-                            <a class="dropdown-item" href="#">Change Details</a>
+                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-profile' %}">Change Details</a>
                             <a class="dropdown-item" href="{% url 'connect_therapy:patient-logout' %}">Logout</a>
                         </div>
                     </li>
@@ -77,7 +77,7 @@
                                 Profile
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="#">Change Details</a>
+                                <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-profile' %}">Change Details</a>
                                 <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-logout' %}">Logout</a>
                             </div>
                         </li>

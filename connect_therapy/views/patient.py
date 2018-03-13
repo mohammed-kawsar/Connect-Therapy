@@ -55,19 +55,10 @@ class PatientLoginView(auth_views.LoginView):
         return reverse_lazy('connect_therapy:patient-homepage')
 
 
-class PatientMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
+class PatientMyAppointmentsView(generic.TemplateView):
     template_name = 'connect_therapy/patient/my-appointments.html'
     login_url = reverse_lazy('connect_therapy:patient-login')
-    redirect_field_name = None
     model = Appointment
-
-    def test_func(self):
-        try:
-            self.request.user.patient
-        except Patient.DoesNotExist:
-            return False
-        return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -405,8 +396,8 @@ class PatientEditDetailsView(UserPassesTestMixin,UpdateView):
             self.request.user.patient
         except Patient.DoesNotExist:
             return False
-        return self.get_object().patient is not None and \
-            self.request.user.id == self.get_object().patient.user.id
+        return self.get_object() is not None and \
+            self.request.user.id == self.get_object().user.id
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
