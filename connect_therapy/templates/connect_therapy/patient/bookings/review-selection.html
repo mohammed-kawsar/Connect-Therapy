@@ -1,0 +1,133 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Review Bookings{% endblock %}
+{% block header %}
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'connect_therapy/styles/bookings.css' %}" type="text/css">
+{% endblock %}
+{% block content %}
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-info">
+
+            {% for message in messages %}
+                <p>  {% if message.tags %} {{ message }} {% endif %} </p>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+    <div class="container">
+        {% if clashes is not None and clashes|length > 0 %}
+            <div class="panel panel-danger">
+                <div class="panel-heading"><h3 class="panel-title">Clashing appointments</h3></div>
+                <div class="panel-body">
+                    <h3>You seem to have some clashes.</h3>
+                    <p>You can review clashes below and then go back and select a different appointment</p>
+                </div>
+            </div>
+
+            <div class="row row-centered pos">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 col-centered">
+                    <p>The shaded in appointments are those you already have booked</p>
+                    <table class="table table-hover">
+                        {% for i,j in clashes %}
+                            <tr>
+                                {% if i.patient is None %}
+                                    <td>Dr. {{ i.practitioner.user.get_full_name }}
+                                        on {{ i.start_date_and_time }}</td>
+                                {% else %}
+                                    <td bgcolor="#ccd4e2">Dr. {{ i.practitioner.user.get_full_name }}
+                                        on {{ i.start_date_and_time }}</td>
+                                {% endif %}
+
+
+                                <td>clashes with</td>
+
+                                {% if j.patient is None %}
+                                    <td>Dr. {{ j.practitioner.user.get_full_name }}
+                                        on {{ j.start_date_and_time }}</td>
+                                {% else %}
+                                    <td bgcolor="#ccd4e2">Dr. {{ j.practitioner.user.get_full_name }}
+                                        on {{ j.start_date_and_time }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+            </div>
+
+        {% elif invalid_appointments == True %}
+            <div class="panel panel-warning">
+                <div class="panel-heading"><h3 class="panel-title">Invalid appointment</h3></div>
+                <div class="panel-body">
+                    <h3>You have selected invalid appointments, please go <b>back</b> and try again.</h3>
+                </div>
+            </div>
+        {% elif bookable_appointments is not None and bookable_appointments|length > 0 %}
+
+            <div class="panel panel-info">
+                <div class="panel-heading"><h3 class="panel-title">Information</h3></div>
+                <div class="panel-body">
+                    <h3>Great, no clashes!</h3>
+                    <p>Note that consecutive appointments will have be merged together</p>
+                    <hr>
+                    <h4>You can go ahead and book these now or you can go to the checkout page whenever you're
+                        ready</h4>
+                    <p>But also note, that they might get booked by someone else if you leave it for too long!</p>
+                </div>
+            </div>
+
+
+            <table class="table table-hover">
+                <tr>
+                    <th>Practitioner</th>
+                    <th>Date and time</th>
+                    <th>Duration</th>
+                </tr>
+                {% for app in bookable_appointments %}
+                    <tr>
+                        <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
+                        <td>{{ app.start_date_and_time }}</td>
+                        <td>{{ app.length }}</td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+
+
+            <form action="{% url 'connect_therapy:checkout' %}"
+                  method="get">
+                <input type="submit" class="btn btn-submit" value="Continue">
+            </form>
+            <div class="merged">
+            {% if merged_appointments|length > 0 %}
+                <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#merged-appointments">
+                    Show merged appointments
+                </button>
+                <div id="merged-appointments" class="collapse">
+                    <h3>The following appointments were merged</h3>
+                    <table class="table table-hover">
+                        {% csrf_token %}
+                        <tr>
+                            <th>Practitioner</th>
+                            <th>Date and time</th>
+                            <th>Duration</th>
+                        </tr>
+                        {% for app in merged_appointments %}
+                            <tr>
+                                <input type="hidden" name="apps" value={{ app }}>
+                                <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
+                                <td>{{ app.start_date_and_time }}</td>
+                                <td>{{ app.length }}</td>
+                            </tr>
+                        {% endfor %}
+
+                    </table>
+                </div>
+            {% endif %}
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}

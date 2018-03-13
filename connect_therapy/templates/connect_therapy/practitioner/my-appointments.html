@@ -24,7 +24,7 @@
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
                             <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}" class="btn btn-info">View Notes</a>
-                            <a href="" class="btn btn-info">Cancel Appointment</a>
+                            <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}" class="btn btn-info">Cancel Appointment</a>
                          </div>
                     </div>
                  </div>

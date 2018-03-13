@@ -28,7 +28,7 @@ urlpatterns = [
          auth_views.logout,
          {
              'next_page':
-                 reverse_lazy('connect_therapy:practitioner-logout-success'),
+                 reverse_lazy('connect_therapy:index'),
          },
          name='practitioner-logout'
          ),
@@ -44,7 +44,7 @@ urlpatterns = [
          ),
          name='practitioner-homepage'
          ),
-    path('notes/<int:appointment_id>',
+    path('notes/<int:pk>',
          PractitionerNotesView.as_view(),
          name='practitioner-notes'
          ),
@@ -59,5 +59,28 @@ urlpatterns = [
     path('view-current-notes/<int:pk>',
          PractitionerPreviousNotesView.as_view(),
          name='practitioner-before-meeting-notes'
+         ),
+    path('view-patients',
+         PractitionerAllPatientsView.as_view(),
+         name='practitioner-view-patients'
+         ),
+    path('profile',
+         PractitionerProfile.as_view(),
+         name='practitioner-profile'
+         ),
+    path('profile/edit/<int:pk>',
+         PractitionerEditDetailsView.as_view(),
+         name='practitioner-profile-edit'
+         ),
+    path('profile/change-password',
+         change_password,
+         name='practitioner-change-password'),
+    path('set-appointments',
+         PractitionerSetAppointmentView.as_view(),
+         name='practitioner-set-appointments'
+         ),
+    path('cancel-appointment/<int:pk>',
+         PractitionerAppointmentDelete.as_view(),
+         name='practitioner-cancel-appointment'
          ),
 ]

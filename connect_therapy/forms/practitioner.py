@@ -1,9 +1,12 @@
+import datetime
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.contrib.auth.models import User
-
+from betterforms.multiform import MultiModelForm
 from connect_therapy.models import Practitioner
 
+from connect_therapy.models import Practitioner
 
 class PractitionerSignUpForm(UserCreationForm):
     address_line_1 = forms.CharField(max_length=100)
@@ -74,3 +77,74 @@ class PractitionerNotesForm(forms.Form):
                                                     widget=forms.Textarea(
                                                         attrs={'class': 'form-control'}
                                                     ))
+
+
+class PractitionerForm(forms.ModelForm):
+    address_line_1 = forms.CharField(max_length=100)
+    address_line_2 = forms.CharField(max_length=100)
+    postcode = forms.CharField(max_length=10)
+    mobile = forms.CharField(max_length=20)
+    bio = forms.Textarea
+
+    class Meta:
+        model = Practitioner
+        fields = ('address_line_1',
+                  'address_line_2',
+                  'postcode',
+                  'mobile',
+                  'bio')
+
+    # Prevents a user from editing these fields in the form.
+    def __init__(self, *args, **kwargs):
+        super(PractitionerForm, self).__init__(*args, **kwargs)
+
+
+class PractitionerUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name',
+                  'last_name',
+                  'email')
+
+        widgets = {
+            'email': forms.TextInput(attrs={'size': 35})
+        }
+
+    # Prevents a user from editing these fields in the form.
+    def __init__(self, *args, **kwargs):
+        super(PractitionerUserForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].widget.attrs['readonly'] = True
+        self.fields['last_name'].widget.attrs['readonly'] = True
+
+
+class PractitionerEditMultiForm(MultiModelForm):
+    form_classes = {
+            'user': PractitionerUserForm,
+            'practitioner': PractitionerForm
+    }
+
+
+class PractitionerDefineAppointmentForm(forms.Form):
+
+    start_date_and_time = forms.DateTimeField(help_text=" Format: DD/MM/YYYY H:M",
+                                              required=True,
+                                              input_formats=['%d/%m/%Y %H:%M'])
+
+    length = forms.TimeField(help_text=" Format: H:M",
+                             required=True,
+                             input_formats=['%H:%M'])
+
+    def clean_start_date_and_time(self):
+        start_datetime = self.cleaned_data['start_date_and_time']
+
+        # Check appointment date is not in past.
+        if start_datetime.date() < datetime.date.today():
+            raise forms.ValidationError("Invalid date, cannot enter a past date!",
+                                        code='invalid'
+                                        )
+        if start_datetime.date() > datetime.date.today() + datetime.timedelta(weeks=12):
+            raise forms.ValidationError("Invalid date, cannot enter a date more than 3 months ahead!",
+                                        code='invalid'
+                                        )
+
+        return start_datetime

@@ -134,3 +134,57 @@ class PatientLoginFormTests(TestCase):
             'password': 'woofwoof12'
         })
         self.assertFalse(form.is_valid())
+
+
+class PatientEditProfileTests(TestCase):
+    # Test that a patient can successfully update their mobile.
+    def test_edit_mobile(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12',
+                                        first_name='John',
+                                        last_name='Smith'
+                                        )
+        patient = Patient(user=user,
+                          date_of_birth=date(year=1995, month=2, day=20),
+                          gender='M',
+                          mobile='+447476565333'
+                          )
+        patient.save()
+
+        patient = PatientForm(instance=user.patient, data={
+            'first_name': 'John',
+            'last_name': 'Smith',
+            'gender': 'M',
+            'date_of_birth': date(year=1995, month=2, day=20),
+            'email': 'test1@example.com',
+            'mobile': '+447075593323',
+        })
+        patient.save()
+        self.assertTrue(patient.is_valid())
+        self.assertEqual(str(user.patient.mobile), '+447075593323')
+
+    # Test that a patient can successfully update their email.
+    def test_edit_email(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12',
+                                        first_name='John',
+                                        last_name='Smith'
+                                        )
+        patient = Patient(user=user,
+                          date_of_birth=date(year=1995, month=2, day=20),
+                          gender='M',
+                          mobile='+447476565333'
+                          )
+        patient.save()
+
+        patient = PatientUserForm(instance=user, data={
+            'first_name': 'John',
+            'last_name': 'Smith',
+            'gender': 'M',
+            'date_of_birth': date(year=1995, month=2, day=20),
+            'email': 'test1@example.com',
+            'mobile': '+447476565333',
+        })
+        patient.save()
+        self.assertTrue(patient.is_valid())
+        self.assertEqual(str(user.email), 'test1@example.com')

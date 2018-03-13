@@ -1,0 +1,12 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Set available appointment times {% endblock %}
+
+{% block content %}
+    <h1>Set availabilty for an appointment</h1></br>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Confirm" />
+        <a href="{% url 'connect_therapy:practitioner-homepage'%}" class="btn btn-default">Cancel</a>
+    </form>
+{% endblock %}
