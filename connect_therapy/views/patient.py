@@ -20,7 +20,7 @@ from connect_therapy import notifications
 from connect_therapy.forms.patient import AppointmentDateSelectForm
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, PatientEditMultiForm
-from connect_therapy.models import Patient, Appointment
+from connect_therapy.models import Patient, Appointment, Practitioner
 from connect_therapy.views.views import FileDownloadView
 
 
@@ -111,6 +111,9 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
     template_name = 'connect_therapy/appointment_detail.html'
     login_url = reverse_lazy('connect_therapy:patient-my-appointments')
     redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.id == self.get_object().patient.user.id
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
