@@ -16,7 +16,7 @@ from connect_therapy import notifications
 from django.views.generic.edit import FormMixin
 from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
     PractitionerNotesForm, PractitionerEditMultiForm, PractitionerDefineAppointmentForm
-from connect_therapy.models import Practitioner, Appointment
+from connect_therapy.models import Practitioner, Appointment, Patient
 
 
 class PractitionerSignUpView(FormView):
@@ -199,11 +199,19 @@ def change_password(request):
         return render(request, 'connect_therapy/practitioner/change-password.html', args)
 
 
-class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
+class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, FormView):
     login_url = reverse_lazy('connect_therapy:practitioner-login')
     form_class = PractitionerDefineAppointmentForm
     template_name = 'connect_therapy/practitioner/appointment-form-page.html'
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+    redirect_field_name = None
+
+    def test_func(self):
+        try:
+            self.request.user.practitioner
+        except Practitioner.DoesNotExist:
+            return False
+        return self.get_object().patient is not None
 
     def form_valid(self, form):
         appointment = Appointment(

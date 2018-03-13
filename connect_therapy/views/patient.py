@@ -82,7 +82,12 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
     model = Appointment
 
     def test_func(self):
-        return self.request.user.id == self.get_object().patient.user.id
+        try:
+            self.request.user.patient
+        except Patient.DoesNotExist:
+            return False
+        return self.get_object().patient is not None and \
+               self.request.user.id == self.get_object().patient.user.id
 
     def form_valid(self, form):
         self.appointment.patient_notes_before_meeting = \
@@ -114,7 +119,12 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
     redirect_field_name = None
 
     def test_func(self):
-        return self.request.user.id == self.get_object().patient.user.id
+        try:
+            self.request.user.patient
+        except Patient.DoesNotExist:
+            return False
+        return self.get_object().patient is not None and \
+            self.request.user.id == self.get_object().patient.user.id
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
@@ -175,8 +185,12 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     template_name = 'connect_therapy/patient/appointment-notes.html'
 
     def test_func(self):
-        return self.request.user.id == self.get_object().patient.user.id
-
+        try:
+            self.request.user.patient
+        except Patient.DoesNotExist:
+            return False
+        return self.get_object().patient is not None and \
+            self.request.user.id == self.get_object().patient.user.id
 
 
     def get_context_data(self, **kwargs):
@@ -378,7 +392,12 @@ class PatientEditDetailsView(UserPassesTestMixin,UpdateView):
     redirect_field_name = None
 
     def test_func(self):
-        return self.request.user.id == self.get_object().user.id
+        try:
+            self.request.user.patient
+        except Patient.DoesNotExist:
+            return False
+        return self.get_object().patient is not None and \
+            self.request.user.id == self.get_object().patient.user.id
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
