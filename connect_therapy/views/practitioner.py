@@ -211,7 +211,7 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
             self.request.user.practitioner
         except Practitioner.DoesNotExist:
             return False
-        return self.get_object().patient is not None
+        return self.get_object().practitioner is not None
 
     def form_valid(self, form):
         appointment = Appointment(
