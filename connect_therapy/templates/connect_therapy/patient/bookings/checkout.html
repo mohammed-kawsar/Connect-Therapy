@@ -1,9 +1,12 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Patient | Checkout{% endblock %}
 
+{% load staticfiles %}
+
 {% block header %}
     <header>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">{% endblock %}
+        <link rel="stylesheet" type="text/css" href="{% static 'connect_therapy/css/jquery.icalendar.css' %}">
     </header>
 {% block content %}
 
@@ -21,7 +24,7 @@
                     <th>Practitioner</th>
                     <th>Date and time</th>
                     <th>Duration</th>
-                    <th>Remove from basket</th>
+                    <th></th> {# Remove from basket #}
                 </tr>
                 {% for app in appointments %}
                     <tr>
@@ -32,7 +35,45 @@
                             <td>{{ app.start_date_and_time }}</td>
                             <td>{{ app.length }}</td>
                             <td>
-                                <input type="submit" class="btn btn-warning" value="Delete">
+
+
+                                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                  <button type="submit" class="btn btn-warning">Delete</button>
+
+                                  <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      Add to Calendar
+                                    </button>
+                                    <div class="dropdown-menu" id="compactICal" aria-labelledby="btnGroupDrop1">
+
+                                        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+                                        <script src="{% static 'connect_therapy/scripts/add-to-calendar/jquery.icalendar.js' %}"></script>
+                                        <script>
+                                            EventObject = {start: new Date({{ app.start_date_and_time.year }},
+                                                                            {{ app.start_date_and_time.month }}-1,
+                                                                            {{ app.start_date_and_time.day }},
+                                                                            {{ app.start_date_and_time.hour }},
+                                                                            {{ app.start_date_and_time.minute }},
+                                                                            {{ app.start_date_and_time.second }}),
+                                            end: new Date({{ app.start_date_and_time.year }},
+                                                                            {{ app.start_date_and_time.month }}-1,
+                                                                            {{ app.start_date_and_time.day }},
+                                                                            {{ app.start_date_and_time.hour }}+1,
+                                                                            {{ app.start_date_and_time.minute }},
+                                                                            {{ app.start_date_and_time.second }}),
+                                            title: "Meeting with Dr. {{ app.practitioner.user.username }} at Connect Therapy",
+                                            description: "Meeting with Dr. {{ app.practitioner.user.username }} at Connect Therapy (Description about the Meeting)",
+                                            location: 'Connect Therapy - Websites URL'};
+
+
+                                            $('#compactICal').icalendar(
+                                                $.extend({sites: ['google', 'yahoo', 'outlook']}, EventObject));
+
+                                        </script>
+                                    </div>
+                                  </div>
+                                </div>
+
                             </td>
                         </form>
                     </tr>
@@ -40,6 +81,7 @@
 
             </table>
     </div>
+
             <form action="{% url 'connect_therapy:checkout' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="checkout" value="checkout">
@@ -47,11 +89,16 @@
             </form>
 
         {% endif %}
+
     </div>
+
 {% endblock %}
 
+
 {% block styles %}
+
     <style>
+
         h1 {
             text-align: center;
             padding-top: 20px;
@@ -89,6 +136,14 @@
             font-weight: 500;
         }
 
+        .btn.btn-primary {
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: 100;
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+
         .btn.btn-success {
             font-size: 16px;
             letter-spacing: 2px;
@@ -98,6 +153,48 @@
             font-weight: 400;
             margin-top: 50px;
             margin-left: 30px;
+        }
+
+        div#compactICal >  ul {
+            list-style-type: none;
+            text-align: center;
+            padding-left: 1px;
+            padding-bottom: 1px;
+            font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",
+                            Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji",
+                                "Segoe UI Symbol";
+            text-transform: uppercase;
+        }
+
+       div#compactICal > ul li:hover {
+            background-color: lightgrey;
+        }
+
+      div#compactICal >  ul li {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            font-weight: 400;
+            letter-spacing: 3px;
+        }
+
+       div#compactICal > ul li a {
+            color: black;
+            font-size: 15px;
+        }
+
+       div#compactICal > ul li a:hover {
+            color: black;
+            text-decoration: none;
+        }
+
+       div#compactICal > ul.icalendar_list {
+                margin-bottom: 0px;
+                margin-top: 0px;
+        }
+
+        div#compactICal {
+            padding-bottom: 0px;
+            padding-top: 0px;
         }
 
         @media (max-width: 600px) {
@@ -130,12 +227,41 @@
                 padding-bottom: 6px;
             }
 
+            .btn.btn-primary {
+                font-size: 12px;
+                letter-spacing: 1px !important;
+                padding-right: 3px;
+                padding-left: 5px;
+                padding-top: 6px;
+                padding-bottom: 6px;
+            }
+
             .btn.btn-success {
-                    margin-left: 20px;
-                    margin-top: 40px;
-                    font-size: 14px;
-                    font-weight: 300;
+                margin-left: 20px;
+                margin-top: 40px;
+                font-size: 14px;
+                font-weight: 300;
+            }
+
+           div#compactICal > ul li a {
+                font-size: 14px;
+                font-weight: 600;
+                letter-spacing: 1px;
+            }
+
+         div#compactICal > ul.icalendar_list {
+                margin-bottom: 0px;
+                margin-top: 0px;
             }
         }
     </style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    if ($(document).height() <= $(window).height()) {
+        document.getElementById('stickyFooter').className = 'fixed-bottom';
+    }
+</script>
 {% endblock %}
