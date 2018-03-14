@@ -5,39 +5,55 @@
     <h1>Your Appointments</h1>
     <br/>
     <h2>Current Bookings</h2>
-    <table class="table">
-        <tr>
-            <th>Date and time</th>
-            <th>Duration</th>
-            <th>Practitioner</th>
-            <th>Actions</th>
-        </tr>
-        {% for appointment in future_appointments %}
-            <tr class="current">
-                <td> {{ appointment.start_date_and_time }} </td>
-                <td> {{ appointment.length }} </td>
-                <td> {{ appointment.practitioner }} </td>
-                <td><a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"> Cancel
-                    Appointment</a></td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="card">
+        <div class="card-body">
+            {% if future_appointments|length > 0 %}
+                <table class="table">
+                    <tr>
+                        <th>Date and time</th>
+                        <th>Duration</th>
+                        <th>Practitioner</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for appointment in future_appointments %}
+                        <tr class="current">
+                            <td> {{ appointment.start_date_and_time }} </td>
+                            <td> {{ appointment.length }} </td>
+                            <td> {{ appointment.practitioner }} </td>
+                            <td><a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"> Cancel
+                                Appointment</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>You don't have any upcoming appointments</p>
+            {% endif %}
+        </div>
+    </div>
 
     <h2>Previous Bookings</h2>
-    <table class="table">
-        <tr>
-            <th>Date and time</th>
-            <th>Duration</th>
-            <th>Practitioner</th>
-            <th>Actions</th>
-        </tr>
-        {% for appointment in past_appointments %}
-            <tr class="previous">
-                <td> {{ appointment.start_date_and_time }} </td>
-                <td> {{ appointment.length }} </td>
-                <td> {{ appointment.practitioner }} </td>
-                <td><a href=""> View Notes</a></td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="card">
+        <div class="card-body">
+            {% if past_appointments|length > 0 %}
+                <table class="table">
+                    <tr>
+                        <th>Date and time</th>
+                        <th>Duration</th>
+                        <th>Practitioner</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for appointment in past_appointments %}
+                        <tr class="previous">
+                            <td> {{ appointment.start_date_and_time }} </td>
+                            <td> {{ appointment.length }} </td>
+                            <td> {{ appointment.practitioner }} </td>
+                            <td><a href=""> View Notes</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>You don't have any previous appointments</p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
