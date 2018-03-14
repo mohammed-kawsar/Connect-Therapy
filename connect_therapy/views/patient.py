@@ -480,3 +480,19 @@ def change_password(request):
         form = PasswordChangeForm(user=request.user)
         args = {'form': form}
         return render(request, 'connect_therapy/patient/change-password.html', args)
+
+
+class PatientHomepageView(UserPassesTestMixin, generic.TemplateView):
+    template_name = 'connect_therapy/patient/homepage.html'
+    login_url = reverse_lazy('connect_therapy:patient-login')
+    redirect_field_name = None
+    model = Appointment
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            patient = Patient.objects.get(user=self.request.user)
+            return True
+        except Patient.DoesNotExist:
+            return False

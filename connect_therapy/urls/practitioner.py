@@ -39,9 +39,7 @@ urlpatterns = [
          name='practitioner-logout-success'
          ),
     path('',
-         TemplateView.as_view(
-            template_name='connect_therapy/practitioner/homepage.html'
-         ),
+         PractitionerHomepageView.as_view(),
          name='practitioner-homepage'
          ),
     path('notes/<int:pk>',

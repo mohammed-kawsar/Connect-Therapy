@@ -166,8 +166,8 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         appointments = Appointment.objects.filter(
-                practitioner=self.request.user.practitioner
-            ).order_by('-start_date_and_time')
+            practitioner=self.request.user.practitioner
+        ).order_by('-start_date_and_time')
         patients_already_seen = []
         appointments_unique_patient = []
         for appointment in appointments:
@@ -275,15 +275,16 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
                                                                                       self.request.user.practitioner)
         if not over_lap_free:
-            over_laps_str = re.sub("<|>|\[\[|\]\]", "",str(over_laps))
+            over_laps_str = re.sub("<|>|\[\[|\]\]", "", str(over_laps))
             over_laps_str = over_laps_str.replace(",", " and ")
-            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html', context={"overlaps": over_laps_str})
+            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html',
+                          context={"overlaps": over_laps_str})
         else:
             appointment.save()
             return super().form_valid(form)
 
 
-class PractitionerAppointmentDelete(DeleteView,UserPassesTestMixin):
+class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
     model = Appointment
     template_name = 'connect_therapy/practitioner/appointment-cancel.html'
     fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
@@ -309,3 +310,18 @@ class PractitionerAppointmentDelete(DeleteView,UserPassesTestMixin):
         self.object.delete()
         return HttpResponseRedirect(success_url)
 
+
+class PractitionerHomepageView(UserPassesTestMixin, generic.TemplateView):
+    template_name = 'connect_therapy/patient/homepage.html'
+    login_url = reverse_lazy('connect_therapy:patient-login')
+    redirect_field_name = None
+    model = Appointment
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            practitioner = Practitioner.objects.get(user=self.request.user)
+            return True
+        except Practitioner.DoesNotExist:
+            return False
