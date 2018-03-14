@@ -1,5 +1,5 @@
 import re
-import csv
+
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -81,11 +81,11 @@ class PractitionerMyAppointmentsView(generic.TemplateView):
         context['future_appointments'] = Appointment.objects.filter(
             start_date_and_time__gte=timezone.now(),
             practitioner=self.request.user.practitioner
-        ).order_by('-start_date_and_time')
+        ).order_by('start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
             practitioner=self.request.user.practitioner
-        ).order_by('-start_date_and_time')
+        ).order_by('start_date_and_time')
         return context
 
 
@@ -108,8 +108,8 @@ class PractitionerAllPatientsView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         appointments = Appointment.objects.filter(
-                practitioner=self.request.user.practitioner
-            ).order_by('-start_date_and_time')
+            practitioner=self.request.user.practitioner
+        ).order_by('-start_date_and_time')
         patients_already_seen = []
         appointments_unique_patient = []
         for appointment in appointments:
@@ -186,15 +186,9 @@ class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
 
     def form_valid(self, form):
-        default_price = Appointment._meta.get_field('price').get_default()
-        custom_price = form.cleaned_data['price']
-        if custom_price != default_price:
-            price = form.cleaned_data['price']
-
         appointment = Appointment(
             patient=None,
             practitioner=self.request.user.practitioner,
-            price=price,
             start_date_and_time=form.cleaned_data['start_date_and_time'],
             length=form.cleaned_data['length']
         )
@@ -202,9 +196,10 @@ class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
         over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
                                                                                       self.request.user.practitioner)
         if not over_lap_free:
-            over_laps_str = re.sub("<|>|\[\[|\]\]", "",str(over_laps))
+            over_laps_str = re.sub("<|>|\[\[|\]\]", "", str(over_laps))
             over_laps_str = over_laps_str.replace(",", " and ")
-            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html', context={"overlaps": over_laps_str})
+            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html',
+                          context={"overlaps": over_laps_str})
         else:
             appointment.save()
             return super().form_valid(form)
@@ -223,4 +218,3 @@ class PractitionerAppointmentDelete(DeleteView):
         success_url = self.get_success_url()
         self.object.delete()
         return HttpResponseRedirect(success_url)
-

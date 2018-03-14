@@ -3,7 +3,7 @@
 
 {% block content %}
     <h1>Your Appointments</h1>
-    <br />
+    <br/>
     <h2>Current Bookings</h2>
     <table class="table">
         <tr>
@@ -17,7 +17,8 @@
                 <td> {{ appointment.start_date_and_time }} </td>
                 <td> {{ appointment.length }} </td>
                 <td> {{ appointment.practitioner }} </td>
-                <td><a href=""> Cancel Appointment</a></td>
+                <td><a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"> Cancel
+                    Appointment</a></td>
             </tr>
         {% endfor %}
     </table>

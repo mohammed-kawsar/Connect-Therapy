@@ -274,3 +274,33 @@ class TestAppointmentMerge(TestCase):
         print(merged)
         self.assertEqual(len(merged), 5)
         self.assertEqual(merged[3].price, Decimal(100.00))
+
+    def test_two_mergeable(self):
+        a1 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=14,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=time(minute=30),
+            price=Decimal(50.00)
+        )
+        a1.save()
+
+        a2 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=14,
+                                         minute=50,
+                                         tzinfo=pytz.utc),
+            length=time(minute=30),
+            price=Decimal(50.00)
+        )
+        a2.save()
+
+        merged, unmerged = Appointment.merge_appointments([a1, a2])
+        print(merged)
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0].price, Decimal(100.00))

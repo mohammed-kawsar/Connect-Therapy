@@ -21,15 +21,18 @@
                     {% if appointment.patient %}
                         {{ appointment.patient.user.get_full_name }}
                     {% else %}
-                    Unbooked
+                        Unbooked
                     {% endif %}
                 </td>
                 <td>
-                {% if appointment.patient %}
-                     {{ appointment.patient.date_of_birth }}
-                {%  endif %}
+                    {% if appointment.patient %}
+                        {{ appointment.patient.date_of_birth }}
+                    {% endif %}
                 <td>£{{ appointment.price }}</td>
-                <td><a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"> Cancel Appointment</a> | <a href=""> View Notes</a></td>
+                <td><a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"> Cancel
+                    Appointment</a> | <a
+                        href="{% url 'connect_therapy:practitioner-appointment-notes'  appointment.id %}"> View
+                    Notes</a></td>
             </tr>
         {% endfor %}
     </table>

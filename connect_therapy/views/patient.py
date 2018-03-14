@@ -105,7 +105,7 @@ class PatientNotesBeforeView(LoginRequiredMixin, FormView):
 class PatientCancelAppointmentView(FormMixin, DetailView):
     model = Appointment
     form_class = forms.Form
-    template_name = 'connect_therapy/appointment_detail.html'
+    template_name = 'connect_therapy/patient/cancel-appointment.html'
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
@@ -145,6 +145,7 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
 
         self.object.length = time(minute=30)
         self.object.patient = None
+        self.object.price = price = Appointment._meta.fields['price'].get_default()
         number_of_appointments = \
             (original_length.hour * 60 + original_length.minute) // 30
         for i in range(1, number_of_appointments):
@@ -153,7 +154,8 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
                 patient=None,
                 length=time(minute=30),
                 start_date_and_time=self.object.start_date_and_time
-                                    + timedelta(minutes=30 * i)
+                                    + timedelta(minutes=30 * i),
+                price=Appointment._meta.fields['price'].get_default()
             )
             appointment.save()
             self.object.save()

@@ -183,14 +183,14 @@ class Appointment(models.Model):
         It will then add the time to the date time object and return it
         """
         return date_time + timedelta(hours=time.hour, minutes=time.minute,
-                                     seconds=time.minute)
+                                     seconds=time.second)
 
     @classmethod
     def _add_time(cls, start_date_and_time, time_1, time_2):
         time_1 = timedelta(hours=time_1.hour, minutes=time_1.minute,
-                           seconds=time_1.minute)
+                           seconds=time_1.second)
         time_2 = timedelta(hours=time_2.hour, minutes=time_2.minute,
-                           seconds=time_2.minute)
+                           seconds=time_2.second)
 
         total = time_1 + time_2
         seconds = total.total_seconds()
