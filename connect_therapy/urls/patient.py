@@ -46,9 +46,7 @@ urlpatterns = [
          name='patient-notes-before'
          ),
     path('',
-         TemplateView.as_view(
-             template_name='connect_therapy/patient/homepage.html'
-         ),
+         PatientHomepageView.as_view(),
          name='patient-homepage'
          ),
     path('cancel-appointment/<int:pk>',
