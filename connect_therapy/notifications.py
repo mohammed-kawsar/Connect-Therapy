@@ -33,10 +33,10 @@ def appointment_cancelled_by_patient(patient, appointment, under_24h=False):
     sms.send_appointment_cancelled(appointment.practitioner, appointment)
 
 
-def appointment_cancelled_by_practitioner(appointment):
+def appointment_cancelled_by_practitioner(appointment, message=None):
     """This must be called BEFORE the appointment is actually cancelled"""
     if appointment.patient:
-        send_patient_practitioner_has_cancelled(appointment)
+        send_patient_practitioner_has_cancelled(appointment, message)
         sms.send_appointment_cancelled(appointment.patient, appointment)
     send_practitioner_cancelled(appointment)
     sms.send_appointment_cancelled(appointment.practitioner, appointment)
