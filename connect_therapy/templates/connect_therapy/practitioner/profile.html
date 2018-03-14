@@ -26,6 +26,8 @@
     <a href="{% url 'connect_therapy:practitioner-change-password'%}" class="btn btn-primary">change password</a>
              </div>
     </div>
+
+    <div class="container-fluid hidden"></div>
 {% endblock %}
 
 {% block styles %}
@@ -74,7 +76,19 @@
             font-size: 18px;
         }
 
+        .container-fluid .hidden {
+            display: none;
+        }
+
 
     }
     </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+          if ($(document).height() <= $(window).height()) {
+        document.getElementById('stickyFooter').className = 'fixed-bottom';
+    }
+    </script>
 {% endblock %}

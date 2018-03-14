@@ -39,6 +39,7 @@
 
 </div>
 
+    <div class="container-fluid">
     {% if appointments is not None and appointments|length > 0 %}
         <form action="{% url 'connect_therapy:book-appointment-review' pk=object.user.practitioner.id %}"
               method="post">
@@ -46,15 +47,18 @@
             {% for app in appointments %}
                 <p><input type="checkbox" name="app_id" value={{ app.id }}> {{ app }} </input> </p>
             {% endfor %}
-            <input type="submit" class="btn btn-submit text-center" value="Continue"/>
+            <input type="submit" class="btn btn-success text-center" value="Continue"/>
+
         </form>
     {% endif %}
-
+</div>
     {# The below message will only show when the page is loaded without submitting a date #}
     {% if appointments is not None and appointments|length == 0 %}
         <h1>Sorry, please try another date</h1>
         <p id="lead_text">There are no appointments available for your chosen date</p>
     {% endif %}
+
+
 
 {% endblock %}
 
@@ -75,6 +79,14 @@
                 text-transform: capitalize;
                 line-height: 50px;
             }
+
+        input checkbox {
+             margin-top: 40px !important;
+        }
+
+        .btn .btn-success {
+            margin-bottom: 20px;
+        }
 
 
         @media (max-width: 649px){
@@ -208,6 +220,14 @@
         }
 
     </script>
+
+    <script>
+
+    if ($(document).height() <= $(window).height()) {
+        document.getElementById('stickyFooter').className = 'fixed-bottom';
+    }
+
+</script>
 
 {% endblock %}
 
