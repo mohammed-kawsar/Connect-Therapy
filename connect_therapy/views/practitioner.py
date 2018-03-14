@@ -190,7 +190,7 @@ class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
         custom_price = form.cleaned_data['price']
         if custom_price != default_price:
             price = form.cleaned_data['price']
-            
+
         appointment = Appointment(
             patient=None,
             practitioner=self.request.user.practitioner,

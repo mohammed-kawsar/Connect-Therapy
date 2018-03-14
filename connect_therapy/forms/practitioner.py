@@ -128,7 +128,7 @@ class PractitionerDefineAppointmentForm(forms.Form):
                              input_formats=['%H:%M'])
 
     price = forms.DecimalField(help_text="GBP. Default price is £50", required=False,
-                               max_digits=5,decimal_places=2)
+                               max_digits=4, decimal_places=2)
 
     def clean_start_date_and_time(self):
         start_datetime = self.cleaned_data['start_date_and_time']
