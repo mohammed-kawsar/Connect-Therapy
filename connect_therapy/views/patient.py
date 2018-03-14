@@ -55,10 +55,20 @@ class PatientLoginView(auth_views.LoginView):
         return reverse_lazy('connect_therapy:patient-homepage')
 
 
-class PatientMyAppointmentsView(generic.TemplateView):
+class PatientMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/patient/my-appointments.html'
-    login_url = reverse_lazy('connect_therapy:patient-login')
+    login_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+    redirect_field_name = None
     model = Appointment
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            patient = Patient.objects.get(user=self.request.user)
+            return True
+        except Patient.DoesNotExist:
+            return False
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
