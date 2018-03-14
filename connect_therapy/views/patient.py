@@ -397,7 +397,7 @@ class PatientEditDetailsView(UserPassesTestMixin,UpdateView):
     template_name = 'connect_therapy/patient/edit-profile.html'
     form_class = PatientEditMultiForm
     success_url = reverse_lazy('connect_therapy:patient-profile')
-    login_url = reverse_lazy('connect_therapy:patient-profile')
+    login_url = reverse_lazy('connect_therapy:patient-login')
     redirect_field_name = None
 
     def test_func(self):

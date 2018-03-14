@@ -193,7 +193,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
     template_name = 'connect_therapy/practitioner/edit-profile.html'
     form_class = PractitionerEditMultiForm
     success_url = reverse_lazy('connect_therapy:practitioner-profile')
-    login_url = reverse_lazy('connect_therapy:practitioner-profile')
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
     redirect_field_name = None
 
     def test_func(self):
@@ -204,7 +204,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-               self.request.user.id == self.get_object().practitioner.user.id
+               self.request.user.id == self.get_object().user.id
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
