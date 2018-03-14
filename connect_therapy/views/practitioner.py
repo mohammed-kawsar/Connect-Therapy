@@ -205,13 +205,14 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
     template_name = 'connect_therapy/practitioner/appointment-form-page.html'
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
     redirect_field_name = None
+    model = Practitioner
 
     def test_func(self):
         try:
             self.request.user.practitioner
         except Practitioner.DoesNotExist:
             return False
-        return self.get_object().practitioner is not None
+        return True is not None
 
     def form_valid(self, form):
         appointment = Appointment(
