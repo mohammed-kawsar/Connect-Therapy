@@ -56,7 +56,7 @@ class PatientLoginView(auth_views.LoginView):
 
 class PatientMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/patient/my-appointments.html'
-    login_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+    login_url = reverse_lazy('connect_therapy:patient-login')
     redirect_field_name = None
     model = Appointment
 
@@ -401,6 +401,8 @@ class PatientEditDetailsView(UserPassesTestMixin,UpdateView):
     redirect_field_name = None
 
     def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
         try:
             self.request.user.patient
         except Patient.DoesNotExist:

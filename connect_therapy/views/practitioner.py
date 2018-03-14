@@ -56,12 +56,19 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
     form_class = PractitionerNotesForm
     template_name = 'connect_therapy/practitioner/notes.html'
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
-    login_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
     redirect_field_name = None
     model = Appointment
 
     def test_func(self):
-        return self.request.user.id == self.get_object().practitioner.user.id
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            self.request.user.practitioner
+        except Practitioner.DoesNotExist:
+            return False
+        return self.get_object() is not None and \
+               self.request.user.id == self.get_object().practitioner.user.id
 
     def form_valid(self, form):
         self.object.practitioner_notes = form.cleaned_data['practitioner_notes']
@@ -78,10 +85,20 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
             return self.form_invalid()
 
 
-class PractitionerMyAppointmentsView(generic.TemplateView):
+class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/my-appointments.html'
-
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
+    redirect_field_name = None
     model = Appointment
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            patient = Practitioner.objects.get(user=self.request.user)
+            return True
+        except Practitioner.DoesNotExist:
+            return False
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -103,22 +120,48 @@ class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     template_name = 'connect_therapy/practitioner/appointment-notes.html'
 
     def test_func(self):
-        return self.request.user.id == self.get_object().practitioner.user.id
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            self.request.user.practitioner
+        except Practitioner.DoesNotExist:
+            return False
+        return self.get_object() is not None and \
+               self.request.user.id == self.get_object().practitioner.user.id
 
 
 class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
-    login_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
     redirect_field_name = None
     model = Appointment
     template_name = 'connect_therapy/practitioner/before-meeting-notes.html'
 
     def test_func(self):
-        return self.request.user.id == self.get_object().practitioner.user.id
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            self.request.user.practitioner
+        except Practitioner.DoesNotExist:
+            return False
+        return self.get_object() is not None and \
+               self.request.user.id == self.get_object().practitioner.user.id
 
 
-class PractitionerAllPatientsView(generic.TemplateView):
+class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/view-patients.html'
     model = Appointment
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
+    redirect_field_name = None
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            self.request.user.practitioner
+        except Practitioner.DoesNotExist:
+            return False
+        return self.get_object() is not None and \
+               self.request.user.id == self.get_object().practitioner.user.id
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -154,7 +197,14 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
     redirect_field_name = None
 
     def test_func(self):
-        return self.request.user.id == self.get_object().user.id
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            self.request.user.practitioner
+        except Practitioner.DoesNotExist:
+            return False
+        return self.get_object() is not None and \
+               self.request.user.id == self.get_object().practitioner.user.id
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
@@ -239,11 +289,18 @@ class PractitionerAppointmentDelete(DeleteView,UserPassesTestMixin):
     fields = ['practitioner', 'patient', 'start_date_and_time', 'length', 'practitioner_notes',
               'patient_notes_by_practitioner']
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
-    login_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
     redirect_field_name = None
 
     def test_func(self):
-        return self.request.user.id == self.get_object().practitioner.user.id
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            self.request.user.practitioner
+        except Practitioner.DoesNotExist:
+            return False
+        return self.get_object() is not None and \
+               self.request.user.id == self.get_object().practitioner.user.id
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
