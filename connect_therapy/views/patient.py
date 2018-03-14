@@ -20,8 +20,7 @@ from connect_therapy import notifications
 from connect_therapy.forms.patient import AppointmentDateSelectForm
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, PatientEditMultiForm
-from connect_therapy.models import Patient, Appointment
-from connect_therapy.models import Practitioner
+from connect_therapy.models import Patient, Appointment, Practitioner
 from connect_therapy.views.views import FileDownloadView
 
 

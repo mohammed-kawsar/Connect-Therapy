@@ -1,10 +1,10 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Review Bookings{% endblock %}
+ {% load static %}
 {% block header %}
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'connect_therapy/styles/bookings.css' %}" type="text/css">
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
 {% endblock %}
 {% block content %}
     <!-- Display messages -->
@@ -12,12 +12,12 @@
         <div class="alert alert-info">
 
             {% for message in messages %}
-                <p>  {% if message.tags %} {{ message }} {% endif %} </p>
+                <p class="lead">  {% if message.tags %} {{ message }} {% endif %} </p>
             {% endfor %}
 
         </div>
     {% endif %}
-    <div class="container">
+    <div class="container-fluid">
         {% if clashes is not None and clashes|length > 0 %}
             <div class="panel panel-danger">
                 <div class="panel-heading"><h3 class="panel-title">Clashing appointments</h3></div>
@@ -71,11 +71,11 @@
                 <div class="panel-heading"><h3 class="panel-title">Information</h3></div>
                 <div class="panel-body">
                     <h3>Great, no clashes!</h3>
-                    <p>Note that consecutive appointments will have be merged together</p>
+                    <p class="lead">Note that consecutive appointments will have be merged together</p>
                     <hr>
                     <h4>You can go ahead and book these now or you can go to the checkout page whenever you're
                         ready</h4>
-                    <p>But also note, that they might get booked by someone else if you leave it for too long!</p>
+                    <p class="lead">But also note, that they might get booked by someone else if you leave it for too long!</p>
                 </div>
             </div>
 
@@ -99,7 +99,7 @@
 
             <form action="{% url 'connect_therapy:checkout' %}"
                   method="get">
-                <input type="submit" class="btn btn-submit" value="Continue">
+                <input type="submit" class="btn btn-success" value="Continue">
             </form>
             <div class="merged">
             {% if merged_appointments|length > 0 %}
@@ -131,3 +131,61 @@
         </div>
     </div>
 {% endblock %}
+
+{% block styles %}
+    <style>
+        .container-fluid {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        div.content.container-fluid {
+            padding-right: 0px !important;
+            padding-left: 0px !important;
+        }
+
+        .panel-title {
+            text-align: center;
+        }
+
+        h3.panel-title {
+            padding-top: 20px;
+            padding-bottom: 30px;
+            font-size: 40px;
+            vertical-align: middle;
+        }
+
+
+        h3 {
+            padding-left: 10px;
+            text-transform: capitalize;
+        }
+
+        .lead {
+            padding-left: 10px;
+        }
+
+        th {
+            background-color: lightgrey;
+            text-align: center;
+            margin-top: 30px;
+            font-size:  20px;
+            font-weight: 600;
+        }
+
+        td{
+            text-align: center;
+        }
+
+        h4 {
+            padding-left: 10px;
+        }
+
+        .btn {
+            margin-left: 10px;
+            margin-top: 50px;
+            font-size: 17px;
+        }
+    </style>
+{% endblock %}
+

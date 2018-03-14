@@ -1,42 +1,86 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Patient appointments{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
-    <h1>Your Appointments</h1>
+    <h1 class="text-center">Your Appointments</h1></br>
     <br />
     <h2>Current Bookings</h2>
-    <table class="table">
-        <tr>
-            <th>Date and time</th>
-            <th>Duration</th>
-            <th>Practitioner</th>
-            <th>Actions</th>
-        </tr>
-        {% for appointment in future_appointments %}
-            <tr class="current">
-                <td> {{ appointment.start_date_and_time }} </td>
-                <td> {{ appointment.length }} </td>
-                <td> {{ appointment.practitioner }} </td>
-                <td><a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"> Cancel Appointment</a></td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="container-fluid col-sm-12">
+        <div class="row">
+
+            {% for appointment in future_appointments %}
+                <div class="col col-sm-12 col-lg-4 col-md-4">
+                    <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
+                        <div class="card-block">
+                            <h4 class="card-title" style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                            <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
+                            <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
+                            <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}" class="btn btn-info"> Cancel Appointment</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <br> <br> <br>
 
     <h2>Previous Bookings</h2>
-    <table class="table">
-        <tr>
-            <th>Date and time</th>
-            <th>Duration</th>
-            <th>Practitioner</th>
-            <th>Actions</th>
-        </tr>
-        {% for appointment in past_appointments %}
-            <tr class="previous">
-                <td> {{ appointment.start_date_and_time }} </td>
-                <td> {{ appointment.length }} </td>
-                <td> {{ appointment.practitioner }} </td>
-                <td><a href="{% url 'connect_therapy:patient-appointment-notes' appointment.id %}"> View Notes</a></td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="container-fluid col-sm-12">
+        <div class="row">
+            {% for appointment in past_appointments %}
+                <div class="col col-xs-12 col-lg-4 col-md-4">
+                    <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
+                        <div class="card-block">
+                            <h4 class="card-title" style="white-space: nowrap;">{{ appointment.start_date_and_time }}</h4>
+                            <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
+                            <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
+                            <a href="{% url 'connect_therapy:patient-appointment-notes' appointment.id %}" class="btn btn-info"> View Notes</a>
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block styles %}
+    <style>
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 30px;
+                padding-top: 15px;
+            }
+
+            h2 {
+                font-size: 25px;
+            }
+
+            .lead {
+                font-size: 20px;
+            }
+
+            .card-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
 {% endblock %}
