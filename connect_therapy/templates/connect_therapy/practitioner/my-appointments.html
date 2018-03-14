@@ -10,6 +10,7 @@
             <th>Duration</th>
             <th>Patient Name</th>
             <th>Patient D.O.B</th>
+            <th>Price</th>
             <th>Actions</th>
         </tr>
         {% for appointment in future_appointments %}
@@ -27,6 +28,7 @@
                 {% if appointment.patient %}
                      {{ appointment.patient.date_of_birth }}
                 {%  endif %}
+                <td>£{{ appointment.price }}</td>
                 <td><a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"> Cancel Appointment</a> | <a href=""> View Notes</a></td>
             </tr>
         {% endfor %}

@@ -335,7 +335,6 @@ class Appointment(models.Model):
                                              price=i_from_s.price + app.price)
 
                         stack.append(merged)
-                        print("Merged price: " + str(merged.price))
                         merged_apps.append(i_from_s)
                         merged_apps.append(app)
                     else:

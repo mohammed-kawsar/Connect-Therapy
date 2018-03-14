@@ -182,13 +182,19 @@ def change_password(request):
 class PractitionerSetAppointmentView(LoginRequiredMixin, FormView):
     login_url = reverse_lazy('connect_therapy:practitioner-login')
     form_class = PractitionerDefineAppointmentForm
-    template_name = 'connect_therapy/practitioner/appointment-form-page.html'
+    template_name = 'connect_therapy/practitioner/set-appointment-page.html'
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
 
     def form_valid(self, form):
+        default_price = Appointment._meta.get_field('price').get_default()
+        custom_price = form.cleaned_data['price']
+        if custom_price != default_price:
+            price = form.cleaned_data['price']
+            
         appointment = Appointment(
             patient=None,
             practitioner=self.request.user.practitioner,
+            price=price,
             start_date_and_time=form.cleaned_data['start_date_and_time'],
             length=form.cleaned_data['length']
         )
