@@ -1,13 +1,14 @@
 from datetime import timedelta, time
 
 from django import forms
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views, \
     update_session_auth_hash
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordChangeForm
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -163,7 +164,6 @@ class PatientPreviousNotesView(LoginRequiredMixin, generic.DetailView):
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -262,8 +262,10 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
                     messages.success(request, str(len(merged_appointments)) + " appointments were merged")
 
                 # add to session data - used by the checkout
-                request.session['bookable_appointments'] = self._appointments_to_dictionary_list(bookable_appointments)
-                request.session['merged_appointments'] = self._appointments_to_dictionary_list(merged_appointments)
+                request.session['bookable_appointments'] = Appointment.appointments_to_dictionary_list(
+                    bookable_appointments)
+                request.session['merged_appointments'] = Appointment.appointments_to_dictionary_list(
+                    merged_appointments)
                 request.session['patient_id'] = self.patient.id
                 return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments,
                                                                    "merged_appointments": merged_appointments,
@@ -272,16 +274,6 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
             # appointments not valid
             invalid_appointments = True
             return render(request, self.get_template_names(), context={"invalid_appointments": invalid_appointments})
-
-    @staticmethod
-    def _appointments_to_dictionary_list(appointments):
-        dict_list = []
-        for app in appointments:
-            appointment_dict = {'id': app.id, 'practitioner_id': app.practitioner.id,
-                                'start_date_and_time': str(app.start_date_and_time), 'length': str(app.length),
-                                'session_id': str(app.session_id), 'session_salt': str(app.session_salt)}
-            dict_list.append(appointment_dict)
-        return dict_list
 
 
 class CheckoutView(UserPassesTestMixin, TemplateView):

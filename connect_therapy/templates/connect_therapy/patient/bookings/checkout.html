@@ -19,6 +19,7 @@
                     <th>Practitioner</th>
                     <th>Date and time</th>
                     <th>Duration</th>
+                    <th>Price</th>
                     <th>Remove from basket</th>
                 </tr>
                 {% for app in appointments %}
@@ -29,6 +30,7 @@
                             <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
                             <td>{{ app.start_date_and_time }}</td>
                             <td>{{ app.length }}</td>
+                            <td>£{{ app.price }}</td>
                             <td>
                                 <input type="submit" class="btn btn-warning" value="Delete">
                             </td>

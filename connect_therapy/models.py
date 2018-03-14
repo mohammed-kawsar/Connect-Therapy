@@ -1,5 +1,4 @@
 import hashlib
-
 from datetime import datetime, timedelta
 from functools import partial
 
@@ -8,8 +7,6 @@ from dateutil import parser
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-
-from django.db.models.signals import post_save
 
 
 class Patient(models.Model):
@@ -89,13 +86,19 @@ class Appointment(models.Model):
                                                   date_time=start_date_and_time)
                                   , editable=False)
 
+    """
+    The price of the appointment in GBP.
+    Max price is £999.
+    """
+    from decimal import Decimal
+    price = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(50))
+
     def __str__(self):
         """Return a string representation of Appointment"""
         return "{} - {} for {}".format(str(self.practitioner),
                                        str(self.start_date_and_time),
                                        str(self.length))
 
-     
     @classmethod
     def book_appointments(cls, appointments, patient):
         """
@@ -126,15 +129,33 @@ class Appointment(models.Model):
         appointments = []
         for app_dict in appointment_dict_list:
             if app_dict['id'] is None:
+                from decimal import Decimal
                 appointment = Appointment(practitioner_id=app_dict['practitioner_id'],
                                           start_date_and_time=parser.parse(app_dict['start_date_and_time']),
                                           length=parser.parse(app_dict['length']),
-                                          session_id=app_dict)
+                                          session_id=app_dict['session_id'],
+                                          session_salt=app_dict['session_salt'],
+                                          price=Decimal(app_dict['price']))
                 appointments.append(appointment)
             else:
                 appointments.append(Appointment.objects.get(pk=app_dict['id']))
 
         return appointments
+
+    def appointments_to_dictionary_list(appointments):
+        """
+        Takes a list of appointments and returns each appointment as a dictionary.
+        Whole load of dictionaries are returned in a list
+        :return: List of appointment dictionaries.
+        """
+        dict_list = []
+        for app in appointments:
+            appointment_dict = {'id': app.id, 'practitioner_id': app.practitioner.id,
+                                'start_date_and_time': str(app.start_date_and_time), 'length': str(app.length),
+                                'session_id': str(app.session_id), 'session_salt': str(app.session_salt),
+                                'price': str(app.price)}
+            dict_list.append(appointment_dict)
+        return dict_list
 
     @classmethod
     def get_valid_appointments(cls, date, practitioner):
@@ -310,9 +331,11 @@ class Appointment(models.Model):
                         merged = Appointment(practitioner=app.practitioner,
                                              start_date_and_time=i_from_s.start_date_and_time,
                                              length=cls._add_time(i_from_s.start_date_and_time, i_from_s.length,
-                                                                  app.length))
+                                                                  app.length),
+                                             price=i_from_s.price + app.price)
 
                         stack.append(merged)
+                        print("Merged price: " + str(merged.price))
                         merged_apps.append(i_from_s)
                         merged_apps.append(app)
                     else:
@@ -330,7 +353,7 @@ class Appointment(models.Model):
                     appointments.remove(other_app)
 
         return appointments
-      
-      
+
+
 class File(models.Model):
     file = models.FileField()
