@@ -175,7 +175,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         self.object.patient = None
 
         from decimal import Decimal
-        default_price = Decimal(Appointment._meta.fields['price'].get_default())
+        default_price = Decimal(Appointment._meta.get_field('price').get_default())
         self.object.price = default_price
 
         number_of_appointments = \
