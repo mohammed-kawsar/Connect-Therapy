@@ -1,5 +1,6 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Set available appointment times {% endblock %}
+{% load staticfiles %}
 
 {% block header %}
     <header>
@@ -39,11 +40,44 @@
             }
         }
     </style>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'connect_therapy/css/jquery.datetimepicker.css' %}">
+
 {% endblock %}
 
 {% block scripts %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="{% static 'connect_therapy/scripts/date-time-picker/jquery.datetimepicker.full.min.js' %}"></script>
+
     <script>
-        document.getElementById('id_start_date_and_time').className = 'form-control';
-        document.getElementById('id_length').className = 'form-control';
+        jQuery('#datetimepicker').datetimepicker({
+            format: 'd/m/Y H:i',
+            step: 10,
+            minDate: 0,
+            startDate: 0,
+            minTime: 0,
+            yearStart: 0,
+            yearEnd: 0,
+            defaultSelect: true,
+            maxTime: false,
+            closeOnDateSelect: true,
+
+        });
+    </script>
+
+    <script>
+        jQuery('#timepicker').datetimepicker({
+            datepicker: false,
+            timepicker: true,
+            format: 'H:i',
+            step: 30,
+
+        });
+    </script>
+
+    <script>
+        document.getElementById('datetimepicker').readOnly = true;
+        document.getElementById('timepicker').readOnly = true;
     </script>
 {% endblock %}

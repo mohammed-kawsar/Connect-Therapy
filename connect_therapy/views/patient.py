@@ -377,7 +377,8 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             # go ahead and book those appointments
             if Appointment.book_appointments(appointments_to_book, self.patient):
                 notifications.multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
-                return render(request, "connect_therapy/patient/bookings/booking-success.html", {})
+                return render(request, "connect_therapy/patient/bookings/booking-success.html", {
+                                                                            'appointment': appointments_to_book})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
 
