@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin as UserAdminParent
 
-from connect_therapy.models import Practitioner
+from connect_therapy.models import Practitioner, Appointment, Patient
 
 
 @admin.register(Practitioner)

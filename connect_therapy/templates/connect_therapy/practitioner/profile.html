@@ -1,16 +1,94 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Practitioner profile{% endblock %}
 
+{% block header %}
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+{% endblock %}
+
 {% block content %}
-    <h1>Profile</h1>
-    <p>First Name: {{ user.first_name }}</p>
-    <p>Last Name: {{ user.last_name }}</p>
-    <p>Email: {{ user.email }}</p>
-    <p>address line 1: {{ user.practitioner.address_line_1 }}</p>
-    <p>address line 2: {{ user.practitioner.address_line_2 }}</p>
-    <p>Mobile: {{ user.practitioner.mobile }}</p>
-    <p>Bio: {{ user.practitioner.bio }}</p>
+    <div class="container-fluid">
+        <div class="jumbotron">
+            <div class="text-center">
+                <h1>Profile</h1>
+                <p><b>First Name:</b> <r class="lead">{{ user.first_name }}</r></p>
+                <p><b>Last Name:</b> <r class="lead">{{ user.last_name }}</r></p>
+                <p><b>Email:</b> <r class="lead">{{ user.email }}</r></p>
+                <p><b>address line 1:</b> <r class="lead">{{ user.practitioner.address_line_1 }}</r></p>
+                <p><b>address line 2:</b> <r class="lead">{{ user.practitioner.address_line_2 }}</r></p>
+                <p><b>Mobile:</b> <r class="lead">{{ user.practitioner.mobile }}</r></p>
+                <p><b>Bio:</b> <r class="lead">{{ user.practitioner.bio }}</r></p>
+            </div>
+
     <a class='btn btn-primary'
        href={% url 'connect_therapy:practitioner-profile-edit' user.practitioner.id %}>Edit</a>
     <a href="{% url 'connect_therapy:practitioner-change-password'%}" class="btn btn-primary">change password</a>
+             </div>
+    </div>
+
+    <div class="container-fluid hidden"></div>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .container-fluid {
+            padding-top: 10px;
+        }
+
+        .jumbotron {
+            padding-bottom: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 50px;
+            font-weight: 600;
+            padding-bottom: 25px;
+        }
+
+        b {
+            font-size: 20px;
+            letter-spacing: 1px;
+        }
+
+        .lead {
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+    .btn {
+        margin-top: 30px;
+    }
+
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 35px;
+            padding-bottom: 25px;
+        }
+
+        b {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .lead {
+            font-size: 18px;
+        }
+
+        .container-fluid .hidden {
+            display: none;
+        }
+
+
+    }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+          if ($(document).height() <= $(window).height()) {
+        document.getElementById('stickyFooter').className = 'fixed-bottom';
+    }
+    </script>
 {% endblock %}

@@ -23,6 +23,9 @@
     <link rel="stylesheet" href="{% static 'connect_therapy/file_picker/file_upload_download.css' %}" type="text/css">
 
     {# FILE DOWNLOAD SCRIPTS END -------------------------------------------------------------------------------- #}
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
 {% endblock %}
 
 {% block content %}
@@ -145,3 +148,13 @@
         <input type="submit" class="btn" value="submit"/>
     </form>
 {% endblock %}
+
+{% block scripts %}
+    <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
+{% endblock %}
+
+

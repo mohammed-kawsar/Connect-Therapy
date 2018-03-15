@@ -23,8 +23,16 @@
     <link rel="stylesheet" href="{% static 'connect_therapy/file_picker/file_upload_download.css' %}" type="text/css">
 
     {# FILE DOWNLOAD SCRIPTS END -------------------------------------------------------------------------------- #}
-{% endblock %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+    {% endblock %}
 {% block content %}
+    <div class="jumbotron col-sm-12">
+        <h3 class="">Practitioner Notes</h3>
+        <hr class="my-4">
+        <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_by_practitioner }}</p>
 
     <script>
         window.onload = function () {
@@ -157,4 +165,44 @@
             {% endif %}
         </div>
     </div>
+
+    <div class="jumbotron">
+        <h3>Your Notes</h3>
+        <hr class="my-4">
+        <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_before_meeting }}</p>
+    </div>
+    <a href="{% url 'connect_therapy:patient-my-appointments' %}" class="btn btn-primary"> Go Back</a>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        @media (max-width: 600px) {
+            .container-fluid {
+                padding-top: 20px;
+            }
+
+            h3 {
+                font-size: 25px;
+            }
+
+            .lead{
+                font-size: 17px;
+            }
+        }
+
+    .jumbotron {
+        padding-top: 15px;
+    }
+    .container-fluid {
+        padding-top: 20px;
+    }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
 {% endblock %}
