@@ -329,10 +329,11 @@ class Appointment(models.Model):
                     if i_end_time == app.start_date_and_time:
 
                         merged = Appointment(practitioner=app.practitioner,
+                                             # take start time of the earlier one
                                              start_date_and_time=i_from_s.start_date_and_time,
                                              length=cls._add_time(i_from_s.start_date_and_time, i_from_s.length,
-                                                                  app.length),
-                                             price=i_from_s.price + app.price)
+                                                                  app.length),  # add the length
+                                             price=i_from_s.price + app.price)  # add the prices of the two apps together
 
                         stack.append(merged)
                         merged_apps.append(i_from_s)
