@@ -30,13 +30,13 @@ class TestPractitionerNotes(TestCase):
                                   length=time(hour=1))
         appointment.save()
         pnv = PractitionerNotesView()
-        pnv.appointment = appointment
+        pnv.object = appointment
         form = PractitionerNotesForm(data={'practitioner_notes': 'test',
                                            'patient_notes_by_practitioner': 'text'})
         form.is_valid()
         pnv.form_valid(form)
-        self.assertEqual(pnv.appointment.practitioner_notes, 'test')
-        self.assertEqual(pnv.appointment.patient_notes_by_practitioner, 'text')
+        self.assertEqual(pnv.object.practitioner_notes, 'test')
+        self.assertEqual(pnv.object.patient_notes_by_practitioner, 'text')
 
 
 class TestPractitionerAllPatientsView(TestCase):

@@ -160,8 +160,7 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
             self.request.user.practitioner
         except Practitioner.DoesNotExist:
             return False
-        return self.get_object() is not None and \
-               self.request.user.id == self.get_object().practitioner.user.id
+        return True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
