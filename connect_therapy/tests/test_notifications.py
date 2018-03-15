@@ -192,7 +192,7 @@ class TestNotifications(TestCase):
         appointment_cancelled_by_patient(patient, appointment, True)
         self.assertEqual(len(mail.outbox), 4)
 
-    def test_appointment_cancelled_by_practitioner(self):
+    def test_appointment_cancelled_by_practitioner_booked(self):
         user = User.objects.create_user(username='test@example.com',
                                         password='woofwoof12',
                                         first_name="Robert",
@@ -233,3 +233,32 @@ class TestNotifications(TestCase):
         appointment.save()
         appointment_cancelled_by_practitioner(appointment)
         self.assertEqual(len(mail.outbox), 2)
+
+    def test_appointment_cancelled_by_practitioner_unbooked(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12',
+                                        first_name="Robert",
+                                        last_name="Greener",
+                                        email="test@example.com"
+                                        )
+        user.save()
+        practitioner = Practitioner(user=user,
+                                    mobile="+447476605233",
+                                    bio="ABC",
+                                    address_line_1="XXX",
+                                    address_line_2="XXXXX",
+                                    is_approved=True
+                                    )
+        practitioner.save()
+        appointment = Appointment(practitioner=practitioner,
+                                  patient=None,
+                                  start_date_and_time=datetime(year=2018,
+                                                               month=4,
+                                                               day=17,
+                                                               hour=15,
+                                                               minute=10,
+                                                               tzinfo=pytz.utc),
+                                  length=time(hour=1))
+        appointment.save()
+        appointment_cancelled_by_practitioner(appointment)
+        self.assertEqual(len(mail.outbox), 1)
