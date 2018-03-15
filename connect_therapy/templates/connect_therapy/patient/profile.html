@@ -1,18 +1,81 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Patient Profile{% endblock %}
 
+{% block header %}
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+{% endblock %}
+
 {% block content %}
-    <h1>Profile</h1>
-    <p>First Name: {{ user.first_name }}</p>
-    <p>Last Name: {{ user.last_name }}</p>
-    <p>Gender: {{ user.patient.gender }}</p>
-    <p>DoB: {{ user.patient.date_of_birth }}</p>
-    <p>Email: {{ user.email }}</p>
-    <p>Mobile: {{ user.patient.mobile }}</p>
-    <a class='btn btn-primary'
-       href={% url 'connect_therapy:patient-profile-edit' user.patient.id %}>Edit</a>
-    <a class='btn btn-primary'
-       href={% url 'connect_therapy:patient-change-password'%}>
-        Change Password
-    </a>
+    <div class="container-fluid">
+        <div class="jumbotron">
+            <div class="text-center">
+            <h1>Profile</h1>
+            <p><b>First Name:</b> <r class="lead">{{ user.first_name }}</r></p>
+            <p><b>Last Name:</b> <r class="lead">{{ user.last_name }}</r></p>
+            <p><b>Gender:</b> <r class="lead">{{ user.patient.gender }}</r></p>
+            <p><b>Date of Birth:</b> <r class="lead">{{ user.patient.date_of_birth }}</r></p>
+            <p><b>Email:</b> <r class="lead">{{ user.email }}</r></p>
+            <p><b>Mobile:</b> <r class="lead">{{ user.patient.mobile }}</r></p>
+        </div>
+        <a class='btn btn-primary'
+           href={% url 'connect_therapy:patient-profile-edit' user.patient.id %}>Edit</a>
+        <a class='btn btn-primary'
+           href={% url 'connect_therapy:patient-change-password'%}>
+            Change Password
+        </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .container-fluid {
+            padding-top: 10px;
+        }
+
+        .jumbotron {
+            padding-bottom: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 50px;
+            font-weight: 600;
+            padding-bottom: 25px;
+        }
+
+        b {
+            font-size: 20px;
+            letter-spacing: 1px;
+        }
+
+        .lead {
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+    .btn {
+        margin-top: 30px;
+    }
+    
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 35px;
+            padding-bottom: 25px;
+        }
+
+        b {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .lead {
+            font-size: 18px;
+        }
+
+
+    }
+    </style>
 {% endblock %}

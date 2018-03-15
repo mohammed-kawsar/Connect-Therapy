@@ -37,17 +37,18 @@ class PractitionerSignUpForm(UserCreationForm):
                   'password2')
 
         widgets = {
-            'email': forms.TextInput(attrs={'size': 35})
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.TextInput(attrs={'size': 35, 'class': 'form-control'}),
         }
 
 
 class PractitionerLoginForm(AuthenticationForm):
     username = UsernameField(
         max_length=254,
-        widget=forms.TextInput(attrs={
-            'autofocus': True,
-            'size': 35,
-        }, ),
+        widget=forms.TextInput(attrs={'autofocus': True,
+                                      'size': 35,
+                                      'class': 'form-control'}, ),
         label="Email"
     )
 
@@ -69,8 +70,13 @@ class PractitionerLoginForm(AuthenticationForm):
 
 
 class PractitionerNotesForm(forms.Form):
-    practitioner_notes = forms.CharField(label="notes for practitioner", widget=forms.Textarea)
-    patient_notes_by_practitioner = forms.CharField(label="notes for patient", widget=forms.Textarea)
+    practitioner_notes = forms.CharField(label="Notes for Practitioner",
+                                         widget=forms.Textarea(
+                                             attrs={'class': 'form-control'}))
+    patient_notes_by_practitioner = forms.CharField(label="Notes for Patient",
+                                                    widget=forms.Textarea(
+                                                        attrs={'class': 'form-control'}
+                                                    ))
 
 
 class PractitionerForm(forms.ModelForm):
