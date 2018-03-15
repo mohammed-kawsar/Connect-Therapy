@@ -145,6 +145,11 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
 
         self.object.length = time(minute=30)
         self.object.patient = None
+
+        from decimal import Decimal
+        default_price = Decimal(Appointment._meta.fields['price'].get_default())
+        self.object.price = default_price
+
         number_of_appointments = \
             (original_length.hour * 60 + original_length.minute) // 30
         for i in range(1, number_of_appointments):
@@ -153,7 +158,8 @@ class PatientCancelAppointmentView(FormMixin, DetailView):
                 patient=None,
                 length=time(minute=30),
                 start_date_and_time=self.object.start_date_and_time
-                                    + timedelta(minutes=30 * i)
+                                    + timedelta(minutes=30 * i),
+                price=default_price
             )
             appointment.save()
             self.object.save()
