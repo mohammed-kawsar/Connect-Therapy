@@ -1,0 +1,48 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Practitioner Edit Details{% endblock %}
+
+{% block header %}
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+{% endblock %}
+
+
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p}}
+    <input type="submit" value="Update" class="btn btn-primary"/>
+</form>
+{% endblock %}
+
+{% block styles %}
+
+    <style>
+        .container-fluid {
+            padding-top: 15px;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+
+        textarea {
+            resize: none;
+        }
+    </style>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.getElementById('id_user-first_name').className = 'form-control';
+        document.getElementById('id_user-last_name').className = 'form-control';
+        document.getElementById('id_user-email').className = 'form-control';
+        document.getElementById('id_practitioner-address_line_1').className = 'form-control';
+        document.getElementById('id_practitioner-address_line_2').className = 'form-control';
+        document.getElementById('id_practitioner-postcode').className = 'form-control';
+        document.getElementById('id_practitioner-mobile').className = 'form-control';
+        document.getElementById('id_practitioner-bio').className = 'form-control';
+    </script>
+{% endblock %}

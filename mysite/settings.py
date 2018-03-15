@@ -101,6 +101,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# This must be changed for production
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -114,6 +116,12 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+TWILIO_PHONE_NUMBER = '+15005550006'
+
+TWILIO_ACC_SID = 'AC35eaf3d5ea24c3665fb0062caad70274'
+
+TWILIO_AUTH_TOKEN = '13af9344123ac994e18e922379fd260b'
 
 
 # Static files (CSS, JavaScript, Images)

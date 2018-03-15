@@ -1,34 +1,96 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Practitioner appointments{% endblock %}
 
+{% block header %}
+
+    <header>
+       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
+
 {% block content %}
-    <h1>Your Appointments</h1></br>
+    <div class="container" style="min-width: 100%">
+<h1 class="text-center">Your Appointments</h1></br>
     <h2>Current Bookings</h2>
-    {% for appointment in future_appointments %}
-        <tr class="current">
-            <td> {{ appointment.start_date_and_time }} </td>
-            <td>Duration: {{ appointment.length }}</td>
-            <td>Patient: {{ appointment.patient }}</td>
-            <td>
-                <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}">
-                    View Notes
-                </a>
-            </td>
-            <td><a href="">Cancel Appointment</a></td>
-        </tr>
-    {% empty %}
-        <p> No upcoming appointments yet. </p>
-    {% endfor %}
+    <div class="container-fluid">
+        <div class="row">
+            {% for appointment in future_appointments %}
+                <div class="col col-sm-12 col-lg-4 col-md-4">
+                    <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
+                        <div class="card-block">
+                            <h4 class="card-title" style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                            <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
+                            <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
+                            <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}" class="btn btn-info">View Notes</a>
+                            <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}" class="btn btn-info">Cancel Appointment</a>
+                         </div>
+                    </div>
+                 </div>
+            {% empty %}
+                <p class="lead"> No upcoming appointments yet. </p>
+            {%  endfor %}
+        </div>
+    </div>
 
     <h2>Previous Bookings</h2>
-    {% for appointment in past_appointments %}
-        <tr class="previous">
-            <td> {{ appointment.start_date_and_time }} </td>
-            <td>Duration: {{ appointment.length }}</td>
-            <td>Patient: {{ appointment.patient }}</td>
-            <td><a href="">View Notes</a></td>
-        </tr>
-    {% empty %}
-        <p> No previous appointments. </p>
+    <div class="container-fluid">
+        <div class="row">
+            {% for appointment in past_appointments %}
+                <div class="col col-sm-12 col-lg-4 col-md-4">
+                    <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
+                        <div class="card-block">
+                            <h4 class="card-title" style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                            <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
+                            <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
+                            <a href="{% url 'connect_therapy:practitioner-appointment-notes' appointment.id %}" class="btn btn-info">View Notes</a><br>
+                        </div>
+                    </div>
+                </div>
+        {% empty %}
+        <p class="lead"> No previous appointments. </p>
     {% endfor %}
+      </div>
+    </div>
 {% endblock %}
+</div>
+
+{% block styles %}
+    <style>
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 30px;
+                padding-top: 15px;
+            }
+
+            h2 {
+                font-size: 25px;
+            }
+
+            .lead {
+                font-size: 20px;
+            }
+
+            .card-title {
+                font-size: 20px;
+            }
+        }
+
+        .content {
+            width: 100%;
+            padding-left: 0%;
+            padding-right: 0%;
+            display: block;
+        }
+
+    </style>
+
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
+
+
