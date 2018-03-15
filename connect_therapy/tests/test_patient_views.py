@@ -93,16 +93,16 @@ class TestPatientCancel(TestCase):
                                        tzinfo=pytz.utc)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
-                                  length=time(hour=1))
+                                  length=time(hour=1, minute=30))
         appointment.save()
         p1 = PatientCancelAppointmentView()
         p1.object = appointment
         p1.split_merged_appointment()
         new_appointments = Appointment.objects.filter(
             start_date_and_time__gte=start_date_and_time,
-            start_date_and_time__lte=start_date_and_time + timedelta(minutes=30)
+            start_date_and_time__lte=start_date_and_time + timedelta(minutes=60)
         )
-        self.assertEqual(len(new_appointments), 2)
+        self.assertEqual(len(new_appointments), 3)
         for appointment in new_appointments:
             self.assertEqual(appointment.length, time(minute=30))
 
