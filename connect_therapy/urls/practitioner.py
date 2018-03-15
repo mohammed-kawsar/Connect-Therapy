@@ -28,7 +28,7 @@ urlpatterns = [
          auth_views.logout,
          {
              'next_page':
-                 reverse_lazy('connect_therapy:practitioner-logout-success'),
+                 reverse_lazy('connect_therapy:index'),
          },
          name='practitioner-logout'
          ),
@@ -39,12 +39,10 @@ urlpatterns = [
          name='practitioner-logout-success'
          ),
     path('',
-         TemplateView.as_view(
-            template_name='connect_therapy/practitioner/homepage.html'
-         ),
+         PractitionerHomepageView.as_view(),
          name='practitioner-homepage'
          ),
-    path('notes/<int:appointment_id>',
+    path('notes/<int:pk>',
          PractitionerNotesView.as_view(),
          name='practitioner-notes'
          ),

@@ -1,0 +1,8 @@
+Dear {% if user.practitioner %}Dr.{% endif %} {{ user.first_name }} {{ user.last_name }},
+
+{% block body %}{% endblock %}
+
+{% block signoff %}
+Yours Sincerely,
+Connect Therapy Admin Team
+{% endblock %}

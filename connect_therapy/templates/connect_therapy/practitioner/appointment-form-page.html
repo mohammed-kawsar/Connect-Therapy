@@ -1,12 +1,49 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Set available appointment times {% endblock %}
 
+{% block header %}
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+{% endblock %}
+
 {% block content %}
     <h1>Set availabilty for an appointment</h1></br>
     <form action="" method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Confirm" />
-        <a href="{% url 'connect_therapy:practitioner-my-appointments'%}" class="btn btn-default">Cancel</a>
+        <input type="submit" value="Confirm" class="btn btn-success"/>
+        <a href="{% url 'connect_therapy:practitioner-homepage'%}" class="btn btn-warning">Cancel</a>
     </form>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .container-fluid {
+            padding-top: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            padding-bottom: 15px;
+        }
+
+        .btn {
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 30px;
+                padding-bottom: 10px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.getElementById('id_start_date_and_time').className = 'form-control';
+        document.getElementById('id_length').className = 'form-control';
+    </script>
 {% endblock %}

@@ -1,6 +1,22 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Practitioner logout success{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
 <h1>You've logged out, thanks!</h1>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
 {% endblock %}

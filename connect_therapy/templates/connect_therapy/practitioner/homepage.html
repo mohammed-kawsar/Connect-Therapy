@@ -1,47 +1,134 @@
 {% extends 'connect_therapy/base.html' %}
 {% load static %}
 {% block title %}Practitioner Home{% endblock %}
+
+
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
 
-    <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-              crossorigin="anonymous">
-        <link href="{% static '/connect_therapy/css/practitioner-homepage.css' %}" rel="stylesheet">
-    </head>
-    <body>
-
-    <div class="main-image">
-        <div class="item1">
-            <div class="container">
-                <img src="{% static '/connect_therapy/images/notepad.png' %}" alt="Snow">
-                <button class="btn">Manage Appointments</button>
+    <div id="myCarousel" class="carousel slide" date-ride="carousel">
+        <div class="carousel-inner" role="listbox">
+            <div class="carousel-item active">
+                <img class=" img-responsive img-fluid" src="{% static '/connect_therapy/images/PractitionerHome.png' %}"
+                     alt="SlideOne" style="min-width: 100%; opacity: 0.7;">
+                <div class="carousel-caption">
+                    <button type="button" onclick="window.location.href = '{% url 'connect_therapy:practitioner-my-appointments'%}'" class="btn btn-default">MANAGE APPOINTMENTS</button>
+                </div>
             </div>
-            <div class="caption"><h3>C O N N E C T &nbsp; &nbsp;T H E R A P Y</h3></div>
+        </div>
+    </div>
+    <div class="container-fluid text-center" style="padding: 15px 0px">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6" id="feature-text">
+                <h6> Incredible feature</h6>
+                <h2>Totally incredible website</h2>
+                <p class="lead">
+                           Niduci tisa suyofos natenix po, nute ieros dorurij ofodu na nomer begora imil
+                           dit be. Cili wihidi ludelu nonihie bugil.
+                            Ugurot ivah co erevun tieleret lar. Royaru usacinen lodie lo reteri. Fape lite lono une
+                            seto. Ilefi gut sonoyis oyora l
+                            imebe rur. Sielore ener honuz yikete pe sehi. Ci sase nicot rat nuted temiv sepuhi
+                            telalos
+                            sosofa! Kosit orietino ehire?
+             </p>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+                <img class="d-block float-right text-center d-block float-right img-fluid" id="feature-image"
+                             src="{% static '/connect_therapy/images/slide.png' %}">
+            </div>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
+{% endblock %}
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    ﻿
-    <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
-    </body>
+
+{% block styles %}
+
+    <style>
+
+    .container-fluid {
+        min-height: 100%;
+        min-width: 100%;
+        padding: 0px 0px;
+        background-size: cover;
+    }
+
+    .carousel-caption {
+        top: 50%;
+        transform: translateY(40%);
+        bottom: initial;
+    }
+
+    .carousel-caption button {
+        padding: 10px 35px;
+        padding-bottom: 7px;
+        font-size: 20px;
+        letter-spacing: 7px;
+        font-weight: 500;
+        background: red;
+        color: white;
+        font-family: DIN Condensed;
+    }
+
+    .carousel-caption button:hover {
+        background-color: palevioletred;
+        color: white;
+    }
+
+    .carousel-item {
+        -webkit-transform-style: preserve-3d;
+        -moz-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+    }
+
+
+     @media (max-width: 600px) {
+        .carousel-caption button {
+            padding: 8px 20px;
+            padding-bottom: 5px;
+            font-size: 15px;
+            letter-spacing: 4px;
+        }
+
+        #feature-text h2 {
+            font-size: 25px;
+        }
+
+        #feature-text p {
+            font-size: 17px;
+        }
+    }
+
+    #feature-image {
+        border-radius: 5px;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    #feature-text {
+
+        padding-left: 20px;
+        padding-right: 20px;
+        vertical-align: middle;
+        padding-top: 6%;
+
+    }
+
+
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+    </script>
 {% endblock %}

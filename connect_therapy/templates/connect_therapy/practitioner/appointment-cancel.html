@@ -1,15 +1,70 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Cancel appointment{% endblock %}
 
+{% block header %}
+
+    <header>
+       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
+    <div class="container-fluid">
     <h1>Cancel your appointment</h1></br>
     <form action="" method="post">
         {% csrf_token %}
+        <div class="jumbotron">
         <h5>Are you sure you want to cancel the following appointment?</h5><br>
-        <p>{{ object }}</p>
+        <p class="lead">{{ object }}</p>
+
+            <hr class="my-4">
+        <p>Click <em>Confirm</em> to Cancel Appointment</p>
         <label for="cancel-message"> Enter a message (Optional):</label>
         <input type="text" name="cancel-message"><br>
-        <input type="submit" value="Confirm" />
-        <a href="{% url 'connect_therapy:practitioner-my-appointments'%}" class="btn btn-default">Back</a>
+        <input type="submit" value="Confirm" class="btn btn-warning"/>
+        <a href="{% url 'connect_therapy:practitioner-my-appointments'%}" class="btn btn-primary">Back</a>
+            </div>
     </form>
+    </div>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .container-fluid {
+            padding-top: 10px;
+        }
+
+        .jumbotron {
+            padding-bottom: 25px;
+        }
+
+        h1 {
+            text-align: center;
+            text-transform: capitalize;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 30px;
+            }
+
+            h5 {
+                font-size: 17px;
+                line-height: 25px;
+            }
+
+            .lead {
+                font-size: 15px;
+            }
+
+            p {
+                font-size: 15px;
+            }
+        }
+    </style>
 {% endblock %}
