@@ -20,7 +20,15 @@
                 <div class="col col-sm-12 col-lg-4 col-md-4">
                     <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
                         <div class="card-block">
-                            <h4 class="card-title" style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                            <h4 class="card-title" style="white-space: nowrap">
+                                {% if appointment.is_live %}
+                                    <a href="{% url 'connect_therapy:chat' appointment.id %}">
+                                {% endif %}
+                                    {{ appointment.start_date_and_time }}
+                                {% if appointment.is_live %}
+                                    </a>
+                                {% endif %}
+                            </h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
                             <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}" class="btn btn-info"> Cancel Appointment</a>
