@@ -128,11 +128,15 @@ class PractitionerDefineAppointmentForm(forms.Form):
 
     start_date_and_time = forms.DateTimeField(help_text=" Format: DD/MM/YYYY H:M",
                                               required=True,
-                                              input_formats=['%d/%m/%Y %H:%M'])
+                                              input_formats=['%d/%m/%Y %H:%M'],
+                                              widget=forms.DateInput(attrs={'id': 'datetimepicker',
+                                                                            'class': 'form-control'}))
 
     length = forms.TimeField(help_text=" Format: H:M",
                              required=True,
-                             input_formats=['%H:%M'])
+                             input_formats=['%H:%M'],
+                             widget=forms.TimeInput(attrs={'id': 'timepicker',
+                                                           'class': 'form-control'}))
 
     def clean_start_date_and_time(self):
         start_datetime = self.cleaned_data['start_date_and_time']
