@@ -167,7 +167,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
 
     def split_merged_appointment(self):
         original_length = self.object.length
-        if original_length.hour + original_length.minute == 30:
+        if original_length.hour * 60 + original_length.minute == 30:
             return
 
         self.object.length = time(minute=30)
