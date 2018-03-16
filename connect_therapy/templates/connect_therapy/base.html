@@ -25,6 +25,38 @@
             font-size: 15px;
             font-weight: 100;
         }
+
+        div.alert.alert-warning {
+        margin-bottom: 0px;
+        border-radius: 0px;
+        padding-left: 15px;
+    }
+
+        p.alert-paragraph {
+            margin-bottom: 0px;
+            font-size: 14px;
+        }
+
+        p.alert-paragraph.final-message {
+            font-weight: 400;
+        }
+
+        button.close {
+            font-size: 50px;
+            font-weight: 300;
+            text-align: center;
+            padding-top: 30px !important;
+        }
+
+
+        h4.alert-heading {
+            font-size: 20px;
+        }
+
+        button.close > span {
+            font-size: 40px;
+
+        }
     }
 
     body {
@@ -49,7 +81,29 @@
         body {
             padding-top: 0px;
      }
+
     }
+
+    div.alert.alert-warning {
+        margin-bottom: 0px;
+        border-radius: 0px;
+    }
+
+    p.alert-paragraph {
+        margin-bottom: 0px;
+    }
+
+    button.close {
+        font-size: 60px;
+        font-weight: 300;
+        padding-top: 25px !important;
+    }
+
+    button.close > span {
+        vertical-align: middle;
+    }
+
+
 </style>
 
 </head>
@@ -169,6 +223,30 @@
     {% endif %}
 </header>
 
+
+<div class="alert alert-warning alert-dismissible fade show" id="id_alert" role="alert">
+  <h4 class="alert-heading">Browser Warning</h4>
+    <p class="alert-paragraph">You are using <b>Safari</b> to browse this website, please use <b>Chrome</b> for the best experience.</p>
+    <hr class="my-2">
+    <p class="alert-paragraph final-message"><b>Sorry for any inconvenience caused.</b></p>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<script>
+    var warning_alert =  document.getElementById('id_alert');
+    if ((!!window.safari) == false) {
+            warning_alert.style.display = 'none';
+    } else if((!!window.safari) == true) {
+            $(".alert").alert();
+    } else {
+        $('.alert').alert('close');
+    }
+</script>
+
+
+
 <div class="container">
 
 </div>
@@ -187,6 +265,8 @@
         crossorigin="anonymous"></script>
 
 <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
+
+
 
 <script>
 
@@ -239,6 +319,8 @@
     }
 
 </script>
+
+
 
 
 
