@@ -105,7 +105,6 @@ class TestPatientCancel(TestCase):
 
         for appointment in new_appointments:
             self.assertEqual(appointment.length, time(minute=30))
-            from decimal import Decimal
 
             self.assertEquals(appointment.price, Decimal(Appointment._meta.get_field('price').get_default()))
 
@@ -143,7 +142,7 @@ class TestPatientCancel(TestCase):
 
         for appointment in new_appointments:
             self.assertEqual(appointment.length, time(minute=30))
-            from decimal import Decimal
+
             self.assertEquals(appointment.price, Decimal(Appointment._meta.get_field('price').get_default()))
 
     def test_split_merged_appointment_when_no_splits_should_happen(self):

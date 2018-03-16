@@ -1,5 +1,6 @@
 import hashlib
 from datetime import datetime, timedelta
+from decimal import Decimal
 from functools import partial
 
 import pytz
@@ -90,7 +91,6 @@ class Appointment(models.Model):
     The price of the appointment in GBP.
     Max price is £999.
     """
-    from decimal import Decimal
     price = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(50))
 
     def __str__(self):
@@ -129,7 +129,6 @@ class Appointment(models.Model):
         appointments = []
         for app_dict in appointment_dict_list:
             if app_dict['id'] is None:
-                from decimal import Decimal
                 appointment = Appointment(practitioner_id=app_dict['practitioner_id'],
                                           start_date_and_time=parser.parse(app_dict['start_date_and_time']),
                                           length=parser.parse(app_dict['length']),

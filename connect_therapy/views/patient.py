@@ -1,4 +1,5 @@
 from datetime import timedelta, time
+from decimal import Decimal
 
 from django import forms
 from django.contrib import messages
@@ -9,7 +10,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
@@ -112,10 +113,10 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
             return self.form_valid()
         else:
             return self.form_invalid()
-    
+
     def get_context_data(self, **kwargs):
         context = super.get_context_data(**kwargs)
-        
+
         files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.appointment.id))
         downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
         context['downloadable_files'] = downloadable_file_list
@@ -134,7 +135,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-            self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
@@ -174,7 +175,6 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         self.object.length = time(minute=30)
         self.object.patient = None
 
-        from decimal import Decimal
         # set the price to the default price set in the model
         default_price = Decimal(Appointment._meta.get_field('price').get_default())
         self.object.price = default_price
@@ -200,14 +200,14 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     redirect_field_name = None
     model = Appointment
     template_name = 'connect_therapy/patient/appointment-notes.html'
+
     def test_func(self):
         try:
             self.request.user.patient
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-            self.request.user.id == self.get_object().patient.user.id
-
+               self.request.user.id == self.get_object().patient.user.id
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -377,7 +377,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             if Appointment.book_appointments(appointments_to_book, self.patient):
                 notifications.multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
                 return render(request, "connect_therapy/patient/bookings/booking-success.html", {
-                                                                            'appointment': appointments_to_book})
+                    'appointment': appointments_to_book})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
 
@@ -392,7 +392,7 @@ class PatientProfileView(LoginRequiredMixin, generic.TemplateView):
         return render(request, args)
 
 
-class PatientEditDetailsView(UserPassesTestMixin,UpdateView):
+class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
     model = Patient
     template_name = 'connect_therapy/patient/edit-profile.html'
     form_class = PatientEditMultiForm
@@ -408,7 +408,7 @@ class PatientEditDetailsView(UserPassesTestMixin,UpdateView):
         except Patient.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().user.id
+               self.request.user.id == self.get_object().user.id
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']

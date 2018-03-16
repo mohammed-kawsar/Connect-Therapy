@@ -107,22 +107,22 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             patient__isnull=False,
             practitioner=self.request.user.practitioner
 
-        ).order_by('start_date_and_time')
+        ).order_by('-start_date_and_time')
         context['unbooked_appointments'] = Appointment.objects.filter(
             start_date_and_time__gte=timezone.now(),
             patient__isnull=True,
             practitioner=self.request.user.practitioner
-        ).order_by('start_date_and_time')
+        ).order_by('-start_date_and_time')
         context['needing_notes'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
             patient_notes_by_practitioner="",
             practitioner=self.request.user.practitioner
-        ).order_by('start_date_and_time')
+        ).order_by('-start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
             practitioner=self.request.user.practitioner
         ).exclude(
-            patient_notes_by_practitioner="").order_by('start_date_and_time')
+            patient_notes_by_practitioner="").order_by('-start_date_and_time')
 
         return context
 

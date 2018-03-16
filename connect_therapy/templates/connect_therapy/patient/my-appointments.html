@@ -16,24 +16,23 @@
     <h2>Current Bookings</h2>
     <div class="container-fluid col-sm-12">
         <div class="row">
-            {% if future_appointments|length > 0 %}
-                {% for appointment in future_appointments %}
-                    <div class="col col-sm-12 col-lg-4 col-md-4">
-                        <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
-                            <div class="card-block">
-                                <h4 class="card-title"
-                                    style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
-                                <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
-                                <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
-                                <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"
-                                   class="btn btn-info"> Cancel Appointment</a>
-                            </div>
+
+            {% for appointment in future_appointments %}
+                <div class="col col-sm-12 col-lg-4 col-md-4">
+                    <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
+                        <div class="card-block">
+                            <h4 class="card-title"
+                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                            <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
+                            <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
+                            <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"
+                               class="btn btn-info"> Cancel Appointment</a>
                         </div>
                     </div>
-                {% endfor %}
-            {% else %}
+                </div>
+            {% empty %}
                 <p>You don't have any future appointments</p>
-            {% endif %}
+            {% endfor %}
         </div>
     </div>
 
