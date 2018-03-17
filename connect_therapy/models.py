@@ -169,14 +169,12 @@ class Appointment(models.Model):
         other_hours = o_days * 24 + o_seconds // 3600
         other_minutes = (o_seconds % 3600) // 60
         other_seconds = o_seconds % 60
-        print("Other minute is: " + str(other_minutes))
-        print("minute=" + str(other_minutes+date_time.minute))
         end_date_time = other_date_time + timedelta(hours=other_hours, minutes=other_minutes, seconds=other_seconds)
 
-        print("First time: " + str(date_time))
-        print("Adding: " + str(time))
-        print("End time: " + str(end_date_time))
-        print("--------------------------------")
+        # print("First time: " + str(date_time))
+        # print("Adding: " + str(time))
+        # print("End time: " + str(end_date_time))
+        # print("--------------------------------")
         return end_date_time
 
     @classmethod
@@ -284,9 +282,14 @@ class Appointment(models.Model):
 
             # limit to same day appointments
             if cur_start_time.date() == next_end_time.date():
+                print("Current start time: " + str(cur_start_time))
+                print("Current end time: " + str(cur_end_time))
+                print("Next start time: " + str(next_start_time))
+                print("Next end time: " + str(next_end_time))
+                print("---------------------------------------------")
                 # first 2 clauses check for partial overlaps
                 # next 2 check for complete overlaps i.e. 1 app. covers another completely
-                if next_start_time < cur_end_time < next_end_time or \
+                if next_start_time < cur_end_time <= next_end_time or \
                         cur_start_time < next_end_time < cur_end_time or \
                         next_start_time >= cur_start_time and next_end_time < cur_end_time or \
                         cur_start_time >= next_start_time and cur_end_time < next_end_time or \

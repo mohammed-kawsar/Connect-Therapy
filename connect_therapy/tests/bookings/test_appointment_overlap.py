@@ -1,10 +1,9 @@
-from datetime import datetime, time, timedelta
+from datetime import datetime, timedelta
 
 import pytz
 from django.test import TestCase
 
 from connect_therapy.models import Appointment
-from connect_therapy.views import *
 
 
 class TestAppointmentOverLap(TestCase):
@@ -242,7 +241,7 @@ class TestAppointmentOverLap(TestCase):
         overlaps = Appointment._get_overlaps([a4, a2, a3, a1])
         self.assertEquals(len(overlaps), 0)
 
-    def test_slight_over_lap(self):
+    def test_over_lap(self):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
@@ -250,7 +249,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=18)
+            length=timedelta(hours=0, minutes=2)
         )
         a1.save()
 
@@ -259,9 +258,9 @@ class TestAppointmentOverLap(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=40,
+                                         minute=21,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=10)
+            length=timedelta(hours=0, minutes=1)
         )
         a2.save()
 
@@ -270,9 +269,9 @@ class TestAppointmentOverLap(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=50,
+                                         minute=22,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=10)
+            length=timedelta(hours=0, minutes=1)
         )
         a3.save()
 
@@ -280,15 +279,15 @@ class TestAppointmentOverLap(TestCase):
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
-                                         hour=15,
-                                         minute=00,
+                                         hour=14,
+                                         minute=23,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=10)
+            length=timedelta(hours=0, minutes=1)
         )
         a4.save()
 
         overlaps = Appointment._get_overlaps([a4, a2, a3, a1])
-        self.assertEquals(len(overlaps), 0)
+        self.assertEquals(len(overlaps), 1)
 
     def test_same_start_different_duartion(self):
         a1 = Appointment(
