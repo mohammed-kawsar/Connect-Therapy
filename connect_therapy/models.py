@@ -143,7 +143,7 @@ class Appointment(models.Model):
             if app_dict['id'] is None:
                 appointment = Appointment(practitioner_id=app_dict['practitioner_id'],
                                           start_date_and_time=parser.parse(app_dict['start_date_and_time']),
-                                          length=parser.parse(app_dict['length']),
+                                          length=cls._get_timedelta_from_datetime(parser.parse(app_dict['length'])),
                                           session_id=app_dict['session_id'],
                                           session_salt=app_dict['session_salt'],
                                           price=Decimal(app_dict['price']))
@@ -152,6 +152,10 @@ class Appointment(models.Model):
                 appointments.append(Appointment.objects.get(pk=app_dict['id']))
 
         return appointments
+
+    @classmethod
+    def _get_timedelta_from_datetime(cls, datetime):
+        return timedelta(hours=datetime.hour, minutes=datetime.minute, seconds=datetime.second)
 
     def appointments_to_dictionary_list(appointments):
         """
@@ -204,6 +208,10 @@ class Appointment(models.Model):
 
     @classmethod
     def _get_timedelta(cls, time):
+        """
+        :param time: Expects the time object from a duration field
+        :return:
+        """
         o_days, o_seconds = time.days, time.seconds
         other_hours = o_days * 24 + o_seconds // 3600
         other_minutes = (o_seconds % 3600) // 60
@@ -340,7 +348,7 @@ class Appointment(models.Model):
                                              # take start time of the earlier one
                                              start_date_and_time=i_from_s.start_date_and_time,
                                              length=i_from_s.length + app.length,
-                                             price=i_from_s.price+app.price)
+                                             price=i_from_s.price + app.price)
 
                         stack.append(merged)
                         merged_apps.append(i_from_s)

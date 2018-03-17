@@ -22,9 +22,6 @@
                     <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
                         <div class="card-block">
 
-                            <h4 class="card-title"
-                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
-
                             <h4 class="card-title" style="white-space: nowrap">
                                 {% if appointment.is_live %}
                                     <a href="{% url 'connect_therapy:chat' appointment.id %}">
