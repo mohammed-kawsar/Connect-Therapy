@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 import pytz
 from django.test import TestCase
@@ -18,7 +18,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=3)
+            length=timedelta(hours=3)
         )
         a1.save()
         overlaps = Appointment._get_overlaps([a1])
@@ -32,7 +32,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=3)
+            length=timedelta(hours=3)
         )
         a1.save()
 
@@ -43,7 +43,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=3)
+            length=timedelta(hours=3)
         )
         a2.save()
 
@@ -54,7 +54,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=3)
+            length=timedelta(hours=3)
         )
         a3.save()
 
@@ -65,7 +65,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=3)
+            length=timedelta(hours=3)
         )
         a4.save()
 
@@ -80,7 +80,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a1.save()
 
@@ -91,7 +91,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=40,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a2.save()
 
@@ -106,7 +106,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a1.save()
 
@@ -117,7 +117,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=50,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a2.save()
 
@@ -128,7 +128,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=15,
                                          minute=10,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a3.save()
 
@@ -139,7 +139,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=16,
                                          minute=00,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a4.save()
 
@@ -154,7 +154,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a1.save()
 
@@ -165,7 +165,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=15,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a2.save()
 
@@ -176,7 +176,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=16,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a3.save()
 
@@ -187,7 +187,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=17,
                                          minute=19,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a4.save()
 
@@ -202,7 +202,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a1.save()
 
@@ -213,7 +213,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=15,
                                          minute=30,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a2.save()
 
@@ -224,7 +224,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=17,
                                          minute=00,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a3.save()
 
@@ -235,7 +235,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=18,
                                          minute=10,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a4.save()
 
@@ -250,7 +250,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=timedelta(minutes=18)
         )
         a1.save()
 
@@ -259,9 +259,9 @@ class TestAppointmentOverLap(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=21,
+                                         minute=40,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=timedelta(minutes=10)
         )
         a2.save()
 
@@ -270,9 +270,9 @@ class TestAppointmentOverLap(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=22,
+                                         minute=50,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=timedelta(minutes=10)
         )
         a3.save()
 
@@ -280,15 +280,15 @@ class TestAppointmentOverLap(TestCase):
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
-                                         hour=14,
-                                         minute=23,
+                                         hour=15,
+                                         minute=00,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=timedelta(minutes=10)
         )
         a4.save()
 
         overlaps = Appointment._get_overlaps([a4, a2, a3, a1])
-        self.assertEquals(len(overlaps), 3)
+        self.assertEquals(len(overlaps), 0)
 
     def test_same_start_different_duartion(self):
         a1 = Appointment(
@@ -298,7 +298,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=1)
+            length=timedelta(minutes=1)
         )
         a1.save()
 
@@ -309,7 +309,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=2)
+            length=timedelta(minutes=2)
         )
         a2.save()
 
@@ -320,7 +320,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=3)
+            length=timedelta(minutes=3)
         )
         a3.save()
 
@@ -331,7 +331,7 @@ class TestAppointmentOverLap(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=4)
+            length=timedelta(minutes=4)
         )
         a4.save()
 

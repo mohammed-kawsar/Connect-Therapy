@@ -1,5 +1,4 @@
 import hashlib
-
 from datetime import datetime, timedelta
 from functools import partial
 
@@ -8,8 +7,6 @@ from dateutil import parser
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-
-from django.db.models.signals import post_save
 
 
 class Patient(models.Model):
@@ -60,7 +57,7 @@ class Appointment(models.Model):
                                 null=True,
                                 blank=True)
     start_date_and_time = models.DateTimeField()
-    length = models.TimeField()
+    length = models.DurationField(default=timedelta(minutes=30))
     """This is how long the appointment lasts"""
     practitioner_notes = models.TextField(blank=True)
     """These are notes left by the practitioner at the end of the appointment,
@@ -95,7 +92,6 @@ class Appointment(models.Model):
                                        str(self.start_date_and_time),
                                        str(self.length))
 
-     
     @classmethod
     def book_appointments(cls, appointments, patient):
         """
@@ -158,11 +154,30 @@ class Appointment(models.Model):
 
     @classmethod
     def _add_datetime_time(cls, date_time, time):
-        """This method expects the first arg to be a datetime object and the second to be a time object
-        It will then add the time to the date time object and return it
         """
-        return date_time + timedelta(hours=time.hour, minutes=time.minute,
-                                     seconds=time.minute)
+        This method expects the first arg to be a datetime object and the second to be a time object
+        It will then add the time to the date time object and return it
+        :param date_time: Expects datetime object
+        :param time: Expects the time object to come in the form of the timedelta
+        used to model a DurationField. will not work as expected in any other case.
+        :return:
+        """
+
+        other_date_time = date_time
+
+        o_days, o_seconds = time.days, time.seconds
+        other_hours = o_days * 24 + o_seconds // 3600
+        other_minutes = (o_seconds % 3600) // 60
+        other_seconds = o_seconds % 60
+        print("Other minute is: " + str(other_minutes))
+        print("minute=" + str(other_minutes+date_time.minute))
+        end_date_time = other_date_time + timedelta(hours=other_hours, minutes=other_minutes, seconds=other_seconds)
+
+        print("First time: " + str(date_time))
+        print("Adding: " + str(time))
+        print("End time: " + str(end_date_time))
+        print("--------------------------------")
+        return end_date_time
 
     @classmethod
     def _add_time(cls, start_date_and_time, time_1, time_2):
@@ -330,7 +345,7 @@ class Appointment(models.Model):
                     appointments.remove(other_app)
 
         return appointments
-      
-      
+
+
 class File(models.Model):
     file = models.FileField()
