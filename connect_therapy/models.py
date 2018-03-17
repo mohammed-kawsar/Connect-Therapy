@@ -165,11 +165,6 @@ class Appointment(models.Model):
 
         other_date_time = date_time
         end_date_time = other_date_time + cls._get_timedelta(time)
-
-        # print("First time: " + str(date_time))
-        # print("Adding: " + str(time))
-        # print("End time: " + str(end_date_time))
-        # print("--------------------------------")
         return end_date_time
 
     @classmethod
@@ -269,11 +264,6 @@ class Appointment(models.Model):
 
             # limit to same day appointments
             if cur_start_time.date() == next_end_time.date():
-                print("Current start time: " + str(cur_start_time))
-                print("Current end time: " + str(cur_end_time))
-                print("Next start time: " + str(next_start_time))
-                print("Next end time: " + str(next_end_time))
-                print("---------------------------------------------")
                 # first 2 clauses check for partial overlaps
                 # next 2 check for complete overlaps i.e. 1 app. covers another completely
                 if next_start_time < cur_end_time <= next_end_time or \
@@ -309,7 +299,9 @@ class Appointment(models.Model):
                     i_from_s = stack.pop()
 
                     i_end_time = cls._add_datetime_time(i_from_s.start_date_and_time, i_from_s.length)
-
+                    print("i_end_time: " + str(i_end_time))
+                    print("app.start_date_and_time: " + str(app.start_date_and_time))
+                    print("---------------------------------------------")
                     if i_end_time == app.start_date_and_time:
 
                         merged = Appointment(practitioner=app.practitioner,
@@ -324,6 +316,7 @@ class Appointment(models.Model):
                         stack.append(app)
 
         merged_apps = cls._remove_duplicates(merged_apps)
+        print("Merged: " + str(stack))
         return stack, merged_apps
 
     @classmethod

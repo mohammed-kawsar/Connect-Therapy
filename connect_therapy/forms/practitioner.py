@@ -131,9 +131,7 @@ class PractitionerDefineAppointmentForm(forms.Form):
                                               widget=forms.DateInput(attrs={'id': 'datetimepicker',
                                                                             'class': 'form-control'}))
 
-    length = forms.DurationField(required=False,
-                                 widget=forms.TimeInput(attrs={'id': 'timepicker',
-                                                               'class': 'form-control'}))
+    length = forms.IntegerField(required=False,help_text="Please enter the length of the appointment in minutes.")
 
     def clean_start_date_and_time(self):
         start_datetime = self.cleaned_data['start_date_and_time']

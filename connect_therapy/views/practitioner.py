@@ -1,22 +1,23 @@
 import re
-import csv
-from django import forms
+from datetime import timedelta
+
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
 from django.views.generic import FormView, UpdateView, DeleteView, DetailView
-from connect_therapy import notifications
 from django.views.generic.edit import FormMixin
+
+from connect_therapy import notifications
 from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
     PractitionerNotesForm, PractitionerEditMultiForm, PractitionerDefineAppointmentForm
-from connect_therapy.models import Practitioner, Appointment, Patient
+from connect_therapy.models import Practitioner, Appointment
 
 
 class PractitionerSignUpView(FormView):
@@ -276,11 +277,16 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         return True is not None
 
     def form_valid(self, form):
+        if form.cleaned_data['length'] is not None:
+            length = form.cleaned_data['length']
+        else:
+            length = (Appointment._meta.get_field('length').get_default().seconds % 3600) // 60
+
         appointment = Appointment(
             patient=None,
             practitioner=self.request.user.practitioner,
             start_date_and_time=form.cleaned_data['start_date_and_time'],
-            length=form.cleaned_data['length']
+            length=timedelta(minutes=length)
         )
 
         over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,

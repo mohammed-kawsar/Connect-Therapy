@@ -53,22 +53,22 @@ class TestAppointmentMerge(TestCase):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
-                                         day=2,
-                                         hour=14,
-                                         minute=20,
+                                         day=19,
+                                         hour=18,
+                                         minute=10,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+            length=timedelta(minutes=30)
         )
         a1.save()
 
         a2 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
-                                         day=2,
-                                         hour=15,
-                                         minute=20,
+                                         day=19,
+                                         hour=18,
+                                         minute=40,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+            length=timedelta(minutes=30)
         )
         a2.save()
 
