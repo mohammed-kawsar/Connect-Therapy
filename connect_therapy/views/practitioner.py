@@ -1,22 +1,22 @@
 import re
-import csv
-from django import forms
+
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
 from django.views.generic import FormView, UpdateView, DeleteView, DetailView
-from connect_therapy import notifications
 from django.views.generic.edit import FormMixin
+
+from connect_therapy import notifications
 from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
     PractitionerNotesForm, PractitionerEditMultiForm, PractitionerDefineAppointmentForm
-from connect_therapy.models import Practitioner, Appointment, Patient
+from connect_therapy.models import Practitioner, Appointment
 
 
 class PractitionerSignUpView(FormView):
@@ -106,6 +106,7 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             start_date_and_time__gte=timezone.now(),
             patient__isnull=False,
             practitioner=self.request.user.practitioner
+
         ).order_by('-start_date_and_time')
         context['unbooked_appointments'] = Appointment.objects.filter(
             start_date_and_time__gte=timezone.now(),
@@ -122,6 +123,7 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).exclude(
             patient_notes_by_practitioner="").order_by('-start_date_and_time')
+
         return context
 
 
@@ -263,7 +265,7 @@ def change_password(request):
 class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, FormView):
     login_url = reverse_lazy('connect_therapy:practitioner-login')
     form_class = PractitionerDefineAppointmentForm
-    template_name = 'connect_therapy/practitioner/appointment-form-page.html'
+    template_name = 'connect_therapy/practitioner/set-appointment-page.html'
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
     redirect_field_name = None
     model = Practitioner

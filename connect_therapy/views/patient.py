@@ -1,14 +1,16 @@
 from datetime import timedelta, time
+from decimal import Decimal
 
 from django import forms
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, views as auth_views, \
     update_session_auth_hash
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordChangeForm
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
@@ -111,10 +113,10 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
             return self.form_valid()
         else:
             return self.form_invalid()
-    
+
     def get_context_data(self, **kwargs):
         context = super.get_context_data(**kwargs)
-        
+
         files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.appointment.id))
         downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
         context['downloadable_files'] = downloadable_file_list
@@ -123,7 +125,7 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
 class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
     model = Appointment
     form_class = forms.Form
-    template_name = 'connect_therapy/appointment_detail.html'
+    template_name = 'connect_therapy/patient/cancel-appointment.html'
     login_url = reverse_lazy('connect_therapy:patient-my-appointments')
     redirect_field_name = None
 
@@ -133,7 +135,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-            self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
@@ -172,6 +174,11 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
 
         self.object.length = time(minute=30)
         self.object.patient = None
+
+        # set the price to the default price set in the model
+        default_price = Decimal(Appointment._meta.get_field('price').get_default())
+        self.object.price = default_price
+
         number_of_appointments = \
             (original_length.hour * 60 + original_length.minute) // 30
 
@@ -181,7 +188,8 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
                 patient=None,
                 length=time(minute=30),
                 start_date_and_time=self.object.start_date_and_time
-                                    + timedelta(minutes=30 * i)
+                                    + timedelta(minutes=30 * i),
+                price=default_price
             )
             appointment.save()
             self.object.save()
@@ -199,8 +207,7 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-            self.request.user.id == self.get_object().patient.user.id
-
+               self.request.user.id == self.get_object().patient.user.id
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -300,8 +307,10 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
                     messages.success(request, str(len(merged_appointments)) + " appointments were merged")
 
                 # add to session data - used by the checkout
-                request.session['bookable_appointments'] = self._appointments_to_dictionary_list(bookable_appointments)
-                request.session['merged_appointments'] = self._appointments_to_dictionary_list(merged_appointments)
+                request.session['bookable_appointments'] = Appointment.appointments_to_dictionary_list(
+                    bookable_appointments)
+                request.session['merged_appointments'] = Appointment.appointments_to_dictionary_list(
+                    merged_appointments)
                 request.session['patient_id'] = self.patient.id
                 return render(request, self.get_template_names(), {"bookable_appointments": bookable_appointments,
                                                                    "merged_appointments": merged_appointments,
@@ -310,16 +319,6 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
             # appointments not valid
             invalid_appointments = True
             return render(request, self.get_template_names(), context={"invalid_appointments": invalid_appointments})
-
-    @staticmethod
-    def _appointments_to_dictionary_list(appointments):
-        dict_list = []
-        for app in appointments:
-            appointment_dict = {'id': app.id, 'practitioner_id': app.practitioner.id,
-                                'start_date_and_time': str(app.start_date_and_time), 'length': str(app.length),
-                                'session_id': str(app.session_id), 'session_salt': str(app.session_salt)}
-            dict_list.append(appointment_dict)
-        return dict_list
 
 
 class CheckoutView(UserPassesTestMixin, TemplateView):
@@ -378,7 +377,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             if Appointment.book_appointments(appointments_to_book, self.patient):
                 notifications.multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
                 return render(request, "connect_therapy/patient/bookings/booking-success.html", {
-                                                                            'appointment': appointments_to_book})
+                    'appointment': appointments_to_book})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
 
@@ -393,7 +392,7 @@ class PatientProfileView(LoginRequiredMixin, generic.TemplateView):
         return render(request, args)
 
 
-class PatientEditDetailsView(UserPassesTestMixin,UpdateView):
+class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
     model = Patient
     template_name = 'connect_therapy/patient/edit-profile.html'
     form_class = PatientEditMultiForm
@@ -409,7 +408,7 @@ class PatientEditDetailsView(UserPassesTestMixin,UpdateView):
         except Patient.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().user.id
+               self.request.user.id == self.get_object().user.id
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']

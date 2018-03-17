@@ -1,12 +1,12 @@
 import datetime
 
+from betterforms.multiform import MultiModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.contrib.auth.models import User
-from betterforms.multiform import MultiModelForm
-from connect_therapy.models import Practitioner
 
 from connect_therapy.models import Practitioner
+
 
 class PractitionerSignUpForm(UserCreationForm):
     address_line_1 = forms.CharField(max_length=100)
@@ -119,13 +119,12 @@ class PractitionerUserForm(forms.ModelForm):
 
 class PractitionerEditMultiForm(MultiModelForm):
     form_classes = {
-            'user': PractitionerUserForm,
-            'practitioner': PractitionerForm
+        'user': PractitionerUserForm,
+        'practitioner': PractitionerForm
     }
 
 
 class PractitionerDefineAppointmentForm(forms.Form):
-
     start_date_and_time = forms.DateTimeField(help_text=" Format: DD/MM/YYYY H:M",
                                               required=True,
                                               input_formats=['%d/%m/%Y %H:%M'],
