@@ -1,5 +1,7 @@
 import re
+
 from datetime import timedelta
+
 
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
@@ -107,6 +109,7 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             start_date_and_time__gte=timezone.now(),
             patient__isnull=False,
             practitioner=self.request.user.practitioner
+
         ).order_by('-start_date_and_time')
         context['unbooked_appointments'] = Appointment.objects.filter(
             start_date_and_time__gte=timezone.now(),
@@ -123,6 +126,7 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).exclude(
             patient_notes_by_practitioner="").order_by('-start_date_and_time')
+
         return context
 
 
@@ -264,7 +268,7 @@ def change_password(request):
 class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, FormView):
     login_url = reverse_lazy('connect_therapy:practitioner-login')
     form_class = PractitionerDefineAppointmentForm
-    template_name = 'connect_therapy/practitioner/appointment-form-page.html'
+    template_name = 'connect_therapy/practitioner/set-appointment-page.html'
     success_url = reverse_lazy('connect_therapy:practitioner-my-appointments')
     redirect_field_name = None
     model = Practitioner

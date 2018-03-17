@@ -1,5 +1,6 @@
 import hashlib
 from datetime import datetime, timedelta
+from decimal import Decimal
 from functools import partial
 
 import pytz
@@ -7,6 +8,7 @@ from dateutil import parser
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.utils import timezone
 
 
 class Patient(models.Model):
@@ -86,6 +88,23 @@ class Appointment(models.Model):
                                                   date_time=start_date_and_time)
                                   , editable=False)
 
+    """
+    The price of the appointment in GBP.
+    Max price is £999.
+    """
+    price = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(50))
+
+    def is_live(self):
+        """
+        Checks whether the appointment is 'live'
+        The appointment is live if the current time is within 5 minutes of the
+        start time, or the appointment is ongoing
+        :return: True iff live
+        """
+        return self.start_date_and_time - timedelta(minutes=5) < \
+               timezone.now() < self.start_date_and_time + \
+               timedelta(hours=self.length.hour, minutes=self.length.minute)
+
     def __str__(self):
         """Return a string representation of Appointment"""
         return "{} - {} for {}".format(str(self.practitioner),
@@ -125,12 +144,29 @@ class Appointment(models.Model):
                 appointment = Appointment(practitioner_id=app_dict['practitioner_id'],
                                           start_date_and_time=parser.parse(app_dict['start_date_and_time']),
                                           length=parser.parse(app_dict['length']),
-                                          session_id=app_dict)
+                                          session_id=app_dict['session_id'],
+                                          session_salt=app_dict['session_salt'],
+                                          price=Decimal(app_dict['price']))
                 appointments.append(appointment)
             else:
                 appointments.append(Appointment.objects.get(pk=app_dict['id']))
 
         return appointments
+
+    def appointments_to_dictionary_list(appointments):
+        """
+        Takes a list of appointments and returns each appointment as a dictionary.
+        Whole load of dictionaries are returned in a list
+        :return: List of appointment dictionaries.
+        """
+        dict_list = []
+        for app in appointments:
+            appointment_dict = {'id': app.id, 'practitioner_id': app.practitioner.id,
+                                'start_date_and_time': str(app.start_date_and_time), 'length': str(app.length),
+                                'session_id': str(app.session_id), 'session_salt': str(app.session_salt),
+                                'price': str(app.price)}
+            dict_list.append(appointment_dict)
+        return dict_list
 
     @classmethod
     def get_valid_appointments(cls, date, practitioner):
@@ -162,7 +198,6 @@ class Appointment(models.Model):
         used to model a DurationField. will not work as expected in any other case.
         :return:
         """
-
         other_date_time = date_time
         end_date_time = other_date_time + cls._get_timedelta(time)
         return end_date_time
@@ -299,14 +334,13 @@ class Appointment(models.Model):
                     i_from_s = stack.pop()
 
                     i_end_time = cls._add_datetime_time(i_from_s.start_date_and_time, i_from_s.length)
-                    print("i_end_time: " + str(i_end_time))
-                    print("app.start_date_and_time: " + str(app.start_date_and_time))
-                    print("---------------------------------------------")
                     if i_end_time == app.start_date_and_time:
 
                         merged = Appointment(practitioner=app.practitioner,
+                                             # take start time of the earlier one
                                              start_date_and_time=i_from_s.start_date_and_time,
-                                             length=i_from_s.length + app.length)
+                                             length=i_from_s.length + app.length,
+                                             price=i_from_s.price+app.price)
 
                         stack.append(merged)
                         merged_apps.append(i_from_s)
@@ -316,7 +350,6 @@ class Appointment(models.Model):
                         stack.append(app)
 
         merged_apps = cls._remove_duplicates(merged_apps)
-        print("Merged: " + str(stack))
         return stack, merged_apps
 
     @classmethod

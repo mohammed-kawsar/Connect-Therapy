@@ -4,7 +4,7 @@
 {% block header %}
 
     <header>
-       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     </header>
 
 {% endblock %}
@@ -12,7 +12,7 @@
 
 {% block content %}
     <div class="container" style="min-width: 100%">
-<h1 class="text-center">Your Appointments</h1></br>
+    <h1 class="text-center">Your Appointments</h1></br>
     <h2>Booked Appointments</h2>
     <div class="container-fluid">
         <div class="row">
@@ -20,17 +20,33 @@
                 <div class="col col-sm-12 col-lg-4 col-md-4">
                     <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
                         <div class="card-block">
-                            <h4 class="card-title" style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+
+                            <h4 class="card-title"
+                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+
+                            <h4 class="card-title" style="white-space: nowrap">
+                                {% if appointment.is_live %}
+                                    <a href="{% url 'connect_therapy:chat' appointment.id %}">
+                                {% endif %}
+                                    {{ appointment.start_date_and_time }}
+                                {% if appointment.is_live %}
+                                    </a>
+                                {% endif %}
+                            </h4>
+
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}" class="btn btn-info">View Notes</a>
-                            <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}" class="btn btn-info">Cancel Appointment</a>
-                         </div>
+                            <p class="card-text"><b>Price:</b> £{{ appointment.price }}</p>
+                            <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}"
+                               class="btn btn-info">View Notes</a>
+                            <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"
+                               class="btn btn-info">Cancel Appointment</a>
+                        </div>
                     </div>
-                 </div>
+                </div>
             {% empty %}
                 <p class="lead"> No booked appointments yet. </p>
-            {%  endfor %}
+            {% endfor %}
         </div>
     </div>
 
@@ -41,15 +57,18 @@
                 <div class="col col-sm-12 col-lg-4 col-md-4">
                     <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
                         <div class="card-block">
-                            <h4 class="card-title" style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                            <h4 class="card-title"
+                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}" class="btn btn-info">Cancel Appointment</a>
-                         </div>
+                            <p class="card-text"><b>Price:</b> £{{ appointment.price }}</p>
+                            <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"
+                               class="btn btn-info">Cancel Appointment</a>
+                        </div>
                     </div>
-                 </div>
+                </div>
             {% empty %}
                 <p class="lead"> No set available times yet. </p>
-            {%  endfor %}
+            {% endfor %}
         </div>
     </div>
 
@@ -60,17 +79,19 @@
                 <div class="col col-sm-12 col-lg-4 col-md-4">
                     <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
                         <div class="card-block">
-                            <h4 class="card-title" style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                            <h4 class="card-title"
+                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-notes' appointment.id %}" class="btn btn-info">Add Notes</a><br>
+                            <a href="{% url 'connect_therapy:practitioner-notes' appointment.id %}"
+                               class="btn btn-info">Add Notes</a><br>
                         </div>
                     </div>
                 </div>
-        {% empty %}
-        <p class="lead"> No previous appointments that need notes to be added. </p>
-    {% endfor %}
-      </div>
+            {% empty %}
+                <p class="lead"> No previous appointments that need notes to be added. </p>
+            {% endfor %}
+        </div>
     </div>
 
 
@@ -81,18 +102,21 @@
                 <div class="col col-sm-12 col-lg-4 col-md-4">
                     <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
                         <div class="card-block">
-                            <h4 class="card-title" style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                            <h4 class="card-title"
+                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-appointment-notes' appointment.id %}" class="btn btn-info">View Notes</a><br>
+                            <a href="{% url 'connect_therapy:practitioner-appointment-notes' appointment.id %}"
+                               class="btn btn-info">View Notes</a><br>
                         </div>
                     </div>
                 </div>
-        {% empty %}
-        <p class="lead"> No past appointments. </p>
-    {% endfor %}
-      </div>
+            {% empty %}
+                <p class="lead"> No past appointments. </p>
+            {% endfor %}
+        </div>
     </div>
+
 {% endblock %}
 </div>
 

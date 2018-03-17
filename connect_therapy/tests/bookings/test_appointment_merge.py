@@ -1,4 +1,5 @@
 from datetime import datetime, time, timedelta
+from decimal import Decimal
 
 import pytz
 from django.test import TestCase
@@ -57,7 +58,8 @@ class TestAppointmentMerge(TestCase):
                                          hour=18,
                                          minute=10,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=30)
+            length=timedelta(minutes=30),
+            price=Decimal(50.00)
         )
         a1.save()
 
@@ -68,12 +70,16 @@ class TestAppointmentMerge(TestCase):
                                          hour=18,
                                          minute=40,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=30)
+
+            length=timedelta(minutes=30),
+            price=Decimal(50.00)
+
         )
         a2.save()
 
         merged, unmerged = Appointment.merge_appointments([a1, a2])
         self.assertEqual(len(merged), 1)
+        self.assertEquals(merged[0].price, Decimal(100.00))
 
     def test_two_mergeable_one_not(self):
         a1 = Appointment(
@@ -83,7 +89,8 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
         )
         a1.save()
 
@@ -94,7 +101,10 @@ class TestAppointmentMerge(TestCase):
                                          hour=15,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
+
         )
         a2.save()
 
@@ -105,14 +115,18 @@ class TestAppointmentMerge(TestCase):
                                          hour=17,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
+
         )
         a3.save()
 
         merged, unmerged = Appointment.merge_appointments([a1, a2, a3])
         self.assertEqual(len(merged), 2)
+        self.assertEquals(merged[0].price, Decimal(100.00))
 
-    def test_six_un_mergeable_one_mergeable(self):
+    def test_six_mergeable(self):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
@@ -120,7 +134,9 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
         )
         a1.save()
 
@@ -131,7 +147,9 @@ class TestAppointmentMerge(TestCase):
                                          hour=15,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
+
         )
         a2.save()
 
@@ -142,7 +160,8 @@ class TestAppointmentMerge(TestCase):
                                          hour=16,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
         )
         a3.save()
 
@@ -153,7 +172,8 @@ class TestAppointmentMerge(TestCase):
                                          hour=17,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
         )
         a4.save()
 
@@ -164,25 +184,30 @@ class TestAppointmentMerge(TestCase):
                                          hour=18,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
         )
         a5.save()
 
         a6 = Appointment(
+
             start_date_and_time=datetime(year=2018,
                                          month=3,
                                          day=2,
                                          hour=19,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
         )
         a6.save()
 
         merged, unmerged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
         self.assertEqual(len(merged), 1)
+        self.assertEquals(merged[0].price, 300)
 
-    def test_six_unmergeable(self):
+    def test_five_unmergeable_one_mergeable(self):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,
@@ -190,7 +215,8 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=30)
+            length=timedelta(minutes=30),
+            price=Decimal(50.00)
         )
         a1.save()
 
@@ -201,7 +227,9 @@ class TestAppointmentMerge(TestCase):
                                          hour=15,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=45)
+            length=timedelta(minutes=45),
+            price=Decimal(50.00)
+
         )
         a2.save()
 
@@ -212,7 +240,8 @@ class TestAppointmentMerge(TestCase):
                                          hour=16,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=59)
+            length=timedelta(minutes=59),
+            price=Decimal(50.00)
         )
         a3.save()
 
@@ -223,7 +252,9 @@ class TestAppointmentMerge(TestCase):
                                          hour=17,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
         )
         a4.save()
 
@@ -234,7 +265,8 @@ class TestAppointmentMerge(TestCase):
                                          hour=18,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(minutes=50)
+            length=timedelta(minutes=50),
+            price=Decimal(50.00)
         )
         a5.save()
 
@@ -245,10 +277,43 @@ class TestAppointmentMerge(TestCase):
                                          hour=19,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=timedelta(hours=1)
+
+            length=timedelta(hours=1),
+            price=Decimal(50.00)
+
         )
         a6.save()
 
         merged, unmerged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
         print(merged)
         self.assertEqual(len(merged), 5)
+        self.assertEqual(merged[3].price, Decimal(100.00))
+
+    def test_two_mergeable(self):
+        a1 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=14,
+                                         minute=20,
+                                         tzinfo=pytz.utc),
+            length=timedelta(minutes=30),
+            price=Decimal(50.00)
+        )
+        a1.save()
+
+        a2 = Appointment(
+            start_date_and_time=datetime(year=2018,
+                                         month=3,
+                                         day=2,
+                                         hour=14,
+                                         minute=50,
+                                         tzinfo=pytz.utc),
+            length=timedelta(minutes=30),
+            price=Decimal(50.00)
+        )
+        a2.save()
+
+        merged, unmerged = Appointment.merge_appointments([a1, a2])
+        self.assertEqual(len(merged), 1)
+        self.assertEqual(merged[0].price, Decimal(100.00))
