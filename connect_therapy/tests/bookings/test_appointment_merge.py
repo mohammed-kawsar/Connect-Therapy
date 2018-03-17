@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 import pytz
 from django.test import TestCase
@@ -17,7 +17,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=3)
+            length=timedelta(hours=3)
         )
         a1.save()
         merged, unmerged = Appointment.merge_appointments([a1])
@@ -31,7 +31,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=3)
+            length=timedelta(hours=3)
         )
         a1.save()
 
@@ -42,7 +42,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=3)
+            length=timedelta(hours=3)
         )
         a2.save()
 
@@ -57,7 +57,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a1.save()
 
@@ -68,7 +68,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=15,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a2.save()
 
@@ -83,7 +83,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a1.save()
 
@@ -94,7 +94,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=15,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a2.save()
 
@@ -105,7 +105,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=17,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a3.save()
 
@@ -120,7 +120,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a1.save()
 
@@ -131,7 +131,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=15,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a2.save()
 
@@ -142,7 +142,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=16,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a3.save()
 
@@ -153,7 +153,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=17,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a4.save()
 
@@ -164,7 +164,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=18,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a5.save()
 
@@ -175,7 +175,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=19,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a6.save()
 
@@ -190,7 +190,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=14,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=30)
+            length=timedelta(minutes=30)
         )
         a1.save()
 
@@ -201,7 +201,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=15,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=45)
+            length=timedelta(minutes=45)
         )
         a2.save()
 
@@ -212,7 +212,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=16,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=59)
+            length=timedelta(minutes=59)
         )
         a3.save()
 
@@ -223,7 +223,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=17,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a4.save()
 
@@ -234,7 +234,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=18,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(minute=50)
+            length=timedelta(minutes=50)
         )
         a5.save()
 
@@ -245,7 +245,7 @@ class TestAppointmentMerge(TestCase):
                                          hour=19,
                                          minute=20,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         a6.save()
 

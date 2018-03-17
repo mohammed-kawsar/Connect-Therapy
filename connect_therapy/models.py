@@ -164,12 +164,7 @@ class Appointment(models.Model):
         """
 
         other_date_time = date_time
-
-        o_days, o_seconds = time.days, time.seconds
-        other_hours = o_days * 24 + o_seconds // 3600
-        other_minutes = (o_seconds % 3600) // 60
-        other_seconds = o_seconds % 60
-        end_date_time = other_date_time + timedelta(hours=other_hours, minutes=other_minutes, seconds=other_seconds)
+        end_date_time = other_date_time + cls._get_timedelta(time)
 
         # print("First time: " + str(date_time))
         # print("Adding: " + str(time))
@@ -178,21 +173,13 @@ class Appointment(models.Model):
         return end_date_time
 
     @classmethod
-    def _add_time(cls, start_date_and_time, time_1, time_2):
-        time_1 = timedelta(hours=time_1.hour, minutes=time_1.minute,
-                           seconds=time_1.minute)
-        time_2 = timedelta(hours=time_2.hour, minutes=time_2.minute,
-                           seconds=time_2.minute)
+    def _get_timedelta(cls, time):
+        o_days, o_seconds = time.days, time.seconds
+        other_hours = o_days * 24 + o_seconds // 3600
+        other_minutes = (o_seconds % 3600) // 60
+        other_seconds = o_seconds % 60
 
-        total = time_1 + time_2
-        seconds = total.total_seconds()
-        hour = seconds / 3600
-        minute = (seconds % 3600) / 60
-        datetime_format = datetime(year=start_date_and_time.year, month=start_date_and_time.month,
-                                   day=start_date_and_time.day,
-                                   hour=int(hour), minute=int(minute))
-
-        return datetime_format.time()
+        return timedelta(hours=other_hours, minutes=other_minutes, seconds=other_seconds)
 
     @classmethod
     def check_validity(cls, selected_appointments_id, selected_practitioner):
@@ -327,8 +314,7 @@ class Appointment(models.Model):
 
                         merged = Appointment(practitioner=app.practitioner,
                                              start_date_and_time=i_from_s.start_date_and_time,
-                                             length=cls._add_time(i_from_s.start_date_and_time, i_from_s.length,
-                                                                  app.length))
+                                             length=i_from_s.length + app.length)
 
                         stack.append(merged)
                         merged_apps.append(i_from_s)
