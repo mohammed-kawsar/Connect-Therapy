@@ -9,6 +9,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
+from django.db.models.signals import post_save
+from django.utils import timezone
+
 
 class Patient(models.Model):
     date_of_birth = models.DateField()
@@ -87,11 +90,23 @@ class Appointment(models.Model):
                                                   date_time=start_date_and_time)
                                   , editable=False)
 
+
     """
     The price of the appointment in GBP.
     Max price is £999.
     """
     price = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(50))
+
+    def is_live(self):
+        """
+        Checks whether the appointment is 'live'
+        The appointment is live if the current time is within 5 minutes of the
+        start time, or the appointment is ongoing
+        :return: True iff live
+        """
+        return self.start_date_and_time - timedelta(minutes=5) < \
+               timezone.now() < self.start_date_and_time + \
+               timedelta(hours=self.length.hour, minutes=self.length.minute)
 
     def __str__(self):
         """Return a string representation of Appointment"""

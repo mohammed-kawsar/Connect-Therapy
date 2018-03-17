@@ -201,26 +201,68 @@
 
 
     <!--Modal Window for Safari (Only opens if the used browser is Safari)-->
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="modalLabel">Browser Warning</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+
           </div>
           <div class="modal-body">
             <p class="">We have detected you using Safari, the Chat feature is not supported in <b>Safari</b></p>
-            <p class="">Please use <b>Chrome</b> or <b>Mozilla Firefox</b></p>
+            <p class="">Please use <b>Chrome</b></p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              <p>Click Close to go to Home</p>
+            <button type="button" class="btn btn-primary" onclick=window.location.href="{% url 'connect_therapy:index' %}" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
 </div>
 
+{% endblock %}
+
+{% block styles %}
+    <style>
+        h5#modalLabel {
+            vertical-align: middle;
+            font-size: 30px;
+        }
+
+        div.modal-footer p {
+                vertical-align: middle;
+                margin-bottom: 0px;
+                font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            h5#modalLabel {
+                font-size: 18px;
+            }
+
+            div.modal-body {
+                font-size: 14px;
+                padding-bottom: 0px;
+            }
+
+            div.modal-footer {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            button.btn.btn-primary {
+                font-size: 14px;
+                padding-left: 6px;
+                padding-right: 6px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+            }
+
+            div.modal-footer > p {
+                font-size: 13px;
+            }
+        }
+    </style>
 {% endblock %}
 
 {% block scripts %}
