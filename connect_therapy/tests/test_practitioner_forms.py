@@ -1,7 +1,7 @@
-from django.contrib.auth.models import User
 from django.test import TestCase
 
-from connect_therapy.forms.practitioner import *
+from connect_therapy.forms.practitioner.custom_duration_field import compress_duration, decompress_duration
+from connect_therapy.forms.practitioner.practitioner import *
 from connect_therapy.models import Practitioner
 
 
@@ -220,3 +220,59 @@ class PractitionerEditProfileTests(TestCase):
         practitioner.save()
         self.assertTrue(practitioner.is_valid())
         self.assertEqual(str(user.email), 'test1@example.com')
+
+    def test_valid_set_appointment_form(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.now(),
+            'length_0': 2,
+            'length_1': 0
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_set_appointment_form_one(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.now(),
+            'length_0': 34535,
+            'length_1': 3455
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_invalid_set_appointment_form_two(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.now(),
+            'length_0': "aa",
+            'length_1': "bb"
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_invalid_set_appointment_form_one(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.now(),
+        })
+        self.assertTrue(form.is_valid())
+
+    def test_custom_duration_field_compression_function(self):
+        data = [2, 0]
+        self.assertEquals(compress_duration(data), "2h0m")
+
+        data = [2, 30]
+        self.assertEquals(compress_duration(data), "2h30m")
+
+        data = [2323, 32132]
+        self.assertEquals(compress_duration(data), "2323h32132m")
+
+        data = []
+        self.assertEquals(compress_duration(data), "")
+
+    def test_custom_duration_field_decompression_function(self):
+        data = "2h0m"
+        self.assertEquals(decompress_duration(data), [2, 0])
+
+        data = "2h30m"
+        self.assertEquals(decompress_duration(data), [2, 30])
+
+        data = "2323h32132m"
+        self.assertEquals(decompress_duration(data), [2323, 32132])
+
+        data = ""
+        self.assertEquals(decompress_duration(data), [None, None])

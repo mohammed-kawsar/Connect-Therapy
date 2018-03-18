@@ -27,7 +27,7 @@ class TestPractitionerNotes(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         pnv = PractitionerNotesView()
         pnv.object = appointment
@@ -72,7 +72,7 @@ class TestPractitionerAllPatientsView(TestCase):
                                                                 hour=15,
                                                                 minute=10,
                                                                 tzinfo=pytz.utc),
-                                   length=time(hour=1))
+                                   length=timedelta(hours=1))
         appointment1.save()
         appointment2 = Appointment(practitioner=practitioner,
                                    patient=patient2,
@@ -82,7 +82,7 @@ class TestPractitionerAllPatientsView(TestCase):
                                                                 hour=15,
                                                                 minute=10,
                                                                 tzinfo=pytz.utc),
-                                   length=time(hour=1))
+                                   length=timedelta(hours=1))
         appointment2.save()
         appointment3 = Appointment(practitioner=practitioner,
                                    patient=patient2,
@@ -92,7 +92,7 @@ class TestPractitionerAllPatientsView(TestCase):
                                                                 hour=15,
                                                                 minute=10,
                                                                 tzinfo=pytz.utc),
-                                   length=time(hour=1))
+                                   length=timedelta(hours=1))
         appointment3.save()
         c = Client()
         c.force_login(john)
