@@ -61,7 +61,7 @@ class TestSMS(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_appointment_booked(patient, appointment)
         send_appointment_booked(practitioner, appointment)
@@ -103,7 +103,7 @@ class TestSMS(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_appointment_cancelled(patient, appointment)
         send_appointment_cancelled(practitioner, appointment)
@@ -145,7 +145,7 @@ class TestSMS(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_appointment_reminder(patient, appointment)
         send_appointment_reminder(practitioner, appointment)
@@ -182,13 +182,13 @@ class TestSMS(TestCase):
         appointment1 = Appointment(practitioner=practitioner,
                                    patient=patient,
                                    start_date_and_time=timezone.now(),
-                                   length=time(hour=1))
+                                   length=timedelta(hours=1))
         appointment1.save()
 
         appointment2 = Appointment(practitioner=practitioner,
                                    patient=patient,
                                    start_date_and_time=timezone.now(),
-                                   length=time(minute=30))
+                                   length=timedelta(minutes=30))
         appointment2.save()
 
         send_patient_appointment_reminders()
@@ -225,13 +225,13 @@ class TestSMS(TestCase):
         appointment1 = Appointment(practitioner=practitioner,
                                    patient=patient,
                                    start_date_and_time=timezone.now(),
-                                   length=time(hour=1))
+                                   length=timedelta(hours=1))
         appointment1.save()
 
         appointment2 = Appointment(practitioner=practitioner,
                                    patient=patient,
                                    start_date_and_time=timezone.now(),
-                                   length=time(minute=30))
+                                   length=timedelta(minutes=30))
         appointment2.save()
 
         send_practitioner_appointment_reminders()

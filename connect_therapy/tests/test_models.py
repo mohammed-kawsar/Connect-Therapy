@@ -52,11 +52,11 @@ class AppointmentModelTests(TestCase):
                                          hour=15,
                                          minute=16,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertEqual(str(appointment),
-                         'John Smith - 2018-03-02 15:16:00+00:00 for 01:00:00')
+                         'John Smith - 2018-03-02 15:16:00+00:00 for 1:00:00')
 
     def test_session_salt_generation(self):
         u = User(first_name="John", last_name="Smith")
@@ -84,7 +84,7 @@ class AppointmentModelTests(TestCase):
                                          hour=15,
                                          minute=16,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertTrue(len(appointment.session_salt) == 10)
@@ -115,7 +115,7 @@ class AppointmentModelTests(TestCase):
                                          hour=15,
                                          minute=16,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertTrue(len(appointment.session_id) > 0)
@@ -141,7 +141,7 @@ class AppointmentModelTests(TestCase):
             practitioner=practitioner,
             patient=patient,
             start_date_and_time=timezone.now() + timedelta(minutes=4, seconds=59),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertTrue(appointment.is_live())
@@ -167,7 +167,7 @@ class AppointmentModelTests(TestCase):
             practitioner=practitioner,
             patient=patient,
             start_date_and_time=timezone.now() + timedelta(minutes=10),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertFalse(appointment.is_live())
@@ -193,7 +193,7 @@ class AppointmentModelTests(TestCase):
             practitioner=practitioner,
             patient=patient,
             start_date_and_time=timezone.now() - timedelta(minutes=10),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertTrue(appointment.is_live())
@@ -219,7 +219,7 @@ class AppointmentModelTests(TestCase):
             practitioner=practitioner,
             patient=patient,
             start_date_and_time=timezone.now() - timedelta(hours=1),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertFalse(appointment.is_live())

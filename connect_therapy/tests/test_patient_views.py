@@ -22,7 +22,7 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         patient_before_notes = PatientNotesBeforeView()
         patient_before_notes.appointment = appointment
@@ -65,7 +65,7 @@ class TestPatientCancel(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         pcav = PatientCancelAppointmentView()
         pcav.object = appointment
@@ -91,7 +91,7 @@ class TestPatientCancel(TestCase):
                                        tzinfo=pytz.utc)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
-                                  length=time(hour=1, minute=30))
+                                  length=timedelta(hours=1, minutes=30))
 
         appointment.save()
         p1 = PatientCancelAppointmentView()
@@ -128,7 +128,7 @@ class TestPatientCancel(TestCase):
                                        tzinfo=pytz.utc)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
-                                  length=time(hour=3))
+                                  length=timedelta(hours=3))
 
         appointment.save()
         p1 = PatientCancelAppointmentView()
@@ -165,7 +165,7 @@ class TestPatientCancel(TestCase):
                                        tzinfo=pytz.utc)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
-                                  length=time(minute=30))
+                                  length=timedelta(minutes=30))
         appointment.save()
         p1 = PatientCancelAppointmentView()
         p1.object = appointment

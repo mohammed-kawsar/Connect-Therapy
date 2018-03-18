@@ -285,7 +285,6 @@ class TestAppointmentMerge(TestCase):
         a6.save()
 
         merged, unmerged = Appointment.merge_appointments([a1, a2, a3, a4, a5, a6])
-        print(merged)
         self.assertEqual(len(merged), 5)
         self.assertEqual(merged[3].price, Decimal(100.00))
 

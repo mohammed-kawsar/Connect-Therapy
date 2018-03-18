@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import date
 
 from django.test import TestCase
 from django.urls import reverse_lazy
@@ -40,7 +40,7 @@ class TestChatView(TestCase):
                                          hour=15,
                                          minute=16,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         test_appointment_1.save()
 
@@ -52,7 +52,7 @@ class TestChatView(TestCase):
                                          hour=15,
                                          minute=16,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         test_appointment_2.save()
 

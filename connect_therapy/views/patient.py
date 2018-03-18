@@ -186,7 +186,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
             appointment = Appointment(
                 practitioner=self.object.practitioner,
                 patient=None,
-                length=time(minute=30),
+                length=timedelta(minutes=30),
                 start_date_and_time=self.object.start_date_and_time
                                     + timedelta(minutes=30 * i),
                 price=default_price

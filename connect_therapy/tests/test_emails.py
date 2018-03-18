@@ -59,7 +59,7 @@ class EmailTests(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_patient_appointment_booked(appointment)
         self.assertEqual(len(mail.outbox), 1)
@@ -96,13 +96,13 @@ class EmailTests(TestCase):
         appointment1 = Appointment(practitioner=practitioner,
                                    patient=patient,
                                    start_date_and_time=timezone.now(),
-                                   length=time(hour=1))
+                                   length=timedelta(hours=1))
         appointment1.save()
 
         appointment2 = Appointment(practitioner=practitioner,
                                    patient=patient,
                                    start_date_and_time=timezone.now(),
-                                   length=time(minute=30))
+                                   length=timedelta(minutes=30))
         appointment2.save()
 
         send_patient_appointment_reminders()
@@ -145,7 +145,7 @@ class EmailTests(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_patient_cancelled_in_good_time(patient, appointment)
         self.assertEqual(len(mail.outbox), 1)
@@ -187,7 +187,7 @@ class EmailTests(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_patient_cancelled_under_24_hours(patient, appointment)
         self.assertEqual(len(mail.outbox), 1)
@@ -261,7 +261,7 @@ class EmailTests(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_patient_practitioner_has_cancelled(appointment)
         send_patient_practitioner_has_cancelled(appointment, "Hello")
@@ -304,7 +304,7 @@ class EmailTests(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_practitioner_appointment_booked(appointment)
         self.assertEqual(len(mail.outbox), 1)
@@ -341,13 +341,13 @@ class EmailTests(TestCase):
         appointment1 = Appointment(practitioner=practitioner,
                                    patient=patient,
                                    start_date_and_time=timezone.now(),
-                                   length=time(hour=1))
+                                   length=timedelta(hours=1))
         appointment1.save()
 
         appointment2 = Appointment(practitioner=practitioner,
                                    patient=patient,
                                    start_date_and_time=timezone.now(),
-                                   length=time(minute=30))
+                                   length=timedelta(minutes=30))
         appointment2.save()
 
         send_practitioner_appointment_reminders()
@@ -396,7 +396,7 @@ class EmailTests(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_practitioner_cancelled(appointment)
         self.assertEqual(len(mail.outbox), 1)
@@ -476,7 +476,7 @@ class EmailTests(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_practitioner_patient_cancelled_in_good_time(appointment)
         self.assertEqual(len(mail.outbox), 1)
@@ -518,7 +518,7 @@ class EmailTests(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         send_practitioner_patient_cancelled_in_under_24_hours(appointment)
         self.assertEqual(len(mail.outbox), 1)
