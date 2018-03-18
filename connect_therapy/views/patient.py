@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -19,6 +20,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
+from connect_therapy.emails import send_patient_confirm_email
 from connect_therapy.forms.patient import AppointmentDateSelectForm
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, PatientEditMultiForm
@@ -29,7 +31,7 @@ from connect_therapy.views.views import FileDownloadView
 class PatientSignUpView(FormView):
     form_class = PatientSignUpForm
     template_name = 'connect_therapy/patient/signup.html'
-    success_url = reverse_lazy('connect_therapy:patient-login')
+    success_url = reverse_lazy('connect_therapy:index')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -41,10 +43,7 @@ class PatientSignUpView(FormView):
                           mobile=form.cleaned_data['mobile']
                           )
         patient.save()
-        user = authenticate(username=form.cleaned_data['email'],
-                            password=form.cleaned_data['password1']
-                            )
-        login(request=self.request, user=user)
+        send_patient_confirm_email(patient, get_current_site(self.request))
         return super().form_valid(form)
 
 

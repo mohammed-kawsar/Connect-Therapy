@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, update_session_auth_hash, v
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.sites.shortcuts import get_current_site
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -14,6 +15,7 @@ from django.views.generic import FormView, UpdateView, DeleteView, DetailView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
+from connect_therapy.emails import send_practitioner_confirm_email
 from connect_therapy.forms.practitioner.custom_duration_field import decompress_duration
 from connect_therapy.forms.practitioner.practitioner import *
 from connect_therapy.models import Practitioner, Appointment
@@ -22,7 +24,7 @@ from connect_therapy.models import Practitioner, Appointment
 class PractitionerSignUpView(FormView):
     form_class = PractitionerSignUpForm
     template_name = 'connect_therapy/practitioner/signup.html'
-    success_url = reverse_lazy('connect_therapy:practitioner-login')
+    success_url = reverse_lazy('connect_therapy:index')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -37,10 +39,7 @@ class PractitionerSignUpView(FormView):
             bio=form.cleaned_data['bio']
         )
         practitioner.save()
-        user = authenticate(username=form.cleaned_data['email'],
-                            password=form.cleaned_data['password1']
-                            )
-        login(request=self.request, user=user)
+        send_practitioner_confirm_email(practitioner, get_current_site(self.request))
         return super().form_valid(form)
 
 
