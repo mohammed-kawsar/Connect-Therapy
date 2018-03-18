@@ -31,7 +31,7 @@
                                 {% endif %}
                             </h4>
 
-                            <p class="card-text"><b>Duration:</b> {{ appointment.length|naturaltime }}</p>
+                            <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
                             <p class="card-text"><b>Price:</b> £{{ appointment.price }}</p>
                             <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}"
