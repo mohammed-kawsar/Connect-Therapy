@@ -252,7 +252,6 @@ class TestPatientCancel(TestCase):
 
 class PatientAppointmentsViewTest(TestCase):
     def setUp(self):
-        # Create two users
         test_user_1 = User.objects.create_user(username='testuser1')
         test_user_1.set_password('12345')
         test_user_1.save()
@@ -262,16 +261,6 @@ class PatientAppointmentsViewTest(TestCase):
                              mobile="+447476666555",
                              date_of_birth=date(year=1995, month=1, day=1))
         test_pat_1.save()
-
-        test_user_2 = User.objects.create_user(username='testuser2')
-        test_user_2.set_password('12345')
-        test_user_2.save()
-
-        test_pat_2 = Patient(user=test_user_2,
-                             gender='M',
-                             mobile="+447476666555",
-                             date_of_birth=date(year=1995, month=1, day=1))
-        test_pat_2.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
         test_user_3.set_password('12345')
@@ -312,7 +301,6 @@ class PatientAppointmentsViewTest(TestCase):
 
 class PatientNotesBeforeTest(TestCase):
     def setUp(self):
-        # Create two users
         test_user_1 = User.objects.create_user(username='testuser1')
         test_user_1.set_password('12345')
         test_user_1.save()
@@ -322,19 +310,6 @@ class PatientNotesBeforeTest(TestCase):
                              mobile="+447476666555",
                              date_of_birth=date(year=1995, month=1, day=1))
         test_pat_1.save()
-
-        appointment = Appointment()
-        Appointment.book_appointments()
-
-        test_user_2 = User.objects.create_user(username='testuser2')
-        test_user_2.set_password('12345')
-        test_user_2.save()
-
-        test_pat_2 = Patient(user=test_user_2,
-                             gender='M',
-                             mobile="+447476666555",
-                             date_of_birth=date(year=1995, month=1, day=1))
-        test_pat_2.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
         test_user_3.set_password('12345')
@@ -347,3 +322,25 @@ class PatientNotesBeforeTest(TestCase):
                                    mobile="+447577293232",
                                    bio="Hello")
         test_prac_1.save()
+
+        appointment = Appointment(
+            practitioner=test_prac_1,
+            patient=test_pat_1,
+            start_date_and_time=datetime(year=timezone.now().year + 1,
+                                         month=3,
+                                         day=2,
+                                         hour=15,
+                                         minute=10,
+                                         tzinfo=pytz.utc),
+            length=time(hour=1),
+        )
+        appointment.save()
+
+    def test_patient_adding_notes_before_appointment(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.post('/patient/notes-before-appointment/1', {
+            'patient_notes_before_meeting': 'Test notes before meeting.',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/patient/my-appointments')
