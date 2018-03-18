@@ -1,10 +1,11 @@
+import boto3
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.contrib import messages
 from django.shortcuts import redirect
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
@@ -65,7 +66,6 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
         uploaded_file = ()
         if form.is_valid():
             print("called once")
-            import boto3
             s3 = boto3.resource("s3")
             file = form.cleaned_data['file']
 
@@ -109,10 +109,6 @@ class FileDownloadView(DetailView):
     model = Appointment
 
     def get(self, request, *args, **kwargs):
-        form = FileForm()
-        import boto3
-        s3 = boto3.resource("s3")
-        bucket = s3.Bucket("segwyn")
         files = {}
         self.object = self.get_object()
 
@@ -123,7 +119,6 @@ class FileDownloadView(DetailView):
 
     @staticmethod
     def get_files_from_folder(folder_name):
-        import boto3
         s3 = boto3.resource("s3")
         bucket = s3.Bucket("segwyn")
         files = []
@@ -149,7 +144,6 @@ class FileDownloadView(DetailView):
 
     @staticmethod
     def generate_presigned_url(key):
-        import boto3
         url = boto3.client('s3', config=boto3.session.Config(signature_version='s3v4',
                                                              region_name='eu-west-2')).generate_presigned_url(
             ClientMethod='get_object',
@@ -163,20 +157,20 @@ class FileDownloadView(DetailView):
 
     @staticmethod
     def get_objects_with_tag(uploader_user_id, appointment_id):
-        import boto3
         s3 = boto3.resource("s3")
         bucket = s3.Bucket("segwyn")
         files = []
         if len(uploader_user_id) > 0:
-            files.append(FileDownloadView._get_objects_with_key_value(bucket.objects.all(), "Uploader", uploader_user_id))
+            files.append(FileDownloadView._get_objects_with_key_value(
+                bucket.objects.all(), "Uploader", uploader_user_id))
         if len(appointment_id) > 0:
-            files.append(FileDownloadView._get_objects_with_key_value(bucket.objects.all(), "Appointment_ID", appointment_id))
+            files.append(FileDownloadView._get_objects_with_key_value(
+                bucket.objects.all(), "Appointment_ID", appointment_id))
 
         return files
 
     @staticmethod
     def _get_objects_with_key_value(objects, key, value):
-        import boto3
         s3 = boto3.resource("s3")
 
         files = []
