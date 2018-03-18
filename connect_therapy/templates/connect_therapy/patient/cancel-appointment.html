@@ -1,24 +1,79 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Cancel Appointment{% endblock %}
 {% block header %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 {% endblock %}
 {% block content %}
 
-    <div class="panel panel-danger">
-        <div class="panel-heading"><h2 class="panel-title">Are you sure you want to cancel your appointment?</h2></div>
-        <div class="panel-body">
-            <h4>If you are cancelling your appointment within 24 hours of the appointment, you will still be charged.
-                Otherwise, you will be refunded.</h4>
+    <div class="card" style="margin-top: 20px">
+        <h2 class="card-header" style="padding-top: 20px">Appointment Cancellation</h2>
+        <div class="card-body">
+            <h4>Are you sure you want to cancel your appointment?</h4><br>
+            <h5>If you are cancelling your appointment within 24 hours of the appointment, you will still be charged.
+                Otherwise, you will be refunded.</h5>
             <p>Please confirm your decision below</p>
             <hr>
             <form action="" method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <input class="btn btn-danger" type="submit" value="Confirm"/>
-                <a href="{% url 'connect_therapy:patient-my-appointments' %}" class="btn btn-default"> Go Back</a>
+                <a href="{% url 'connect_therapy:patient-my-appointments' %}" class="btn btn-primary"> Go Back</a>
             </form>
         </div>
     </div>
 
+{% endblock %}
+
+{% block styles %}
+    <style>
+        div.card {
+            margin-top: 20px;
+        }
+
+        h2.card-header {
+            opacity: 0.7;
+            border-width: 2px;
+            padding-top: 8px !important;
+        }
+
+        @media (max-width: 600px) {
+            h2.card-header {
+                font-size: 20px;
+                text-transform: uppercase;
+                text-align: center;
+                vertical-align: middle;
+                padding-bottom: 8px;
+                letter-spacing: 1px;
+            }
+
+            h4 {
+                letter-spacing: 1px;
+                font-size: 23px;
+            }
+
+            h5 {
+                font-size: 16px;
+                text-align: center;
+                line-height: 28px;
+            }
+
+            p {
+                padding-top: 7px;
+                font-size: 16px;
+                text-align: center;
+                font-weight: 700;
+            }
+
+            .btn.btn-danger, .btn.btn-primary {
+                padding-left: 5px;
+                padding-right: 5px;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-weight: 200;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                vertical-align: middle;
+            }
+        }
+    </style>
 {% endblock %}
