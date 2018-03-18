@@ -67,7 +67,7 @@ class PatientMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             patient = Patient.objects.get(user=self.request.user)
-            return True
+            return patient.email_confirmed
         except Patient.DoesNotExist:
             return False
 
@@ -98,26 +98,27 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id and \
+               self.get_object().patient.email_confirmed
 
     def form_valid(self, form):
-        self.appointment.patient_notes_before_meeting = \
+        self.object.patient_notes_before_meeting = \
             form.cleaned_data['patient_notes_before_meeting']
-        self.appointment.save()
+        self.object.save()
         return super().form_valid(form)
 
     def post(self, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
-            return self.form_valid()
+            return self.form_valid(form)
         else:
-            return self.form_invalid()
+            return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
-        context = super.get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
-        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.appointment.id))
+        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.object.id))
         downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
         context['downloadable_files'] = downloadable_file_list
 
@@ -135,7 +136,8 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id and \
+               self.get_object().patient.email_confirmed
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
@@ -207,7 +209,8 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id and \
+               self.get_object().patient.email_confirmed
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -230,11 +233,11 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
             return False
         try:
             patient = Patient.objects.get(user=self.request.user)
-            return True
+            return patient.email_confirmed
         except Patient.DoesNotExist:
             return False
 
-    def get(self, request, pk):
+    def get(self, request, pk, **kwargs):
         # define the object for the detail view
         self.object = self.get_object()
         form = AppointmentDateSelectForm
@@ -243,7 +246,7 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
                       context={"form": form,
                                "object": self.object})
 
-    def post(self, request, pk):
+    def post(self, request, pk, **kwargs):
         self.object = self.get_object()
         practitioner = Practitioner.objects.filter(pk=pk)
         form = AppointmentDateSelectForm(request.POST)
@@ -258,7 +261,7 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
                                    "appointments": appointments,
                                    "object": self.get_object()})
         else:
-            return self.get(request)
+            return self.get(request, pk)
 
 
 class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
@@ -271,7 +274,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
             return False
         try:
             self.patient = Patient.objects.get(user=self.request.user)
-            return True
+            return self.patient.email_confirmed
         except Patient.DoesNotExist:
             return False
 
@@ -331,7 +334,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             return False
         try:
             self.patient = Patient.objects.get(user=self.request.user)
-            return True
+            return self.patient.email_confirmed
         except Patient.DoesNotExist:
             return False
 
@@ -408,7 +411,8 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
         except Patient.DoesNotExist:
             return False
         return self.get_object() is not None and \
-               self.request.user.id == self.get_object().user.id
+               self.request.user.id == self.get_object().user.id and \
+               self.get_object().email_confirmed
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
@@ -457,7 +461,8 @@ class ViewAllPractitionersView(UserPassesTestMixin, generic.ListView):
         except ObjectDoesNotExist:
             not_practitioner = True
 
-        return not_practitioner and logged_in;
+        return not_practitioner and logged_in and \
+               self.request.user.patient.email_confirmed
 
     def get_queryset(self):
         return Practitioner.objects.all()
@@ -493,6 +498,6 @@ class PatientHomepageView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             patient = Patient.objects.get(user=self.request.user)
-            return True
+            return patient.email_confirmed
         except Patient.DoesNotExist:
             return False
