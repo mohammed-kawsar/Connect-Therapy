@@ -18,7 +18,7 @@
         <div class="alert alert-info">
 
             {% for message in messages %}
-                <p class="lead">  {% if message.tags %} {{ message }} {% endif %} </p>
+                <p class="lead info-alert">  {% if message.tags %} {{ message }} {% endif %} </p>
             {% endfor %}
 
         </div>
@@ -195,6 +195,22 @@
             font-size: 17px;
         }
 
+         .btn.btn-info{
+            margin-bottom: 20px;
+        }
+
+         .alert.alert-info {
+             border-radius: 0px;
+         }
+
+         p.lead.info-alert {
+            vertical-align: middle;
+            margin-bottom: 0px !important;
+            text-transform: capitalize;
+            font-weight: 500;
+            font-size: 25px;
+         }
+
         @media (max-width: 600px) {
             h3.panel-title {
                 font-size: 30px;
@@ -251,6 +267,17 @@
                 margin-left: 20px;
                 font-weight: 300;
             }
+
+            p.lead.info-alert {
+                vertical-align: middle;
+                margin-bottom: 0px;
+                text-transform: uppercase;
+                font-weight: 500;
+                font-size: 18px;
+                padding-top: 0px;
+                letter-spacing: 1px;
+
+         }
 
         }
     </style>
