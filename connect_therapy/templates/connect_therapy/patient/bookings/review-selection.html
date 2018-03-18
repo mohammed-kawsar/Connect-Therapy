@@ -1,10 +1,17 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Review Bookings{% endblock %}
- {% load static %}
+{% load static %}
 {% block header %}
-    <header>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    </header>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'connect_therapy/styles/bookings.css' %}" type="text/css">
+
 {% endblock %}
 {% block content %}
     <!-- Display messages -->
@@ -75,7 +82,8 @@
                     <hr>
                     <h4>You can go ahead and book these now or you can go to the checkout page whenever you're
                         ready</h4>
-                    <p class="lead">But also note, that they might get booked by someone else if you leave it for too long!</p>
+                    <p class="lead">But also note, that they might get booked by someone else if you leave it for too
+                        long!</p>
                 </div>
             </div>
 
@@ -85,12 +93,14 @@
                     <th>Practitioner</th>
                     <th>Date and time</th>
                     <th>Duration</th>
+                    <th>Price</th>
                 </tr>
                 {% for app in bookable_appointments %}
                     <tr>
                         <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
                         <td>{{ app.start_date_and_time }}</td>
                         <td>{{ app.length }}</td>
+                        <td>£{{ app.price }}</td>
                     </tr>
                 {% endfor %}
 
@@ -155,7 +165,6 @@
             vertical-align: middle;
         }
 
-
         h3 {
             padding-left: 10px;
             text-transform: capitalize;
@@ -169,11 +178,11 @@
             background-color: lightgrey;
             text-align: center;
             margin-top: 30px;
-            font-size:  20px;
+            font-size: 20px;
             font-weight: 600;
         }
 
-        td{
+        td {
             text-align: center;
         }
 
@@ -186,7 +195,7 @@
             margin-top: 50px;
             font-size: 17px;
         }
-    
+
         @media (max-width: 600px) {
             h3.panel-title {
                 font-size: 30px;

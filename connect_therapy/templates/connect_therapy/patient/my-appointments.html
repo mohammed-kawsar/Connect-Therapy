@@ -10,8 +10,9 @@
 {% endblock %}
 
 {% block content %}
+
     <h1 class="text-center">Your Appointments</h1></br>
-    <br />
+    <br/>
     <h2>Current Bookings</h2>
     <div class="container-fluid col-sm-12">
         <div class="row">
@@ -20,13 +21,28 @@
                 <div class="col col-sm-12 col-lg-4 col-md-4">
                     <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
                         <div class="card-block">
-                            <h4 class="card-title" style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+
+                            <h4 class="card-title"
+                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+
+                            <h4 class="card-title" style="white-space: nowrap">
+                                {% if appointment.is_live %}
+                                    <a href="{% url 'connect_therapy:chat' appointment.id %}">
+                                {% endif %}
+                                    {{ appointment.start_date_and_time }}
+                                {% if appointment.is_live %}
+                                    </a>
+                                {% endif %}
+                            </h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
-                            <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}" class="btn btn-info"> Cancel Appointment</a>
+                            <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"
+                               class="btn btn-info"> Cancel Appointment</a>
                         </div>
                     </div>
                 </div>
+            {% empty %}
+                <p>You don't have any future appointments</p>
             {% endfor %}
         </div>
     </div>
@@ -36,19 +52,25 @@
     <h2>Previous Bookings</h2>
     <div class="container-fluid col-sm-12">
         <div class="row">
-            {% for appointment in past_appointments %}
-                <div class="col col-xs-12 col-lg-4 col-md-4">
-                    <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
-                        <div class="card-block">
-                            <h4 class="card-title" style="white-space: nowrap;">{{ appointment.start_date_and_time }}</h4>
-                            <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
-                            <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
-                            <a href="{% url 'connect_therapy:patient-appointment-notes' appointment.id %}" class="btn btn-info"> View Notes</a>
+            {% if past_appointments|length > 0 %}
+                {% for appointment in past_appointments %}
+                    <div class="col col-xs-12 col-lg-4 col-md-4">
+                        <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
+                            <div class="card-block">
+                                <h4 class="card-title"
+                                    style="white-space: nowrap;">{{ appointment.start_date_and_time }}</h4>
+                                <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
+                                <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
+                                <a href="{% url 'connect_therapy:patient-appointment-notes' appointment.id %}"
+                                   class="btn btn-info"> View Notes</a>
 
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p>You don't have any past appointments</p>
+            {% endif %}
         </div>
     </div>
 
