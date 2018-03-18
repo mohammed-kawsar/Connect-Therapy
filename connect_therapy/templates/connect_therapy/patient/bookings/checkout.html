@@ -72,8 +72,8 @@
                                                             {{ app.start_date_and_time.hour }}+1,
                                                             {{ app.start_date_and_time.minute }},
                                                             {{ app.start_date_and_time.second }}),
-                                                        title: "Meeting with Dr. {{ app.practitioner.user.username }} at Connect Therapy",
-                                                        description: "Meeting with Dr. {{ app.practitioner.user.username }} at Connect Therapy (Description about the Meeting)",
+                                                        title: "Meeting with Dr. {{ app.practitioner.user.get_full_name }} at Connect Therapy",
+                                                        description: "Meeting with Dr. {{ app.practitioner.user.get_full_name }} at Connect Therapy (Description about the Meeting)",
                                                         location: 'Connect Therapy - Websites URL'
                                                     };
 
@@ -110,6 +110,7 @@
 {% block styles %}
 
     <style>
+
 
         .jumbotron {
             border-radius: 0px;
@@ -169,6 +170,7 @@
             font-weight: 400;
             margin-top: 50px;
             margin-left: 30px;
+            margin-bottom: 20px;
         }
 
         div#compactICal > ul {
