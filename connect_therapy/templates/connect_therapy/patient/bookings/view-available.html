@@ -37,13 +37,16 @@
         <input type="submit" value="Select date" class="btn btn-primary"/>
     </form>
 
+    <hr class="my-4">
+
 </div>
 
-<div class="container-fluid" style="padding-bottom: 30px">
+<div class="container-fluid">
     {% if appointments is not None and appointments|length > 0 %}
         <form action="{% url 'connect_therapy:book-appointment-review' pk=object.user.practitioner.id %}"
               method="post">
             {% csrf_token %}
+        <p>Pick a slot from below</p>
             <div class="card-group">
                 {% for app in appointments %}
                     <p class="available-slots">
@@ -53,7 +56,7 @@
                                 <div class="card-body">
                                     {{ app }}
                                 </div>
-                                <input type="checkbox" class="card-text" name="app_id" value={{ app.id }}>
+                                <input type="checkbox" class="card-text" name="app_id" style="display: none" value={{ app.id }}>
                             </label>
                         </div>
                     </p>
@@ -66,7 +69,7 @@
     {# The below message will only show when the page is loaded without submitting a date #}
     {% if appointments is not None and appointments|length == 0 %}
         <h1>Sorry, please try another date</h1>
-        <p id="lead_text">There are no appointments available for your chosen date</p>
+        <p id="lead_text" style="text-align: center; font-size: 20px">There are no appointments available for your chosen date</p>
     {% endif %}
 
 
@@ -134,6 +137,36 @@
             padding-right: 0px;
         }
 
+        h5.card-title {
+            text-align: center;
+            padding-top: 10px;
+            letter-spacing: 2px;
+            padding-bottom: 10px;
+        }
+
+        .card-group {
+            padding-bottom: 15px;
+        }
+
+        .card {
+            border-radius: 5px;
+        }
+
+        form {
+            padding-bottom: 5px;
+        }
+
+        div.container-fluid > form > p {
+            font-size: 25px;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        p#lead-text {
+            text-align: center;
+            font-size: 20px;
+        }
+
         @media (max-width: 649px){
             div.ui-datepicker-inline{ /* Overrides this class in Jquery Library */
                 display: none !important;
@@ -171,7 +204,7 @@
                 text-align: center;
                 vertical-align: middle;
                 font-size: 20px;
-                margin-top: 15px;
+                margin-top: 0px;
                 line-height: 40px;
             }
 
@@ -179,6 +212,9 @@
                 font-weight: 600;
                 text-transform: uppercase;
                 letter-spacing: 3px;
+            }
+            .card {
+                border-radius: 5px;
             }
         }
 
@@ -193,6 +229,9 @@
         div.ui-datepicker{ /* Overrides this class in Jquery Library */
             font-size:12px !important;
             width: auto;
+        }
+        .card {
+            border-radius: 5px;
         }
     }
 
@@ -231,7 +270,7 @@
             .jumbotron {
                 text-align: center;
                 vertical-align: middle;
-                margin-top: 15px;
+                margin-top: 0px;
                 font-size: 30px;
                 letter-spacing: 3px;
                 text-transform: capitalize;
@@ -244,10 +283,68 @@
                 text-transform: uppercase;
                 letter-spacing: 3px;
             }
+            .card {
+                border-radius: 5px;
+            }
+
+    }
+
+    @media (max-width: 600px) {
+        .jumbotron {
+            margin-top: 0px;
+            padding-bottom: 0px;
+        }
+
+        h1 {
+            font-size: 25px !important;
+            line-height: 40px !important;
+        }
+
+        h1 > b {
+            font-size: 30px !important;
+            line-height: 70px !important;
+        }
+
+        .btn.btn-primary, .btn.btn-success {
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            margin-bottom: 5px;
+        }
+
+        div.container-fluid > form > p {
+            margin-bottom: 0px;
+            text-align: center;
+            padding-top: 20px;
+            text-transform: uppercase;
+            font-size: 15px;
+            letter-spacing: 1.5px;
+        }
+
+        div.card-group {
+            padding-bottom: 0px;
+        }
+
+        div.card-body {
+            font-size: 16px;
+        }
+
+        .btn.btn-success {
+            margin-bottom: 10px;
+        }
+
+        .card {
+            border-radius: 5px;
+        }
 
     }
 
     </style>
+
 
 {% endblock %}
 
@@ -267,6 +364,19 @@
             document.getElementById('stickyFooter').className = 'fixed-bottom';
         }
 
+    </script>
+    
+    <script>
+
+        $('.card').mousedown(function () {
+            if ($(this).css("background-color")==="rgb(255, 255, 255)") {
+                $(this).css("background-color", "lightgrey")
+                $(this).effect( "pulsate", {times:1}, 400 )
+            } else if ($(this).css("background-color")==="rgb(211, 211, 211)") {
+                $(this).css("background-color", "white")
+                $(this).effect( "bounce", {times:1}, 270 );
+            }
+        })
     </script>
 
 {% endblock %}
