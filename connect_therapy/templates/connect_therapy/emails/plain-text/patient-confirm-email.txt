@@ -4,7 +4,7 @@ Thanks for signing up with Connect Therapy, just a quick thing before you get st
 
 Please confirm your email address here:
 {% autoescape off %}
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+http://{{ domain }}{% url 'connect_therapy:activate' uidb64=uid token=token %}
 {% endautoescape %}
 
 If you were not expecting this email, feel free to disregard it.
