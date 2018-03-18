@@ -43,7 +43,7 @@
 
 <div class="container-fluid">
     {% if appointments is not None and appointments|length > 0 %}
-        <form action="{% url 'connect_therapy:book-appointment-review' pk=object.user.practitioner.id %}"
+        <form action="{% url 'connect_therapy:patient-book-appointment-review' pk=object.user.practitioner.id %}"
               method="post">
             {% csrf_token %}
         <p>Pick a slot from below</p>

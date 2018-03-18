@@ -63,14 +63,14 @@ urlpatterns = [
          ),
     path('book-appointment/<int:pk>',
          ViewBookableAppointmentsView.as_view(),
-         name='book-appointment'
+         name='patient-book-appointment'
          ),
     path('book-appointment/<int:pk>/review',
          ReviewSelectedAppointmentsView.as_view(),
-         name='book-appointment-review'),
+         name='patient-book-appointment-review'),
     path('checkout',
          CheckoutView.as_view(),
-         name='checkout'),
+         name='patient-checkout'),
     path('profile',
          PatientProfileView.as_view(),
          name='patient-profile'
@@ -84,7 +84,7 @@ urlpatterns = [
          name='patient-change-password'),
     path('view-practitioners',
          ViewAllPractitionersView.as_view(),
-         name='view-practitioners'
+         name='patient-view-practitioners'
          ),
 
 ]

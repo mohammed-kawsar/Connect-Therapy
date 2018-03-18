@@ -30,7 +30,7 @@ class ChatView(UserPassesTestMixin, DetailView):
         
         if self.get_object().patient is None:
             messages.info(request, "You should book an appointment to access this page")
-            return redirect(reverse_lazy('connect_therapy:book-appointment',
+            return redirect(reverse_lazy('connect_therapy:patient-book-appointment',
                                          kwargs={'pk': self.get_object().practitioner.id}))
 
         super().get(request, *args, **kwargs)

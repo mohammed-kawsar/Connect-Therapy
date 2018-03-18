@@ -284,7 +284,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
 
         if len(app_ids) == 0:
             messages.warning(request, "You haven't selected any appointments")
-            return redirect('connect_therapy:book-appointment', pk=practitioner_id)
+            return redirect('connect_therapy:patient-book-appointment', pk=practitioner_id)
 
         return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id)
 
