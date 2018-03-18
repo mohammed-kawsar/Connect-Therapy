@@ -1,13 +1,10 @@
 import re
-
 from datetime import timedelta
-
 
 from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import User
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -17,8 +14,7 @@ from django.views.generic import FormView, UpdateView, DeleteView, DetailView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
-from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
-    PractitionerNotesForm, PractitionerEditMultiForm, PractitionerDefineAppointmentForm
+from connect_therapy.forms.practitioner.practitioner import *
 from connect_therapy.models import Practitioner, Appointment
 
 
@@ -285,6 +281,8 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
             length = form.cleaned_data['length']
         else:
             length = (Appointment._meta.get_field('length').get_default().seconds % 3600) // 60
+
+        # TODO: Parse and sanitize inputs i.e. convert to int
 
         appointment = Appointment(
             patient=None,
