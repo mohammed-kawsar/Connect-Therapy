@@ -47,13 +47,13 @@
             <div class="card-group">
                 {% for app in appointments %}
                     <p class="available-slots">
-                        <div class="card mr-2" style="display: inline-block">
+                        <div class="card mr-2">
                             <label style="min-width: 100%">
                                 <h5 class="card-title">Slot {{ forloop.counter }}</h5>
-                                <input type="checkbox" class="card-text" name="app_id" value={{ app.id }}>
                                 <div class="card-body">
                                     {{ app }}
                                 </div>
+                                <input type="checkbox" class="card-text" name="app_id" value={{ app.id }}>
                             </label>
                         </div>
                     </p>
