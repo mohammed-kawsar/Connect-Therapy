@@ -1,0 +1,235 @@
+{% extends "connect_therapy/base.html" %}
+{% block title %}Book Appointments{% endblock %}
+{% load staticfiles %}
+
+
+{% block header %}
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+{% endblock %}
+
+{% block content %}
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-warning">
+            {% for message in messages %}
+                <p>  {% if message.tags %} {{ message }} {% endif %} </p>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+
+    <h1 class="jumbotron">You are booking an appointment with <b id="bold_username">{{ object.user.username }}</b> </h1>
+<div class="container-fluid text-center">
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <h3 class="text-center" id="select_date_label">Select Date</h3>
+
+    <div class="row">
+        <div class="col col-md-3 col-lg-3"></div>
+        <div class="col col-md-6 col-lg-6">
+            <div id="date_picker"></div>
+        </div>
+         <div class="col col-md-3 col-lg-3"></div>
+    </div>
+        <input type="submit" value="Select date" class="btn btn-primary"/>
+    </form>
+
+</div>
+
+    <div class="container-fluid">
+    {% if appointments is not None and appointments|length > 0 %}
+        <form action="{% url 'connect_therapy:book-appointment-review' pk=object.user.practitioner.id %}"
+              method="post">
+            {% csrf_token %}
+            {% for app in appointments %}
+                <p><input type="checkbox" name="app_id" value={{ app.id }}> {{ app }} </input> </p>
+            {% endfor %}
+            <input type="submit" class="btn btn-success text-center" value="Continue"/>
+
+        </form>
+    {% endif %}
+</div>
+    {# The below message will only show when the page is loaded without submitting a date #}
+    {% if appointments is not None and appointments|length == 0 %}
+        <h1>Sorry, please try another date</h1>
+        <p id="lead_text">There are no appointments available for your chosen date</p>
+    {% endif %}
+
+
+
+{% endblock %}
+
+{% block styles %}
+
+    <style>
+
+        div.ui-datepicker { /* Overrides this class in Jquery Library */
+            width: auto;
+        }
+
+        .jumbotron {
+                text-align: center;
+                vertical-align: middle;
+                margin-top: 15px;
+                font-size: 40px;
+                letter-spacing: 3px;
+                text-transform: capitalize;
+                line-height: 50px;
+            }
+
+        input checkbox {
+             margin-top: 40px !important;
+        }
+
+        .btn .btn-success {
+            margin-bottom: 20px;
+        }
+
+
+        @media (max-width: 649px){
+            div.ui-datepicker-inline{ /* Overrides this class in Jquery Library */
+                display: none !important;
+
+            }
+
+            #id_date_month, #id_date_day, #id_date_year, label {
+                display: inline-block !important;
+                margin-bottom: 10px !important;
+            }
+
+            h3 {
+                display: none;
+            }
+
+            label {
+                font-size: 20px;
+                font-weight: 500;
+                text-transform: uppercase;
+            }
+
+            h1 {
+                font-size: 25px;
+                padding-top: 20px;
+                padding-bottom: 15px;
+            }
+
+            #lead_text {
+                font-size: 17px;
+                font-weight: 300;
+                font-style: oblique;
+            }
+
+            .jumbotron {
+                text-align: center;
+                vertical-align: middle;
+                font-size: 20px;
+                margin-top: 15px;
+                line-height: 40px;
+            }
+
+            #bold_username {
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 3px;
+            }
+        }
+
+    @media (max-width: 768px) {
+        div.ui-datepicker{ /* Overrides this class in Jquery Library */
+            font-size:12px !important;
+            width: 28em;
+        }
+    }
+
+    @media (max-width: 1080px) {
+        div.ui-datepicker{ /* Overrides this class in Jquery Library */
+            font-size:12px !important;
+            width: auto;
+        }
+    }
+
+    @media (max-width: 800px) {
+        div.ui-datepicker-inline { /* Overrides this class in Jquery Library */
+            display: none !important;
+        }
+
+        #id_date_month, #id_date_day, #id_date_year, label {
+                display: inline-block !important;
+                margin-bottom: 10px !important;
+            }
+
+            h3 {
+                display: none;
+            }
+
+            label {
+                font-size: 20px;
+                font-weight: 500;
+                text-transform: uppercase;
+            }
+
+            h1 {
+                font-size: 25px;
+                padding-top: 20px;
+                padding-bottom: 15px;
+            }
+
+            #lead_text {
+                font-size: 17px;
+                font-weight: 300;
+                font-style: oblique;
+            }
+
+            .jumbotron {
+                text-align: center;
+                vertical-align: middle;
+                margin-top: 15px;
+                font-size: 30px;
+                letter-spacing: 3px;
+                text-transform: capitalize;
+                line-height: 50px;
+            }
+
+            #bold_username {
+                font-weight: 600;
+                font-size: 33px;
+                text-transform: uppercase;
+                letter-spacing: 3px;
+            }
+
+    }
+
+    </style>
+    
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{% static 'connect_therapy/scripts/scripts_view-available.js' %}"></script>
+
+    <script>
+        document.getElementById("id_password").className = "form-control";
+
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
+
+    </script>
+
+    <script>
+
+    if ($(document).height() <= $(window).height()) {
+        document.getElementById('stickyFooter').className = 'fixed-bottom';
+    }
+
+</script>
+
+{% endblock %}
+
+
+

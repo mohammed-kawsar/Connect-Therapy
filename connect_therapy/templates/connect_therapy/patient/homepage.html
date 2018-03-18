@@ -1,0 +1,135 @@
+{% extends 'connect_therapy/base.html' %}
+{% load static %}
+{% block title %}Patient Home{% endblock %}
+
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="myCarousel" class="carousel slide" date-ride="carousel">
+        <div class="carousel-inner" role="listbox">
+            <div class="carousel-item active">
+                <img class=" img-responsive img-fluid" src="{% static '/connect_therapy/images/PatientHome.png' %}"
+                     alt="SlideOne" style="min-width: 100%; opacity: 0.7;">
+                <div class="carousel-caption">
+                    <button type="button" class="btn btn-default" onclick="window.location.href='{% url 'connect_therapy:view-practitioners' %}';">BOOK AN APPOINTMENT NOW</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid text-center" style="padding: 15px 0px">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6" id="feature-text">
+                <h6> Incredible feature</h6>
+                <h2>Totally incredible website</h2>
+                <p class="lead">
+                           Niduci tisa suyofos natenix po, nute ieros dorurij ofodu na nomer begora imil
+                           dit be. Cili wihidi ludelu nonihie bugil.
+                            Ugurot ivah co erevun tieleret lar. Royaru usacinen lodie lo reteri. Fape lite lono une
+                            seto. Ilefi gut sonoyis oyora l
+                            imebe rur. Sielore ener honuz yikete pe sehi. Ci sase nicot rat nuted temiv sepuhi
+                            telalos
+                            sosofa! Kosit orietino ehire?
+             </p>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+                <img class="d-block float-right text-center d-block float-right img-fluid" id="feature-image"
+                             src="{% static '/connect_therapy/images/slide.png' %}">
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block styles %}
+
+    <style>
+
+    .container-fluid {
+        min-height: 100%;
+        min-width: 100%;
+        padding: 0px 0px;
+        background-size: cover;
+    }
+
+    .carousel-caption {
+        top: 50%;
+        transform: translateY(40%);
+        bottom: initial;
+    }
+
+    .carousel-caption button {
+        padding: 10px 35px;
+        padding-bottom: 7px;
+        font-size: 20px;
+        letter-spacing: 7px;
+        font-weight: 500;
+        background: red;
+        color: white;
+        font-family: DIN Condensed;
+    }
+
+    .carousel-caption button:hover {
+        background-color: palevioletred;
+        color: white;
+    }
+
+    .carousel-item {
+        -webkit-transform-style: preserve-3d;
+        -moz-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+    }
+
+
+     @media (max-width: 600px) {
+        .carousel-caption button {
+            padding: 8px 20px;
+            padding-bottom: 5px;
+            font-size: 15px;
+            letter-spacing: 4px;
+        }
+
+        #feature-text h2 {
+            font-size: 25px;
+        }
+
+        #feature-text p {
+            font-size: 17px;
+        }
+    }
+
+    #feature-image {
+        border-radius: 5px;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+    #feature-text {
+
+        padding-left: 20px;
+        padding-right: 20px;
+        vertical-align: middle;
+        padding-top: 6%;
+
+    }
+
+    </style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    if ($(document).height() <= $(window).height()) {
+        document.getElementById('stickyFooter').className = 'fixed-bottom';
+    }
+</script>
+{% endblock %}
+
