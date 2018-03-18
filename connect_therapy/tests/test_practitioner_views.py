@@ -4,7 +4,7 @@ import pytz
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
 
-from connect_therapy.forms.practitioner import PractitionerNotesForm
+from connect_therapy.forms.practitioner.practitioner import PractitionerNotesForm
 from connect_therapy.models import Practitioner, Appointment, Patient
 from connect_therapy.views.practitioner import *
 
@@ -21,7 +21,7 @@ class TestPractitionerNotes(TestCase):
                                     is_approved=True)
         practitioner.save()
         appointment = Appointment(practitioner=practitioner,
-                                  start_date_and_time=datetime(year=2018,
+                                  start_date_and_time=datetime.datetime(year=2018,
                                                                month=4,
                                                                day=17,
                                                                hour=15,
@@ -66,7 +66,7 @@ class TestPractitionerAllPatientsView(TestCase):
         patient2.save()
         appointment1 = Appointment(practitioner=practitioner,
                                    patient=patient1,
-                                   start_date_and_time=datetime(year=2018,
+                                   start_date_and_time=datetime.datetime(year=2018,
                                                                 month=4,
                                                                 day=15,
                                                                 hour=15,
@@ -76,7 +76,7 @@ class TestPractitionerAllPatientsView(TestCase):
         appointment1.save()
         appointment2 = Appointment(practitioner=practitioner,
                                    patient=patient2,
-                                   start_date_and_time=datetime(year=2018,
+                                   start_date_and_time=datetime.datetime(year=2018,
                                                                 month=4,
                                                                 day=17,
                                                                 hour=15,
@@ -86,7 +86,7 @@ class TestPractitionerAllPatientsView(TestCase):
         appointment2.save()
         appointment3 = Appointment(practitioner=practitioner,
                                    patient=patient2,
-                                   start_date_and_time=datetime(year=2018,
+                                   start_date_and_time=datetime.datetime(year=2018,
                                                                 month=6,
                                                                 day=14,
                                                                 hour=15,
