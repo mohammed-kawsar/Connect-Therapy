@@ -175,7 +175,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         if original_length_hour * 60 + original_length_minute == 30:
             return
 
-        self.object.length = time(minute=30)
+        self.object.length = timedelta(minutes=30)
         self.object.patient = None
 
         # set the price to the default price set in the model
@@ -190,8 +190,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
                 practitioner=self.object.practitioner,
                 patient=None,
                 length=timedelta(minutes=30),
-                start_date_and_time=self.object.start_date_and_time
-                                    + timedelta(minutes=30 * i),
+                start_date_and_time=self.object.start_date_and_time + timedelta(minutes=(30 * i)),
                 price=default_price
             )
             appointment.save()
