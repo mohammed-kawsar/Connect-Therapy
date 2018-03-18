@@ -6,6 +6,77 @@ from django.test import TestCase
 from connect_therapy.views.patient import *
 
 
+class PatientSignUpTest(TestCase):
+    def test_sign_up_redirect(self):
+        response = self.client.post('/patient/signup', {
+            'first_name': 'Dave',
+            'last_name': 'Daverson',
+            'gender': 'M',
+            'date_of_birth': date(year=1995, month=2, day=20),
+            'mobile': '+447075593323',
+            'email': 'dave@example.com',
+            'password1': 'meowmeow1',
+            'password2': 'meowmeow1'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateUsed(response, 'connect_therapy/patient/signup.html')
+        self.assertRedirects(response, '/patient/login')
+
+
+class PatientLoginTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1))
+        test_pat_1.save()
+
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        test_prac_1 = Practitioner(user=test_user_3,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello")
+        test_prac_1.save()
+
+    def test_patient_login_success_redirect(self):
+        response = self.client.post('/patient/login', {
+            'username': 'testuser1',
+            'password': '12345',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/patient/')
+
+    def test_if_practitioner_cannot_login_on_patients_login(self):
+        response = self.client.post('/patient/login', {
+            'username': 'testuser3',
+            'password': '12345',
+        })
+
+        self.assertTemplateUsed(response, 'connect_therapy/patient/login.html')
+        self.assertContains(response, 'You are not a patient')
+
+    def test_if_not_a_user_cannot_login(self):
+        response = self.client.post('/patient/login', {
+            'username': 'testnotuser',
+            'password': '12345',
+        })
+
+        self.assertTemplateUsed(response, 'connect_therapy/patient/login.html')
+        self.assertContains(response, 'Please enter a correct username and '
+                                      'password. Note that both fields may be '
+                                      'case-sensitive.')
+
+
 class PatientNotesBeforeAppointmentTest(TestCase):
     def test_patient_before_notes_form(self):
         u = User(first_name="John", last_name="Smith")
@@ -177,3 +248,100 @@ class TestPatientCancel(TestCase):
         self.assertEqual(len(new_appointments), 1)
         for appointment in new_appointments:
             self.assertEqual(appointment.length, time(minute=30))
+
+
+class PatientAppointmentsViewTest(TestCase):
+    def setUp(self):
+        # Create two users
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1))
+        test_pat_1.save()
+
+        test_user_2 = User.objects.create_user(username='testuser2')
+        test_user_2.set_password('12345')
+        test_user_2.save()
+
+        test_pat_2 = Patient(user=test_user_2,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1))
+        test_pat_2.save()
+
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        test_prac_1 = Practitioner(user=test_user_3,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello")
+        test_prac_1.save()
+
+    def test_logged_in_patient_view_appointments(self):
+        login = self.client.login(username="testuser1", password="12345")
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-my-appointments'))
+
+        # Check our user is logged in
+        self.assertEqual(str(resp.context['user']), 'testuser1')
+        # Check that we got a response "success"
+        self.assertEqual(resp.status_code, 200)
+
+        # Check we used correct template
+        self.assertTemplateUsed(resp, 'connect_therapy/patient/my-appointments.html')
+
+    def test_cannot_view_my_appointments_if_not_logged_in(self):
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-my-appointments'))
+        # Checks that the response is a redirect.
+        self.assertEqual(resp.status_code, 302)
+
+    def test_logged_in_practitioner_cannot_view_patient_appointments(self):
+        login = self.client.login(username="testuser3", password="12345")
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-my-appointments'))
+        self.assertEqual(resp.status_code, 302)
+
+
+class PatientNotesBeforeTest(TestCase):
+    def setUp(self):
+        # Create two users
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1))
+        test_pat_1.save()
+
+        appointment = Appointment()
+        Appointment.book_appointments()
+
+        test_user_2 = User.objects.create_user(username='testuser2')
+        test_user_2.set_password('12345')
+        test_user_2.save()
+
+        test_pat_2 = Patient(user=test_user_2,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1))
+        test_pat_2.save()
+
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        test_prac_1 = Practitioner(user=test_user_3,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello")
+        test_prac_1.save()
