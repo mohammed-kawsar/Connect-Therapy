@@ -104,7 +104,7 @@ class TestPatientCancel(TestCase):
         self.assertEqual(len(new_appointments), 3)
 
         for appointment in new_appointments:
-            self.assertEqual(appointment.length, time(minute=30))
+            self.assertEqual(appointment.length, timedelta(minutes=30))
 
             self.assertEquals(appointment.price, Decimal(Appointment._meta.get_field('price').get_default()))
 
@@ -141,7 +141,7 @@ class TestPatientCancel(TestCase):
         self.assertEqual(len(new_appointments), 6)
 
         for appointment in new_appointments:
-            self.assertEqual(appointment.length, time(minute=30))
+            self.assertEqual(appointment.length, timedelta(minutes=30))
 
             self.assertEquals(appointment.price, Decimal(Appointment._meta.get_field('price').get_default()))
 
@@ -176,4 +176,4 @@ class TestPatientCancel(TestCase):
         )
         self.assertEqual(len(new_appointments), 1)
         for appointment in new_appointments:
-            self.assertEqual(appointment.length, time(minute=30))
+            self.assertEqual(appointment.length, timedelta(minutes=30))
