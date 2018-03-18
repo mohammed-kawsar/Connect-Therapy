@@ -12,12 +12,7 @@ class DurationWidget(forms.MultiWidget):
 
     def decompress(self, value):
         if value:
-            split = value.split('h')
-            hour = int(split[0])
-            minute_split = split[1].split('m')
-            minute = int(minute_split[1])
-            return [hour, minute]
-        return [None, None]
+            return decompress_duration(value)
 
 
 class DurationField(forms.MultiValueField):
@@ -32,4 +27,21 @@ class DurationField(forms.MultiValueField):
         self.widget = DurationWidget(minute_interval_choices=minute_interval_choices)
 
     def compress(self, data_list):
+        return compress_duration(data_list)
+
+
+def decompress_duration(value):
+    if value and len(value) > 0:
+        split = value.split('h')
+        hour = int(split[0])
+        minute_split = split[1].split('m')
+        minute = int(minute_split[0])
+        return [hour, minute]
+    return [None, None]
+
+
+def compress_duration(data_list):
+    if len(data_list) == 2:
         return str(data_list[0]) + "h" + str(data_list[1]) + "m"
+    else:
+        return ""

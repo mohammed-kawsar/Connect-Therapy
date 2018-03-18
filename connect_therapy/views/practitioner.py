@@ -14,6 +14,7 @@ from django.views.generic import FormView, UpdateView, DeleteView, DetailView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
+from connect_therapy.forms.practitioner.custom_duration_field import decompress_duration
 from connect_therapy.forms.practitioner.practitioner import *
 from connect_therapy.models import Practitioner, Appointment
 
@@ -277,18 +278,19 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         return True is not None
 
     def form_valid(self, form):
-        if form.cleaned_data['length'] is not None:
-            length = form.cleaned_data['length']
-        else:
-            length = (Appointment._meta.get_field('length').get_default().seconds % 3600) // 60
+        hour = 0
+        minute = (Appointment._meta.get_field('length').get_default().seconds % 3600) // 60
 
-        # TODO: Parse and sanitize inputs i.e. convert to int
+        if form.cleaned_data['length'] is not None:
+            duration = decompress_duration(str(form.cleaned_data['length']))
+            hour = duration[0]
+            minute = duration [1]
 
         appointment = Appointment(
             patient=None,
             practitioner=self.request.user.practitioner,
             start_date_and_time=form.cleaned_data['start_date_and_time'],
-            length=timedelta(minutes=length)
+            length=timedelta(hours=hour, minutes=minute)
         )
 
         over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,

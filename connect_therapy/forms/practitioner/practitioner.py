@@ -5,7 +5,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.contrib.auth.models import User
 
-from connect_therapy.forms.practitioner.custom_duration import DurationField
+from connect_therapy.forms.practitioner.custom_duration_field import DurationField
 from connect_therapy.models import Practitioner
 
 
@@ -132,10 +132,11 @@ class PractitionerDefineAppointmentForm(forms.Form):
                                               widget=forms.DateInput(attrs={'id': 'datetimepicker',
                                                                             'class': 'form-control'}))
     minute_interval_choices = (
-        (1, '00'),
-        (2, '30'),
+        (00, '00'),
+        (30, '30'),
     )
-    length = DurationField(minute_interval_choices=minute_interval_choices)
+    length = DurationField(required=False, minute_interval_choices=minute_interval_choices,
+                           help_text="Hour(s) Minute(s)")
 
     def clean_start_date_and_time(self):
         start_datetime = self.cleaned_data['start_date_and_time']
