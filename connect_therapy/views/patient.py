@@ -169,10 +169,13 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
 
     def split_merged_appointment(self):
         original_length = self.object.length
-        if original_length.hour * 60 + original_length.minute == 30:
+        original_length_hour, original_length_minute, original_length_seconds = \
+            Appointment.get_hour_minute_seconds(original_length)
+
+        if original_length_hour * 60 + original_length_minute == 30:
             return
 
-        self.object.length = time(minute=30)
+        self.object.length = timedelta(minutes=30)
         self.object.patient = None
 
         # set the price to the default price set in the model
@@ -180,15 +183,14 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         self.object.price = default_price
 
         number_of_appointments = \
-            (original_length.hour * 60 + original_length.minute) // 30
+            (original_length_hour * 60 + original_length_minute) // 30
 
         for i in range(1, number_of_appointments):
             appointment = Appointment(
                 practitioner=self.object.practitioner,
                 patient=None,
-                length=time(minute=30),
-                start_date_and_time=self.object.start_date_and_time
-                                    + timedelta(minutes=30 * i),
+                length=timedelta(minutes=30),
+                start_date_and_time=self.object.start_date_and_time + timedelta(minutes=(30 * i)),
                 price=default_price
             )
             appointment.save()
