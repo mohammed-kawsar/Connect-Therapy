@@ -22,8 +22,8 @@ class ChatView(UserPassesTestMixin, DetailView):
     login_url = reverse_lazy('connect_therapy:patient-login')
 
     def get(self, request, *args, **kwargs):
-        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.get_object().id))
-        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self,files_for_appointment)
+        files_for_appointment = FileDownloadView.get_files_from_folder(str(self.get_object().id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
 
         form = FileForm()
         
@@ -98,12 +98,11 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
 
             # get file to return to view
 
-            uploaded_file = (key.split('/')[1], FileDownloadView.generate_presigned_url(self, key))
+            uploaded_file = (key.split('/')[1], FileDownloadView.generate_presigned_url(key))
 
             is_valid = True
 
         return JsonResponse({'is_valid': is_valid, 'uploaded_files': uploaded_file})
-
 
 
 class FileDownloadView(DetailView):
@@ -118,11 +117,12 @@ class FileDownloadView(DetailView):
         self.object = self.get_object()
 
         for file in self.get_files_from_folder(str(self.object.id)):
-            files[file] = self._generate_presigned_url(file)
+            files[file] = self.generate_presigned_url(file)
 
         return JsonResponse({'downloadable_files': files})
 
-    def get_files_from_folder(self, folder_name):
+    @staticmethod
+    def get_files_from_folder(folder_name):
         import boto3
         s3 = boto3.resource("s3")
         bucket = s3.Bucket("segwyn")
@@ -138,15 +138,17 @@ class FileDownloadView(DetailView):
 
         return files
 
-    def generate_pre_signed_url_for_each(self, files):
+    @staticmethod
+    def generate_pre_signed_url_for_each(files):
         downloadable_file_list = []
         for file in files:
             downloadable_file_list.append(
-                [file.split("/")[1], FileDownloadView._generate_presigned_url(self, file)]
+                [file.split("/")[1], FileDownloadView.generate_presigned_url(file)]
             )
         return downloadable_file_list
 
-    def _generate_presigned_url(self, key):
+    @staticmethod
+    def generate_presigned_url(key):
         import boto3
         url = boto3.client('s3', config=boto3.session.Config(signature_version='s3v4',
                                                              region_name='eu-west-2')).generate_presigned_url(
@@ -159,19 +161,21 @@ class FileDownloadView(DetailView):
         )
         return str(url)
 
-    def get_objects_with_tag(self, uploader_user_id, appointment_id):
+    @staticmethod
+    def get_objects_with_tag(uploader_user_id, appointment_id):
         import boto3
         s3 = boto3.resource("s3")
         bucket = s3.Bucket("segwyn")
         files = []
         if len(uploader_user_id) > 0:
-            files.append(self._get_objects_with_key_value(bucket.objects.all(), "Uploader", uploader_user_id))
+            files.append(FileDownloadView._get_objects_with_key_value(bucket.objects.all(), "Uploader", uploader_user_id))
         if len(appointment_id) > 0:
-            files.append(self._get_objects_with_key_value(bucket.objects.all(), "Appointment_ID", appointment_id))
+            files.append(FileDownloadView._get_objects_with_key_value(bucket.objects.all(), "Appointment_ID", appointment_id))
 
         return files
 
-    def _get_objects_with_key_value(self, objects, key, value):
+    @staticmethod
+    def _get_objects_with_key_value(objects, key, value):
         import boto3
         s3 = boto3.resource("s3")
 
