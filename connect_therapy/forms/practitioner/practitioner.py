@@ -135,8 +135,7 @@ class PractitionerDefineAppointmentForm(forms.Form):
         (00, '00'),
         (30, '30'),
     )
-    length = DurationField(required=False, minute_interval_choices=minute_interval_choices,
-                           help_text="Hour(s) Minute(s)")
+    length = DurationField(required=False, minute_interval_choices=minute_interval_choices)
 
     def clean_start_date_and_time(self):
         start_datetime = self.cleaned_data['start_date_and_time']
