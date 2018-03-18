@@ -93,15 +93,15 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         patient_before_notes = PatientNotesBeforeView()
-        patient_before_notes.appointment = appointment
+        patient_before_notes.object = appointment
         form = PatientNotesBeforeForm(data={'patient_notes_before_meeting': 'test'})
         form.is_valid()
         patient_before_notes.form_valid(form)
         self.assertEqual(
-            patient_before_notes.appointment.patient_notes_before_meeting, 'test')
+            patient_before_notes.object.patient_notes_before_meeting, 'test')
 
 
 class TestPatientCancel(TestCase):
@@ -136,7 +136,7 @@ class TestPatientCancel(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=time(hour=1))
+                                  length=timedelta(hours=1))
         appointment.save()
         pcav = PatientCancelAppointmentView()
         pcav.object = appointment
@@ -162,7 +162,7 @@ class TestPatientCancel(TestCase):
                                        tzinfo=pytz.utc)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
-                                  length=time(hour=1, minute=30))
+                                  length=timedelta(hours=1, minutes=30))
 
         appointment.save()
         p1 = PatientCancelAppointmentView()
@@ -175,7 +175,7 @@ class TestPatientCancel(TestCase):
         self.assertEqual(len(new_appointments), 3)
 
         for appointment in new_appointments:
-            self.assertEqual(appointment.length, time(minute=30))
+            self.assertEqual(appointment.length, timedelta(minutes=30))
 
             self.assertEquals(appointment.price, Decimal(Appointment._meta.get_field('price').get_default()))
 
@@ -199,7 +199,7 @@ class TestPatientCancel(TestCase):
                                        tzinfo=pytz.utc)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
-                                  length=time(hour=3))
+                                  length=timedelta(hours=3))
 
         appointment.save()
         p1 = PatientCancelAppointmentView()
@@ -212,7 +212,7 @@ class TestPatientCancel(TestCase):
         self.assertEqual(len(new_appointments), 6)
 
         for appointment in new_appointments:
-            self.assertEqual(appointment.length, time(minute=30))
+            self.assertEqual(appointment.length, timedelta(minutes=30))
 
             self.assertEquals(appointment.price, Decimal(Appointment._meta.get_field('price').get_default()))
 
@@ -236,7 +236,7 @@ class TestPatientCancel(TestCase):
                                        tzinfo=pytz.utc)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
-                                  length=time(minute=30))
+                                  length=timedelta(minutes=30))
         appointment.save()
         p1 = PatientCancelAppointmentView()
         p1.object = appointment
@@ -247,7 +247,7 @@ class TestPatientCancel(TestCase):
         )
         self.assertEqual(len(new_appointments), 1)
         for appointment in new_appointments:
-            self.assertEqual(appointment.length, time(minute=30))
+            self.assertEqual(appointment.length, timedelta(minutes=30))
 
 
 class PatientAppointmentsViewTest(TestCase):
