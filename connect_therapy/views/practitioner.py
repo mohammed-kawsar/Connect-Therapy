@@ -335,7 +335,7 @@ class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
 
 class PractitionerHomepageView(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/homepage.html'
-    login_url = reverse_lazy('connect_therapy:patient-login')
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
     redirect_field_name = None
     model = Appointment
 
