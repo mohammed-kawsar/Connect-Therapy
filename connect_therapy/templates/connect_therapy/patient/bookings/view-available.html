@@ -20,7 +20,7 @@
         </div>
     {% endif %}
 
-    <h1 class="jumbotron">You are booking an appointment with <b id="bold_username">{{ object.user.username }}</b> </h1>
+    <h1 class="jumbotron">You are booking an appointment with <br><b id="bold_username">{{ object.user.username }}</b> </h1>
 <div class="container-fluid text-center">
     <form action="" method="post">
         {% csrf_token %}
@@ -39,16 +39,27 @@
 
 </div>
 
-    <div class="container-fluid">
+<div class="container-fluid" style="padding-bottom: 30px">
     {% if appointments is not None and appointments|length > 0 %}
         <form action="{% url 'connect_therapy:book-appointment-review' pk=object.user.practitioner.id %}"
               method="post">
             {% csrf_token %}
-            {% for app in appointments %}
-                <p><input type="checkbox" name="app_id" value={{ app.id }}> {{ app }} </input> </p>
-            {% endfor %}
+            <div class="card-group">
+                {% for app in appointments %}
+                    <p class="available-slots">
+                        <div class="card mr-2" style="display: inline-block">
+                            <label style="min-width: 100%">
+                                <h5 class="card-title">Slot {{ forloop.counter }}</h5>
+                                <input type="checkbox" class="card-text" name="app_id" value={{ app.id }}>
+                                <div class="card-body">
+                                    {{ app }}
+                                </div>
+                            </label>
+                        </div>
+                    </p>
+                {% endfor %}
+            </div>
             <input type="submit" class="btn btn-success text-center" value="Continue"/>
-
         </form>
     {% endif %}
 </div>
@@ -73,11 +84,13 @@
         .jumbotron {
                 text-align: center;
                 vertical-align: middle;
-                margin-top: 15px;
+                margin-top: 0px;
                 font-size: 40px;
                 letter-spacing: 3px;
-                text-transform: capitalize;
-                line-height: 50px;
+                line-height: 80px;
+                padding-bottom: 20px;
+                padding-top: 20px;
+                border-radius: 0px;
             }
 
         input checkbox {
@@ -88,6 +101,38 @@
             margin-bottom: 20px;
         }
 
+        h1 {
+            font-size: 35px;
+            text-align: center;
+            line-height: 50px;
+            padding-top: 20px;
+        }
+
+        h3 {
+            font-size: 28px;
+            padding-bottom: 10px;
+            padding-top: 10px;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        div#date_picker {
+            padding-bottom: 20px;
+        }
+
+        .btn.btn-primary {
+            margin-bottom: 20px;
+        }
+
+        p.available-slots > label:hover {
+            cursor: pointer;
+        }
+
+        div.content.container-fluid {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
 
         @media (max-width: 649px){
             div.ui-datepicker-inline{ /* Overrides this class in Jquery Library */
@@ -203,7 +248,7 @@
     }
 
     </style>
-    
+
 {% endblock %}
 
 {% block scripts %}
@@ -214,6 +259,9 @@
 
     <script>
         document.getElementById("id_password").className = "form-control";
+    </script>
+
+    <script>
 
         if ($(document).height() <= $(window).height()) {
             document.getElementById('stickyFooter').className = 'fixed-bottom';
@@ -221,15 +269,9 @@
 
     </script>
 
-    <script>
-
-    if ($(document).height() <= $(window).height()) {
-        document.getElementById('stickyFooter').className = 'fixed-bottom';
-    }
-
-</script>
-
 {% endblock %}
+
+
 
 
 
