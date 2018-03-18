@@ -301,11 +301,13 @@ class PatientAppointmentsViewTest(TestCase):
         resp = self.client.get(reverse_lazy('connect_therapy:patient-my-appointments'))
         # Checks that the response is a redirect.
         self.assertEqual(resp.status_code, 302)
+        self.assertRedirects(resp, '/patient/login')
 
     def test_logged_in_practitioner_cannot_view_patient_appointments(self):
         login = self.client.login(username="testuser3", password="12345")
         resp = self.client.get(reverse_lazy('connect_therapy:patient-my-appointments'))
         self.assertEqual(resp.status_code, 302)
+        self.assertRedirects(resp, '/patient/login')
 
 
 class PatientNotesBeforeTest(TestCase):
