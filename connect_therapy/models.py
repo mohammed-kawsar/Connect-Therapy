@@ -103,7 +103,7 @@ class Appointment(models.Model):
         """
         return self.start_date_and_time - timedelta(minutes=5) < \
                timezone.now() < self.start_date_and_time + \
-               timedelta(hours=self.length.hour, minutes=self.length.minute)
+               Appointment._get_timedelta(self.length)
 
     def __str__(self):
         """Return a string representation of Appointment"""
@@ -212,12 +212,18 @@ class Appointment(models.Model):
         :param time: Expects the time object from a duration field
         :return:
         """
+        other_hours, other_minutes, other_seconds = cls.get_hour_minute_seconds(time)
+
+        return timedelta(hours=other_hours, minutes=other_minutes, seconds=other_seconds)
+
+    @classmethod
+    def get_hour_minute_seconds(cls, time):
         o_days, o_seconds = time.days, time.seconds
         other_hours = o_days * 24 + o_seconds // 3600
         other_minutes = (o_seconds % 3600) // 60
         other_seconds = o_seconds % 60
 
-        return timedelta(hours=other_hours, minutes=other_minutes, seconds=other_seconds)
+        return other_hours, other_minutes, other_seconds
 
     @classmethod
     def check_validity(cls, selected_appointments_id, selected_practitioner):
