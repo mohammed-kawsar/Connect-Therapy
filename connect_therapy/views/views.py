@@ -37,8 +37,10 @@ class ChatView(UserPassesTestMixin, DetailView):
         # for this appointment in the get method above
         if self.get_object().patient is None:
             return True
-        return (self.request.user.id == self.get_object().patient.user.id) \
-               or (self.request.user.id == self.get_object().practitioner.user.id)
+        if self.request.user.id == self.get_object().patient.user.id:
+            return self.get_object().patient.email_confirmed
+        elif self.request.user.id == self.get_object().practitioner.user.id:
+            return self.get_object().practitioner.email_confirmed
 
 
 class FileUploadView(LoginRequiredMixin, generic.DetailView):
