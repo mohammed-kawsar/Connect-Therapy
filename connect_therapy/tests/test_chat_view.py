@@ -14,6 +14,7 @@ class TestChatView(TestCase):
 
         # test_pat_1 will be assigned to an appointment with test_prac_1
         test_pat_1 = Patient(user=test_user_1,
+                             email_confirmed=True,
                              gender='M',
                              mobile="+447476666555",
                              date_of_birth=date(year=1995, month=1, day=1))
@@ -25,6 +26,7 @@ class TestChatView(TestCase):
         test_user_2.save()
 
         test_prac_1 = Practitioner(user=test_user_2,
+                                   email_confirmed=True,
                                    address_line_1="My home",
                                    postcode="EC12 1CV",
                                    mobile="+447577293232",
@@ -62,6 +64,7 @@ class TestChatView(TestCase):
 
         # test_pat_2 will not be assigned to an appointment
         test_pat_2 = Patient(user=test_user_3,
+                             email_confirmed=True,
                              gender='M',
                              mobile="+447476666555",
                              date_of_birth=date(year=1995, month=1, day=1))
@@ -73,6 +76,7 @@ class TestChatView(TestCase):
         test_user_4.save()
         # will not be assigned to any appointments
         test_prac_2 = Practitioner(user=test_user_4,
+                                   email_confirmed=True,
                                    address_line_1="My home",
                                    postcode="EC12 1CV",
                                    mobile="+447577293232",
