@@ -9,6 +9,73 @@ from connect_therapy.models import Practitioner, Appointment, Patient
 from connect_therapy.views.practitioner import *
 
 
+class PractitionerSignUpTest(TestCase):
+    def test_sign_up_redirect(self):
+        response = self.client.post('/practitioner/signup', {
+            'first_name': 'Chris',
+            'last_name': 'Harris',
+            'email': 'chris@yahoo.com',
+            'mobile': '07893839383',
+            'date_of_birth': date(year=1971, month=1, day=1),
+            'address1': '1 Fetter Lane',
+            'address2': '',
+            'postcode': 'E1 WCX',
+            'bio': 'Here to serve',
+            'password1': 'makapaka!',
+            'password2': 'makapaka!'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse_lazy('app:signup'), fetch_redirect_response=False)
+        self.assertTemplateUsed(response, 'connect_therapy/practitioner/signup.html')
+        self.assertRedirects(response, '/practitioner/login', status_code=302,
+                             target_status_code=302)
+
+
+class PractitionerLoginTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1))
+        test_pat_1.save()
+
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        test_prac_1 = Practitioner(user=test_user_3,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello")
+        test_prac_1.save()
+
+    def test_practitioner_login_success_redirect(self):
+        response = self.client.post('/practitioner/login', {
+            'username': 'testuser1',
+            'password': '12345',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse_lazy('app:login'), fetch_redirect_response=False)
+        self.assertRedirects(response, '/practitioner/', status_code=302,
+                             target_status_code=302)
+
+    def test_if_practitioner_can_login_on_patients_login(self):
+        response = self.client.post('/patient/login', {
+            'username': 'testuser3',
+            'password': '12345',
+        })
+
+        self.assertTemplateUsed(response, 'connect_therapy/patient/login.html')
+        self.assertContains(response, 'You are not a patient')
+
+
 class TestPractitionerNotes(TestCase):
     def test_practitioner_notes_form(self):
         u = User(first_name="John", last_name="Smith")
