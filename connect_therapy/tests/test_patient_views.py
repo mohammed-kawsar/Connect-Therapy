@@ -20,8 +20,7 @@ class PatientSignUpTest(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed(response, 'connect_therapy/patient/signup.html')
-        self.assertRedirects(response, '/patient/login', status_code=302,
-                             target_status_code=302)
+        self.assertRedirects(response, '/patient/login')
 
 
 class PatientLoginTest(TestCase):
@@ -55,8 +54,7 @@ class PatientLoginTest(TestCase):
         })
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/patient/', status_code=302,
-                             target_status_code=302)
+        self.assertRedirects(response, '/patient/')
 
     def test_if_practitioner_cannot_login_on_patients_login(self):
         response = self.client.post('/patient/login', {
@@ -353,5 +351,4 @@ class PatientNotesBeforeTest(TestCase):
         })
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/patient/my-appointments',
-                             status_code=302, target_status_code=302)
+        self.assertRedirects(response, '/patient/my-appointments')
