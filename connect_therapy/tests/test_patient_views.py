@@ -16,11 +16,11 @@ class PatientSignUpTest(TestCase):
             'mobile': '+447075593323',
             'email': 'dave@example.com',
             'password1': 'meowmeow1',
-            'password2': 'meowmeow1'
+            'password2': 'meowmeow1',
         })
         self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed(response, 'connect_therapy/patient/signup.html')
-        self.assertRedirects(response, '/patient/login')
+        self.assertRedirects(response, '/')
 
 
 class PatientLoginTest(TestCase):
@@ -32,7 +32,8 @@ class PatientLoginTest(TestCase):
         test_pat_1 = Patient(user=test_user_1,
                              gender='M',
                              mobile="+447476666555",
-                             date_of_birth=date(year=1995, month=1, day=1))
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
         test_pat_1.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
@@ -44,7 +45,8 @@ class PatientLoginTest(TestCase):
                                    address_line_1="My home",
                                    postcode="EC12 1CV",
                                    mobile="+447577293232",
-                                   bio="Hello")
+                                   bio="Hello",
+                                   email_confirmed=True)
         test_prac_1.save()
 
     def test_patient_login_success_redirect(self):
@@ -259,7 +261,8 @@ class PatientAppointmentsViewTest(TestCase):
         test_pat_1 = Patient(user=test_user_1,
                              gender='M',
                              mobile="+447476666555",
-                             date_of_birth=date(year=1995, month=1, day=1))
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
         test_pat_1.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
@@ -271,7 +274,8 @@ class PatientAppointmentsViewTest(TestCase):
                                    address_line_1="My home",
                                    postcode="EC12 1CV",
                                    mobile="+447577293232",
-                                   bio="Hello")
+                                   bio="Hello",
+                                   email_confirmed=True)
         test_prac_1.save()
 
     def test_logged_in_patient_view_appointments(self):
@@ -308,7 +312,8 @@ class PatientNotesBeforeTest(TestCase):
         test_pat_1 = Patient(user=test_user_1,
                              gender='M',
                              mobile="+447476666555",
-                             date_of_birth=date(year=1995, month=1, day=1))
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
         test_pat_1.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
@@ -320,7 +325,8 @@ class PatientNotesBeforeTest(TestCase):
                                    address_line_1="My home",
                                    postcode="EC12 1CV",
                                    mobile="+447577293232",
-                                   bio="Hello")
+                                   bio="Hello",
+                                   email_confirmed=True)
         test_prac_1.save()
 
         appointment = Appointment(practitioner=test_prac_1,
@@ -337,12 +343,10 @@ class PatientNotesBeforeTest(TestCase):
     def test_patient_adding_notes_before_appointment(self):
         login = self.client.login(username="testuser1", password="12345")
         response = self.client.post('/patient/notes-before-appointment/1', {
-            'patient_notes_before_meeting': 'Test notes before meeting.',
-        })
+            'patient_notes_before_meeting': 'Test notes before meeting.'})
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/patient/my-appointments',
-                             status_code=302, target_status_code=302)
+        self.assertRedirects(response, '/patient/my-appointments')
 
     def test_practitioner_cannot_add_before_appointment_notes(self):
         login = self.client.login(username="testuser3", password="12345")
@@ -352,3 +356,130 @@ class PatientNotesBeforeTest(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, '/patient/my-appointments')
+
+
+class PatientProfileTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
+        test_pat_1.save()
+
+        test_user_2 = User.objects.create_user(username='testuser3')
+        test_user_2.set_password('12345')
+
+        test_user_2.save()
+
+        test_prac_1 = Practitioner(user=test_user_2,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   email_confirmed=True)
+        test_prac_1.save()
+
+    def test_patient_can_view_their_profile(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(reverse_lazy('connect_therapy:patient-profile'))
+
+        self.assertEqual(str(response.context['user']), 'testuser1')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'connect_therapy/patient/profile.html')
+
+    def test_redirect_practitioner_cannot_view_patient_profile(self):
+        login = self.client.login(username="testuser2", password="12345")
+        response = self.client.get(reverse_lazy('connect_therapy:patient-profile'))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_patient_profile_if_not_logged_in(self):
+        response = self.client.get(reverse_lazy('connect_therapy:patient-profile'))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_patient_edit_profile(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.post('/patient/profile/edit/1', {
+            'first_name': 'John',
+            'last_name': 'Smith',
+            'gender': 'M',
+            'date_of_birth': date(year=1995, month=2, day=20),
+            'email': 'test1@example.com',
+            'mobile': '+447476565333',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/patient/profile')
+
+    def test_redirect_practitioner_cannot_view_patient_profile_edit(self):
+        login = self.client.login(username="testuser2", password="12345")
+        response = self.client.get(reverse_lazy('connect_therapy:patient-profile-edit',
+                                                kwargs={'pk': 1}))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/patient/login')
+
+    def test_redirect_patient_edit_if_not_logged_in(self):
+        response = self.client.get(reverse_lazy('connect_therapy:patient-profile-edit',
+                                                kwargs={'pk': 1}))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/patient/login')
+
+
+class ViewAllPractitionersTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
+        test_pat_1.save()
+
+        test_user_2 = User.objects.create_user(username='testuser3')
+        test_user_2.set_password('12345')
+
+        test_user_2.save()
+
+        test_prac_1 = Practitioner(user=test_user_2,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   email_confirmed=True)
+        test_prac_1.save()
+
+    def test_patient_view_all_practitioners(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:patient-view-practitioners'))
+
+        self.assertEqual(str(response.context['user']), 'testuser1')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, 'connect_therapy/patient/bookings/list-practitioners.html')
+
+    def test_practitioner_cannot_view_all_practitioners(self):
+        login = self.client.login(username="testuser2", password="12345")
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:patient-view-practitioners'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/patient/login?next=/patient/view-practitioners')
+
+    def test_if_not_logged_in_cannot_view_all_practitioners(self):
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:patient-view-practitioners'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/patient/login?next=/patient/view-practitioners')
