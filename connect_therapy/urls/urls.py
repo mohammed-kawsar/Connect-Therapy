@@ -1,4 +1,4 @@
-from django.urls import path, reverse_lazy, include
+from django.urls import path, reverse_lazy, include, re_path
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
@@ -31,4 +31,7 @@ urlpatterns = [
          ),
          name='index'
          ),
+    path('activate/<uidb64>/<token>',
+         activate,
+         name='activate')
 ]

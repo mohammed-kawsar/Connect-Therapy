@@ -1,14 +1,19 @@
+from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 from django.views import generic
 from django.views.generic import DetailView
 
 from connect_therapy.forms.forms import FileForm
-from connect_therapy.models import Appointment
+from connect_therapy.models import Appointment, Patient, Practitioner
+from connect_therapy.tokens import account_activation_token
 
 
 class ChatView(UserPassesTestMixin, DetailView):
@@ -37,8 +42,10 @@ class ChatView(UserPassesTestMixin, DetailView):
         # for this appointment in the get method above
         if self.get_object().patient is None:
             return True
-        return (self.request.user.id == self.get_object().patient.user.id) \
-               or (self.request.user.id == self.get_object().practitioner.user.id)
+        if self.request.user.id == self.get_object().patient.user.id:
+            return self.get_object().patient.email_confirmed
+        elif self.request.user.id == self.get_object().practitioner.user.id:
+            return self.get_object().practitioner.email_confirmed
 
 
 class FileUploadView(LoginRequiredMixin, generic.DetailView):
@@ -179,3 +186,30 @@ class FileDownloadView(DetailView):
                         files.append(obj.key)
 
         return files
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        login(request, user)
+        try:
+            patient = user.patient
+            patient.email_confirmed = True
+            patient.save()
+            return redirect('connect_therapy:patient-homepage')
+        except Patient.DoesNotExist:
+            pass
+        try:
+            practitioner = user.practitioner
+            practitioner.email_confirmed = True
+            practitioner.save()
+            return redirect('connect_therapy:practitioner-homepage')
+        except Practitioner.DoesNotExist:
+            pass
+        return redirect('connect_therapy:index')
+    else:
+        return redirect('connect_therapy:index')
