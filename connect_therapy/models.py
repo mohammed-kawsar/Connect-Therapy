@@ -95,11 +95,18 @@ class Appointment(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(50))
     @classmethod
     def split_merged_appointment(cls, appointment):
+        """
+        This method will take an appointment and split it into 30 minute blocks. They will then be saved.
+        If the appointment cannot be split, it will just be saved
+        :param appointment: Take an appointment object to split and save
+        :return:
+        """
         original_length = appointment.length
         original_length_hour, original_length_minute, original_length_seconds = \
             Appointment.get_hour_minute_seconds(original_length)
 
         if original_length_hour * 60 + original_length_minute == 30:
+            appointment.save()
             return
 
         appointment.length = timedelta(minutes=30)
