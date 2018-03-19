@@ -20,7 +20,8 @@ class PatientSignUpTest(TestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed(response, 'connect_therapy/patient/signup.html')
-        self.assertRedirects(response, '/patient/login')
+        self.assertRedirects(response, '/patient/login', status_code=302,
+                             target_status_code=302)
 
 
 class PatientLoginTest(TestCase):
@@ -54,7 +55,8 @@ class PatientLoginTest(TestCase):
         })
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/patient/')
+        self.assertRedirects(response, '/patient/', status_code=302,
+                             target_status_code=302)
 
     def test_if_practitioner_cannot_login_on_patients_login(self):
         response = self.client.post('/patient/login', {
@@ -323,17 +325,15 @@ class PatientNotesBeforeTest(TestCase):
                                    bio="Hello")
         test_prac_1.save()
 
-        appointment = Appointment(
-            practitioner=test_prac_1,
-            patient=test_pat_1,
-            start_date_and_time=datetime(year=timezone.now().year + 1,
-                                         month=3,
-                                         day=2,
-                                         hour=15,
-                                         minute=10,
-                                         tzinfo=pytz.utc),
-            length=time(hour=1),
-        )
+        appointment = Appointment(practitioner=test_prac_1,
+                                  patient=test_pat_1,
+                                  start_date_and_time=datetime(year=2018,
+                                                               month=4,
+                                                               day=17,
+                                                               hour=15,
+                                                               minute=10,
+                                                               tzinfo=pytz.utc),
+                                  length=timedelta(hours=1))
         appointment.save()
 
     def test_patient_adding_notes_before_appointment(self):
@@ -343,4 +343,15 @@ class PatientNotesBeforeTest(TestCase):
         })
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/patient/my-appointments')
+        self.assertRedirects(response, '/patient/my-appointments',
+                             status_code=302, target_status_code=302)
+
+    def test_practitioner_cannot_add_before_appointment_notes(self):
+        login = self.client.login(username="testuser3", password="12345")
+        response = self.client.post('/patient/notes-before-appointment/1', {
+            'patient_notes_before_meeting': 'Test notes before meeting.',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/patient/my-appointments',
+                             status_code=302, target_status_code=302)
