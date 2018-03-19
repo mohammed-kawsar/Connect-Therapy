@@ -289,7 +289,7 @@ class TestAppointmentOverLap(TestCase):
         overlaps = Appointment._get_overlaps([a4, a2, a3, a1])
         self.assertEquals(len(overlaps), 1)
 
-    def test_same_start_different_duartion(self):
+    def test_same_start_different_duration(self):
         a1 = Appointment(
             start_date_and_time=datetime(year=2018,
                                          month=3,

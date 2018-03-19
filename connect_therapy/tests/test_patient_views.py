@@ -25,12 +25,12 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                                   length=timedelta(hours=1))
         appointment.save()
         patient_before_notes = PatientNotesBeforeView()
-        patient_before_notes.appointment = appointment
+        patient_before_notes.object = appointment
         form = PatientNotesBeforeForm(data={'patient_notes_before_meeting': 'test'})
         form.is_valid()
         patient_before_notes.form_valid(form)
         self.assertEqual(
-            patient_before_notes.appointment.patient_notes_before_meeting, 'test')
+            patient_before_notes.object.patient_notes_before_meeting, 'test')
 
 
 class TestPatientCancel(TestCase):

@@ -1,14 +1,15 @@
-from datetime import timedelta, time
+from datetime import timedelta
 from decimal import Decimal
 
 from django import forms
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, views as auth_views, \
+from django.contrib.auth import views as auth_views, \
     update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -19,6 +20,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
+from connect_therapy.emails import send_patient_confirm_email
 from connect_therapy.forms.patient import AppointmentDateSelectForm
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, PatientEditMultiForm
@@ -29,7 +31,7 @@ from connect_therapy.views.views import FileDownloadView
 class PatientSignUpView(FormView):
     form_class = PatientSignUpForm
     template_name = 'connect_therapy/patient/signup.html'
-    success_url = reverse_lazy('connect_therapy:patient-login')
+    success_url = reverse_lazy('connect_therapy:index')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -41,10 +43,7 @@ class PatientSignUpView(FormView):
                           mobile=form.cleaned_data['mobile']
                           )
         patient.save()
-        user = authenticate(username=form.cleaned_data['email'],
-                            password=form.cleaned_data['password1']
-                            )
-        login(request=self.request, user=user)
+        send_patient_confirm_email(patient, get_current_site(self.request))
         return super().form_valid(form)
 
 
@@ -67,7 +66,7 @@ class PatientMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             patient = Patient.objects.get(user=self.request.user)
-            return True
+            return patient.email_confirmed
         except Patient.DoesNotExist:
             return False
 
@@ -98,27 +97,28 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id and \
+               self.get_object().patient.email_confirmed
 
     def form_valid(self, form):
-        self.appointment.patient_notes_before_meeting = \
+        self.object.patient_notes_before_meeting = \
             form.cleaned_data['patient_notes_before_meeting']
-        self.appointment.save()
+        self.object.save()
         return super().form_valid(form)
 
     def post(self, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
-            return self.form_valid()
+            return self.form_valid(form)
         else:
-            return self.form_invalid()
+            return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
-        context = super.get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
-        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.appointment.id))
-        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
+        files_for_appointment = FileDownloadView.get_files_from_folder(str(self.object.id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
         context['downloadable_files'] = downloadable_file_list
 
 
@@ -135,7 +135,8 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id and \
+               self.get_object().patient.email_confirmed
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
@@ -209,13 +210,14 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
         except Patient.DoesNotExist:
             return False
         return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id and \
+               self.get_object().patient.email_confirmed
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.object.id))
-        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
+        files_for_appointment = FileDownloadView.get_files_from_folder(str(self.object.id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
 
         context['downloadable_files'] = downloadable_file_list
 
@@ -232,11 +234,11 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
             return False
         try:
             patient = Patient.objects.get(user=self.request.user)
-            return True
+            return patient.email_confirmed
         except Patient.DoesNotExist:
             return False
 
-    def get(self, request, pk):
+    def get(self, request, **kwargs):
         # define the object for the detail view
         self.object = self.get_object()
         form = AppointmentDateSelectForm
@@ -245,9 +247,8 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
                       context={"form": form,
                                "object": self.object})
 
-    def post(self, request, pk):
+    def post(self, request, pk, **kwargs):
         self.object = self.get_object()
-        practitioner = Practitioner.objects.filter(pk=pk)
         form = AppointmentDateSelectForm(request.POST)
         if form.is_valid():
             date = form.cleaned_data['date']
@@ -273,7 +274,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
             return False
         try:
             self.patient = Patient.objects.get(user=self.request.user)
-            return True
+            return self.patient.email_confirmed
         except Patient.DoesNotExist:
             return False
 
@@ -283,7 +284,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
 
         if len(app_ids) == 0:
             messages.warning(request, "You haven't selected any appointments")
-            return ViewBookableAppointmentsView.get(self, request, practitioner_id)
+            return redirect('connect_therapy:patient-book-appointment', pk=practitioner_id)
 
         return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id)
 
@@ -333,7 +334,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             return False
         try:
             self.patient = Patient.objects.get(user=self.request.user)
-            return True
+            return self.patient.email_confirmed
         except Patient.DoesNotExist:
             return False
 
@@ -369,7 +370,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             # first delete the appointments we merged, if any
             merged_dictionary = request.session['merged_appointments']
             if merged_dictionary is None:
-                # no merges where made so we dont need to do anything with them
+                # no merges where made so we don't need to do anything with them
                 pass
             else:
                 merged_appointment_list = Appointment.convert_dictionaries_to_appointments(merged_dictionary)
@@ -410,7 +411,8 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
         except Patient.DoesNotExist:
             return False
         return self.get_object() is not None and \
-               self.request.user.id == self.get_object().user.id
+               self.request.user.id == self.get_object().user.id and \
+               self.get_object().email_confirmed
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
@@ -459,7 +461,8 @@ class ViewAllPractitionersView(UserPassesTestMixin, generic.ListView):
         except ObjectDoesNotExist:
             not_practitioner = True
 
-        return not_practitioner and logged_in;
+        return not_practitioner and logged_in and \
+               self.request.user.patient.email_confirmed
 
     def get_queryset(self):
         return Practitioner.objects.all()
@@ -495,6 +498,6 @@ class PatientHomepageView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             patient = Patient.objects.get(user=self.request.user)
-            return True
+            return patient.email_confirmed
         except Patient.DoesNotExist:
             return False

@@ -117,6 +117,11 @@ class Appointment(models.Model):
         :param appointments: An iterable of appointments to be booked
         :param patient: The patient booking the appointment
         """
+        for appointment in appointments:
+            try:
+                appointment.patient
+            except Patient.DoesNotExist:
+                return False
 
         for app in appointments:
             app.patient = patient

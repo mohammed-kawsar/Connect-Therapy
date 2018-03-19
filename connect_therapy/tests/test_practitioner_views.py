@@ -111,6 +111,7 @@ class TestPractitionerAllPatientsView(TestCase):
         john = User(username='john', first_name="John", last_name="Smith")
         john.save()
         practitioner = Practitioner(user=john,
+                                    email_confirmed=True,
                                     address_line_1="My home",
                                     postcode="EC12 1CV",
                                     mobile="+447577293232",
@@ -120,6 +121,7 @@ class TestPractitionerAllPatientsView(TestCase):
         robert = User(username='robert', first_name="Robert", last_name="Greener")
         robert.save()
         patient1 = Patient(user=robert,
+                           email_confirmed=True,
                            gender='M',
                            mobile="+447476666555",
                            date_of_birth=date(year=1995, month=1, day=1))
@@ -127,6 +129,7 @@ class TestPractitionerAllPatientsView(TestCase):
         alan = User(username='alan', first_name="Alan", last_name="Brown")
         alan.save()
         patient2 = Patient(user=alan,
+                           email_confirmed=True,
                            gender='M',
                            mobile="+447477776555",
                            date_of_birth=date(year=1996, month=1, day=1))
