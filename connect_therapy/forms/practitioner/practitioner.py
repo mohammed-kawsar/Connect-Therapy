@@ -7,7 +7,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.contrib.auth.models import User
 
-from connect_therapy.forms.practitioner.custom_duration_field import DurationField
+from connect_therapy.forms.practitioner.custom_duration_field import DurationField, decompress_duration
 from connect_therapy.models import Practitioner
 
 
@@ -137,7 +137,7 @@ class PractitionerDefineAppointmentForm(forms.Form):
         (00, '00'),
         (30, '30'),
     )
-    length = DurationField(required=False,
+    length = DurationField(required=True,
                            minute_interval_choices=minute_interval_choices,
                            help_text="Hour(s) Minute(s)")
 
@@ -156,3 +156,16 @@ class PractitionerDefineAppointmentForm(forms.Form):
                                         )
 
         return start_datetime
+
+    def clean_length(self):
+        length_ = self.cleaned_data['length']
+        if decompress_duration(length_) == [0, 0] :
+            raise forms.ValidationError(
+                "Invalid length, minimum length required is 30 minutes",
+                code='invalid'
+                )
+        return length_
+
+
+
+
