@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 import pytz
+from decimal import Decimal
 from django.test import TestCase
 
 from connect_therapy.views.patient import *
