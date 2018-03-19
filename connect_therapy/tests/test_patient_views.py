@@ -71,6 +71,7 @@ class TestPatientCancel(TestCase):
         pcav.object = appointment
         pcav.form_valid(None)
 
+
     def test_split_merged_appointment_into_3(self):
         user = User.objects.create_user('split@yahoo.co.uk',
                                         password='megasword'
@@ -94,9 +95,7 @@ class TestPatientCancel(TestCase):
                                   length=timedelta(hours=1, minutes=30))
 
         appointment.save()
-        p1 = PatientCancelAppointmentView()
-        p1.object = appointment
-        p1.split_merged_appointment()
+        Appointment.split_merged_appointment(appointment)
         new_appointments = Appointment.objects.filter(
             start_date_and_time__gte=start_date_and_time,
             start_date_and_time__lte=start_date_and_time + timedelta(minutes=60)
@@ -131,9 +130,7 @@ class TestPatientCancel(TestCase):
                                   length=timedelta(hours=3))
 
         appointment.save()
-        p1 = PatientCancelAppointmentView()
-        p1.object = appointment
-        p1.split_merged_appointment()
+        Appointment.split_merged_appointment(appointment)
         new_appointments = Appointment.objects.filter(
             start_date_and_time__gte=start_date_and_time,
             start_date_and_time__lte=start_date_and_time + timedelta(hours=3)
@@ -167,9 +164,7 @@ class TestPatientCancel(TestCase):
                                   start_date_and_time=start_date_and_time,
                                   length=timedelta(minutes=30))
         appointment.save()
-        p1 = PatientCancelAppointmentView()
-        p1.object = appointment
-        p1.split_merged_appointment()
+        Appointment.split_merged_appointment(appointment)
         new_appointments = Appointment.objects.filter(
             start_date_and_time__gte=start_date_and_time,
             start_date_and_time__lte=start_date_and_time + timedelta(minutes=30)
