@@ -1,4 +1,5 @@
 import datetime
+from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
 from betterforms.multiform import MultiModelForm
@@ -144,7 +145,7 @@ class PractitionerDefineAppointmentForm(forms.Form):
         start_datetime = self.cleaned_data['start_date_and_time']
 
         # Check appointment date is not in past.
-        if start_datetime.date() < datetime.date.today():
+        if start_datetime < timezone.now():
             raise forms.ValidationError("Invalid date, cannot enter a past date!",
                                         code='invalid'
                                         )

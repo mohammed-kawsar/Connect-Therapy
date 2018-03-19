@@ -221,6 +221,9 @@ class PractitionerEditProfileTests(TestCase):
         self.assertTrue(practitioner.is_valid())
         self.assertEqual(str(user.email), 'test1@example.com')
 
+
+class PractitionerDefineAppointmentTests(TestCase):
+
     def test_valid_set_appointment_form(self):
         form = PractitionerDefineAppointmentForm(data={
             'start_date_and_time': datetime.datetime.now(),
@@ -276,3 +279,20 @@ class PractitionerEditProfileTests(TestCase):
 
         data = ""
         self.assertEquals(decompress_duration(data), [None, None])
+
+    def test_set_appointment_form_date_in_past(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.today() - datetime.timedelta(days=1),
+            'length_0': 2,
+            'length_1': 0
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_set_appointment_form_time_in_past(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.today() - datetime.timedelta(hours=1),
+            'length_0': 2,
+            'length_1': 0
+        })
+        self.assertFalse(form.is_valid())
+
