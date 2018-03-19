@@ -144,11 +144,12 @@ class PractitionerDefineAppointmentForm(forms.Form):
     def clean_start_date_and_time(self):
         start_datetime = self.cleaned_data['start_date_and_time']
 
-        # Check appointment date is not in past.
+        # Check appointment date and time is not in the past.
         if start_datetime < timezone.now():
-            raise forms.ValidationError("Invalid date, cannot enter a past date!",
+            raise forms.ValidationError("Invalid date, cannot enter a time that has already passed!",
                                         code='invalid'
                                         )
+        # Check appointment date is not greater than three months
         if start_datetime.date() > datetime.date.today() + relativedelta(months=+3):
             raise forms.ValidationError("Invalid date, cannot enter a date more than 3 months ahead!",
                                         code='invalid'

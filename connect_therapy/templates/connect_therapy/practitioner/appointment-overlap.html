@@ -10,8 +10,10 @@
 {% block content %}
     <div class="container-fluid">
         <h1>You have overlaps for the following appointments</h1></br>
-        <div class="jumbotron">
-            <p class="lead">{{ overlaps }}</p>
+        <div class="jumbotron" style="text-align: center; line-height: 29px; padding-bottom: 29px">
+            <p class="lead">{{ overlaps1 }}</p>
+            <p class="lead">{{ "and" }}</p>
+            <p class="lead">{{ overlaps2 }}</p>
             <hr class="my-4">
             <a href="{% url 'connect_therapy:practitioner-set-appointments'%}" class="btn btn-primary">Back</a>
         </div>
