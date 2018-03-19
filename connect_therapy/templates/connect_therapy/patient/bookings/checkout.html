@@ -18,7 +18,7 @@
             <div class="jumbotron">
                 <h4>Your basket seems to be empty, go and select some appointments and then come back.</h4>
                 <button type="button" class="btn btn-primary back-to-home"
-                        onclick=window.location.href='{% url 'connect_therapy:view-practitioners' %}'>Go Back
+                        onclick=window.location.href='{% url 'connect_therapy:patient-view-practitioners' %}'>Go Back
                 </button>
             </div>
         {% elif appointments|length > 0 %}
@@ -34,7 +34,7 @@
                     </tr>
                     {% for app in appointments %}
                         <tr>
-                            <form action="{% url 'connect_therapy:checkout' %}" method="post">
+                            <form action="{% url 'connect_therapy:patient-checkout' %}" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="session_id" value="{{ app.session_id }}">
                                 <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
@@ -72,8 +72,8 @@
                                                             {{ app.start_date_and_time.hour }}+1,
                                                             {{ app.start_date_and_time.minute }},
                                                             {{ app.start_date_and_time.second }}),
-                                                        title: "Meeting with Dr. {{ app.practitioner.user.username }} at Connect Therapy",
-                                                        description: "Meeting with Dr. {{ app.practitioner.user.username }} at Connect Therapy (Description about the Meeting)",
+                                                        title: "Meeting with Dr. {{ app.practitioner.user.get_full_name }} at Connect Therapy",
+                                                        description: "Meeting with Dr. {{ app.practitioner.user.get_full_name }} at Connect Therapy (Description about the Meeting)",
                                                         location: 'Connect Therapy - Websites URL'
                                                     };
 
@@ -94,7 +94,7 @@
                 </table>
             </div>
 
-            <form action="{% url 'connect_therapy:checkout' %}" method="post">
+            <form action="{% url 'connect_therapy:patient-checkout' %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="checkout" value="checkout">
                 <input type="submit" class="btn btn-success" value="Book">
@@ -110,6 +110,7 @@
 {% block styles %}
 
     <style>
+
 
         .jumbotron {
             border-radius: 0px;
@@ -169,6 +170,7 @@
             font-weight: 400;
             margin-top: 50px;
             margin-left: 30px;
+            margin-bottom: 20px;
         }
 
         div#compactICal > ul {

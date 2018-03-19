@@ -80,4 +80,28 @@
         document.getElementById('datetimepicker').readOnly = true;
         document.getElementById('timepicker').readOnly = true;
     </script>
+
+    <script>
+        var lengthField = document.getElementById('id_length_0');
+        var minuteField = document.getElementById('id_length_1');
+
+        lengthField.className = 'form-control';
+        lengthField.style.width = '30%';
+        lengthField.style.display = 'inline';
+        lengthField.style.marginRight = '5px';
+        lengthField.setAttribute('min', '0');
+        lengthField.setAttribute('max', '2');
+        lengthField.setAttribute('placeholder', 'Select a hour between 0 to 2');
+        lengthField.setAttribute('onkeydown', 'return false')
+
+        minuteField.className = 'form-control';
+        minuteField.style.width = '30%';
+        minuteField.style.display = 'inline';
+
+        if ($(window).width() <= 600) {
+            lengthField.removeAttribute('placeholder');
+            lengthField.setAttribute('value', '0');
+        }
+
+    </script>
 {% endblock %}

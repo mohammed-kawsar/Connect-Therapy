@@ -46,12 +46,12 @@ class AppointmentBookingViewTest(TestCase):
         test_prac_1.save()
 
     def test_redirect_if_not_logged_in_init_booking_page(self):
-        resp = self.client.get(reverse_lazy('connect_therapy:book-appointment', kwargs={'pk': 1}))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment', kwargs={'pk': 1}))
         self.assertRedirects(resp, '/patient/login?next=/patient/book-appointment/1')
 
     def test_logged_in_user_correct_template_init_booking_page(self):
         login = self.client.login(username="testuser1", password="12345")
-        resp = self.client.get(reverse_lazy('connect_therapy:book-appointment', kwargs={'pk': 1}))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment', kwargs={'pk': 1}))
 
         # Check our user is logged in
         self.assertEqual(str(resp.context['user']), 'testuser1')
@@ -62,12 +62,12 @@ class AppointmentBookingViewTest(TestCase):
         self.assertTemplateUsed(resp, 'connect_therapy/patient/bookings/view-available.html')
 
     def test_redirect_if_not_logged_in_review_booking_page(self):
-        resp = self.client.get(reverse_lazy('connect_therapy:book-appointment-review', kwargs={'pk': 1}))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}))
         self.assertRedirects(resp, '/patient/login?next=/patient/book-appointment/1/review')
 
     def test_logged_in_user_correct_template_review_booking_page(self):
         login = self.client.login(username="testuser1", password="12345")
-        resp = self.client.get(reverse_lazy('connect_therapy:book-appointment-review', kwargs={'pk': 1}))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}))
 
         # Check our user is logged in
         self.assertEqual(str(resp.context['user']), 'testuser1')
@@ -78,12 +78,12 @@ class AppointmentBookingViewTest(TestCase):
         self.assertTemplateUsed(resp, 'connect_therapy/patient/bookings/review-selection.html')
 
     def test_redirect_if_not_logged_in_checkout(self):
-        resp = self.client.get(reverse_lazy('connect_therapy:checkout'))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-checkout'))
         self.assertRedirects(resp, '/patient/login?next=/patient/checkout')
 
     def test_logged_in_user_correct_template_checkout(self):
         login = self.client.login(username="testuser1", password="12345")
-        resp = self.client.get(reverse_lazy('connect_therapy:checkout'))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-checkout'))
 
         # Check our user is logged in
         self.assertEqual(str(resp.context['user']), 'testuser1')
@@ -95,25 +95,25 @@ class AppointmentBookingViewTest(TestCase):
 
     def test_redirect_if_practitioner_init_booking_page(self):
         login = self.client.login(username="testuser3", password="12345")
-        resp = self.client.get(reverse_lazy('connect_therapy:book-appointment', kwargs={'pk': 1}))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment', kwargs={'pk': 1}))
 
         self.assertRedirects(resp, '/patient/login?next=/patient/book-appointment/1')
 
     def test_redirect_if_practitioner_review_booking_page(self):
         login = self.client.login(username="testuser3", password="12345")
-        resp = self.client.get(reverse_lazy('connect_therapy:book-appointment-review', kwargs={'pk': 1}))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}))
 
         self.assertRedirects(resp, '/patient/login?next=/patient/book-appointment/1/review')
 
     def test_redirect_if_practitioner_visits_checkout_page(self):
         login = self.client.login(username="testuser3", password="12345")
-        resp = self.client.get(reverse_lazy('connect_therapy:checkout'))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-checkout'))
 
         self.assertRedirects(resp, '/patient/login?next=/patient/checkout')
 
     def test_correct_page_if_user_visits_list_practitioner_page(self):
         login = self.client.login(username="testuser1", password="12345")
-        resp = self.client.get(reverse_lazy('connect_therapy:view-practitioners'))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-view-practitioners'))
 
         # Check our user is logged in
         self.assertEqual(str(resp.context['user']), 'testuser1')
@@ -124,10 +124,10 @@ class AppointmentBookingViewTest(TestCase):
         self.assertTemplateUsed(resp, 'connect_therapy/patient/bookings/list-practitioners.html')
 
     def test_redirect_if_anonymous_visits_list_practitioner_page(self):
-        resp = self.client.get(reverse_lazy('connect_therapy:view-practitioners'))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-view-practitioners'))
         self.assertRedirects(resp, '/patient/login?next=/patient/view-practitioners')
 
     def test_redirect_if_practitioner_visits_list_practitioner_page(self):
         login = self.client.login(username="testuser3", password="12345")
-        resp = self.client.get(reverse_lazy('connect_therapy:view-practitioners'))
+        resp = self.client.get(reverse_lazy('connect_therapy:patient-view-practitioners'))
         self.assertRedirects(resp, '/patient/login?next=/patient/view-practitioners')

@@ -30,6 +30,10 @@
         textarea {
             resize: none;
         }
+
+    footer {
+        position: relative !important;
+    }
     </style>
 
 {% endblock %}
@@ -45,4 +49,11 @@
         document.getElementById('id_practitioner-mobile').className = 'form-control';
         document.getElementById('id_practitioner-bio').className = 'form-control';
     </script>
+
+    <script>
+          if ($(document).height() <= $(window).height()) {
+        document.getElementById('stickyFooter').className = 'fixed-bottom';
+    }
+    </script>
+
 {% endblock %}

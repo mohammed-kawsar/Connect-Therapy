@@ -20,7 +20,7 @@
         </div>
     {% endif %}
 
-    <h1 class="jumbotron">You are booking an appointment with <br><b id="bold_username">{{ object.user.username }}</b> </h1>
+    <h1 class="jumbotron">You are booking an appointment with <br><b id="bold_username">{{ object.user.get_full_name }}</b> </h1>
 <div class="container-fluid text-center">
     <form action="" method="post">
         {% csrf_token %}
@@ -43,12 +43,14 @@
 
 <div class="container-fluid">
     {% if appointments is not None and appointments|length > 0 %}
-        <form action="{% url 'connect_therapy:book-appointment-review' pk=object.user.practitioner.id %}"
+        <form action="{% url 'connect_therapy:patient-book-appointment-review' pk=object.user.practitioner.id %}"
               method="post">
             {% csrf_token %}
         <p>Pick a slot from below</p>
+
             <div class="card-group">
                 {% for app in appointments %}
+                    <div class="col-lg-4 col-md-6 col-sm-12 text-center">
                     <p class="available-slots">
                         <div class="card mr-2">
                             <label style="min-width: 100%">
@@ -60,6 +62,7 @@
                             </label>
                         </div>
                     </p>
+                    </div>
                 {% endfor %}
             </div>
             <input type="submit" class="btn btn-success text-center" value="Continue"/>
