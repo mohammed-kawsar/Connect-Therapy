@@ -1,4 +1,5 @@
 import datetime
+from dateutil.relativedelta import relativedelta
 
 from betterforms.multiform import MultiModelForm
 from django import forms
@@ -147,7 +148,7 @@ class PractitionerDefineAppointmentForm(forms.Form):
             raise forms.ValidationError("Invalid date, cannot enter a past date!",
                                         code='invalid'
                                         )
-        if start_datetime.date() > datetime.date.today() + datetime.timedelta(weeks=12):
+        if start_datetime.date() > datetime.date.today() + relativedelta(months=+3):
             raise forms.ValidationError("Invalid date, cannot enter a date more than 3 months ahead!",
                                         code='invalid'
                                         )

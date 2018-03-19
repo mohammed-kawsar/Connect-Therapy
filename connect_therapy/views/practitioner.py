@@ -67,8 +67,8 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed
 
     def form_valid(self, form):
         self.object.practitioner_notes = form.cleaned_data['practitioner_notes']
@@ -141,8 +141,8 @@ class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed
 
 
 class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
@@ -159,8 +159,8 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed
 
 
 class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
@@ -222,8 +222,8 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().user.id and \
-            self.get_object().email_confirmed
+               self.request.user.id == self.get_object().user.id and \
+               self.get_object().email_confirmed
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
@@ -277,6 +277,8 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
     model = Practitioner
 
     def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
         try:
             practitioner = self.request.user.practitioner
             return practitioner.email_confirmed
@@ -290,7 +292,7 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         if form.cleaned_data['length'] is not None:
             duration = decompress_duration(str(form.cleaned_data['length']))
             hour = duration[0]
-            minute = duration [1]
+            minute = duration[1]
 
         appointment = Appointment(
             patient=None,
@@ -328,8 +330,8 @@ class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed
 
     def delete(self, request, *args, **kwargs):
         message = request.POST['cancel-message']
