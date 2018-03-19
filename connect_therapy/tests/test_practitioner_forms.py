@@ -226,7 +226,7 @@ class PractitionerDefineAppointmentTests(TestCase):
 
     def test_valid_set_appointment_form(self):
         form = PractitionerDefineAppointmentForm(data={
-            'start_date_and_time': datetime.datetime.now(),
+            'start_date_and_time': datetime.datetime.now() + datetime.timedelta(minutes=30),
             'length_0': 2,
             'length_1': 0
         })
@@ -295,4 +295,36 @@ class PractitionerDefineAppointmentTests(TestCase):
             'length_1': 0
         })
         self.assertFalse(form.is_valid())
+
+    def test_set_appointment_form_date_in_past(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.today() - datetime.timedelta(days=1),
+            'length_0': 2,
+            'length_1': 0
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_set_appointment_form_time_in_past(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.today() - datetime.timedelta(hours=1),
+            'length_0': 2,
+            'length_1': 0
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_set_appointment_form_date_too_far_in_future(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.today() + relativedelta(months=+3) + datetime.timedelta(days=1),
+            'length_0': 2,
+            'length_1': 0
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_set_appointment_form_max_date(self):
+        form = PractitionerDefineAppointmentForm(data={
+            'start_date_and_time': datetime.datetime.now() + relativedelta(months=+3),
+            'length_0': 2,
+            'length_1': 0
+        })
+        self.assertTrue(form.is_valid())
 
