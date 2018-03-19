@@ -20,7 +20,7 @@
         </div>
     {% endif %}
 
-    <h1 class="jumbotron">You are booking an appointment with <br><b id="bold_username">{{ object.user.username }}</b> </h1>
+    <h1 class="jumbotron">You are booking an appointment with <br><b id="bold_username">{{ object.user.get_full_name }}</b> </h1>
 <div class="container-fluid text-center">
     <form action="" method="post">
         {% csrf_token %}

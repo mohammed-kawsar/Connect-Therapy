@@ -122,7 +122,7 @@ class Appointment(models.Model):
                 appointment.patient
             except Patient.DoesNotExist:
                 return False
-        
+
         for app in appointments:
             app.patient = patient
             app.save()
