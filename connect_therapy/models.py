@@ -93,6 +93,42 @@ class Appointment(models.Model):
     Max price is £999.
     """
     price = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(50))
+    @classmethod
+    def split_merged_appointment(cls, appointment):
+        """
+        This method will take an appointment and split it into 30 minute blocks. They will then be saved.
+        If the appointment cannot be split, it will just be saved
+        :param appointment: Take an appointment object to split and save
+        :return:
+        """
+        original_length = appointment.length
+        original_length_hour, original_length_minute, original_length_seconds = \
+            Appointment.get_hour_minute_seconds(original_length)
+
+        if original_length_hour * 60 + original_length_minute == 30:
+            appointment.save()
+            return
+
+        appointment.length = timedelta(minutes=30)
+        appointment.patient = None
+
+        # set the price to the default price set in the model
+        default_price = Decimal(Appointment._meta.get_field('price').get_default())
+        appointment.price = default_price
+
+        number_of_appointments = \
+            (original_length_hour * 60 + original_length_minute) // 30
+
+        for i in range(1, number_of_appointments):
+            split_appointment = Appointment(
+                practitioner=appointment.practitioner,
+                patient=None,
+                length=timedelta(minutes=30),
+                start_date_and_time=appointment.start_date_and_time + timedelta(minutes=(30 * i)),
+                price=default_price
+            )
+            split_appointment.save()
+            appointment.save()
 
     def is_live(self):
         """
