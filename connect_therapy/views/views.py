@@ -239,7 +239,6 @@ class SendEmailConfirmationView(generic.View):
         email = request.POST.get('email_address')
         valid_email_format = False
         valid_user = False
-        sent = False
         is_patient = False
         user = User
         # first check for valid email
@@ -277,10 +276,7 @@ class SendEmailConfirmationView(generic.View):
             else:
                 practitioner = Practitioner.objects.get(user=user)
                 send_practitioner_confirm_email(practitioner, get_current_site(self.request))
-            sent = True
-
         data = {
-            'validEmailFormat': valid_email_format,
-            'sent': sent
+            'validEmailFormat': valid_email_format
         }
         return JsonResponse(data)
