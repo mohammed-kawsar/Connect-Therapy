@@ -80,9 +80,9 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
-            return self.form_valid()
+            return self.form_valid(form)
         else:
-            return self.form_invalid()
+            return self.form_invalid(form)
 
 
 class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
@@ -116,7 +116,8 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
         context['needing_notes'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
             patient_notes_by_practitioner="",
-            practitioner=self.request.user.practitioner
+            practitioner=self.request.user.practitioner,
+            patient__isnull=False
         ).order_by('-start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
@@ -193,14 +194,17 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
         return context
 
 
-class PractitionerProfile(LoginRequiredMixin, generic.TemplateView):
+class PractitionerProfile(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/profile.html'
 
-    @login_required
-    def view_profile(self, request):
-        user = request.user
-        args = {'user': user}
-        return render(request, args)
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            practitioner = self.request.user.practitioner
+            return practitioner.email_confirmed
+        except Practitioner.DoesNotExist:
+            return False
 
 
 class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):

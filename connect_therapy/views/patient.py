@@ -1,9 +1,9 @@
-from datetime import timedelta, time
+from datetime import timedelta
 from decimal import Decimal
 
 from django import forms
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, views as auth_views, \
+from django.contrib.auth import views as auth_views, \
     update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -116,9 +116,8 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.object.id))
-        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
+        files_for_appointment = FileDownloadView.get_files_from_folder(str(self.object.id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
         context['downloadable_files'] = downloadable_file_list
 
 
@@ -216,8 +215,8 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.object.id))
-        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
+        files_for_appointment = FileDownloadView.get_files_from_folder(str(self.object.id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
 
         context['downloadable_files'] = downloadable_file_list
 
@@ -238,7 +237,7 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
         except Patient.DoesNotExist:
             return False
 
-    def get(self, request, pk, **kwargs):
+    def get(self, request, **kwargs):
         # define the object for the detail view
         self.object = self.get_object()
         form = AppointmentDateSelectForm
@@ -249,7 +248,6 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
 
     def post(self, request, pk, **kwargs):
         self.object = self.get_object()
-        practitioner = Practitioner.objects.filter(pk=pk)
         form = AppointmentDateSelectForm(request.POST)
         if form.is_valid():
             date = form.cleaned_data['date']
@@ -285,7 +283,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
 
         if len(app_ids) == 0:
             messages.warning(request, "You haven't selected any appointments")
-            return ViewBookableAppointmentsView.get(self, request, practitioner_id)
+            return redirect('connect_therapy:patient-book-appointment', pk=practitioner_id)
 
         return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id)
 
@@ -371,7 +369,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             # first delete the appointments we merged, if any
             merged_dictionary = request.session['merged_appointments']
             if merged_dictionary is None:
-                # no merges where made so we dont need to do anything with them
+                # no merges where made so we don't need to do anything with them
                 pass
             else:
                 merged_appointment_list = Appointment.convert_dictionaries_to_appointments(merged_dictionary)

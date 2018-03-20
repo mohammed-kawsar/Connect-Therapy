@@ -14,6 +14,18 @@
 
 <style>
 
+    a.nav-link {
+        text-transform: uppercase;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 1px;
+    }
+
+    div.dropdown-menu.show {
+        font-size: 15px;
+        text-transform: capitalize;
+    }
+
 
     @media (max-width: 600px) {
         #stickyFooter h5 {
@@ -125,7 +137,7 @@
                         <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'connect_therapy:view-practitioners' %}">Book Appointment</a>
+                        <a class="nav-link" href="{% url 'connect_therapy:patient-view-practitioners' %}">Book Appointment</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Live Chat</a>
