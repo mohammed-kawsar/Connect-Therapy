@@ -11,7 +11,7 @@ from connect_therapy.views.practitioner import *
 
 class PractitionerSignUpTest(TestCase):
     def test_sign_up_redirect(self):
-        response = self.client.post('/practitioner/signup', {
+        response = self.client.post((reverse_lazy('connect_therapy:practitioner-signup')), {
             'first_name': 'Chris',
             'last_name': 'Harris',
             'email': 'chris@yahoo.com',
@@ -25,9 +25,9 @@ class PractitionerSignUpTest(TestCase):
             'password2': 'makapaka!'
         })
 
+        response = self.client.get(reverse_lazy('connect_therapy:practitioner-homepage'))
+
         self.assertEqual(response.status_code, 302)
-        self.assertTemplateUsed(response, 'connect_therapy/practitioner/signup.html')
-        self.assertRedirects(response, '/practitioner/')
 
 
 class PractitionerLoginTest(TestCase):
@@ -40,7 +40,7 @@ class PractitionerLoginTest(TestCase):
                              gender='M',
                              mobile="+447476666555",
                              date_of_birth=date(year=1995, month=1, day=1),
-                             email_confirmed=True,)
+                             email_confirmed=True, )
         test_pat_1.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
@@ -54,17 +54,15 @@ class PractitionerLoginTest(TestCase):
                                    mobile="+447577293232",
                                    bio="Hello",
                                    email_confirmed=True,
-                                    is_approved=True)
+                                   is_approved=True)
         test_prac_1.save()
 
     def test_practitioner_login_success_redirect(self):
-        response = self.client.post('/practitioner/login', {
-            'username': 'testuser1',
-            'password': '12345',
-        })
+        login = self.client.login(username="testuser1", password="12345")
+
+        response = self.client.get(reverse_lazy('connect_therapy:practitioner-homepage'))
 
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/practitioner/')
 
     def test_if_practitioner_can_login_on_patients_login(self):
         response = self.client.post('/patient/login', {
@@ -100,11 +98,11 @@ class TestPractitionerNotes(TestCase):
         practitioner.save()
         appointment = Appointment(practitioner=practitioner,
                                   start_date_and_time=datetime.datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                                        month=4,
+                                                                        day=17,
+                                                                        hour=15,
+                                                                        minute=10,
+                                                                        tzinfo=pytz.utc),
                                   length=timedelta(hours=1))
         appointment.save()
         pnv = PractitionerNotesView()
@@ -148,34 +146,198 @@ class TestPractitionerAllPatientsView(TestCase):
         appointment1 = Appointment(practitioner=practitioner,
                                    patient=patient1,
                                    start_date_and_time=datetime.datetime(year=2018,
-                                                                month=4,
-                                                                day=15,
-                                                                hour=15,
-                                                                minute=10,
-                                                                tzinfo=pytz.utc),
+                                                                         month=4,
+                                                                         day=15,
+                                                                         hour=15,
+                                                                         minute=10,
+                                                                         tzinfo=pytz.utc),
                                    length=timedelta(hours=1))
         appointment1.save()
         appointment2 = Appointment(practitioner=practitioner,
                                    patient=patient2,
                                    start_date_and_time=datetime.datetime(year=2018,
-                                                                month=4,
-                                                                day=17,
-                                                                hour=15,
-                                                                minute=10,
-                                                                tzinfo=pytz.utc),
+                                                                         month=4,
+                                                                         day=17,
+                                                                         hour=15,
+                                                                         minute=10,
+                                                                         tzinfo=pytz.utc),
                                    length=timedelta(hours=1))
         appointment2.save()
         appointment3 = Appointment(practitioner=practitioner,
                                    patient=patient2,
                                    start_date_and_time=datetime.datetime(year=2018,
-                                                                month=6,
-                                                                day=14,
-                                                                hour=15,
-                                                                minute=10,
-                                                                tzinfo=pytz.utc),
+                                                                         month=6,
+                                                                         day=14,
+                                                                         hour=15,
+                                                                         minute=10,
+                                                                         tzinfo=pytz.utc),
                                    length=timedelta(hours=1))
         appointment3.save()
         c = Client()
         c.force_login(john)
         response = c.get(reverse_lazy('connect_therapy:practitioner-view-patients'))
         self.assertEqual(len(response.context['appointments']), 2)
+
+
+class PractitionerProfileTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
+        test_pat_1.save()
+
+        test_user_2 = User.objects.create_user(username='testuser3')
+        test_user_2.set_password('12345')
+
+        test_user_2.save()
+
+        test_prac_1 = Practitioner(user=test_user_2,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   is_approved=True,
+                                   email_confirmed=True)
+        test_prac_1.save()
+
+    def test_practitioner_can_view_their_profile(self):
+        login = self.client.login(username="testuser2", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile'))
+
+        self.assertEqual(str(response.context['user']), 'testuser2')
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateUsed(response, 'connect_therapy/practitioner/profile.html')
+
+    def test_redirect_patient_cannot_view_practitioner_profile(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile'))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_practitioner_profile_if_not_logged_in(self):
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile'))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_practitioner_edit_profile(self):
+        login = self.client.login(username="testuser2", password="12345")
+        response = self.client.post(
+            reverse_lazy('connect_therapy:practitioner-profile-edit',
+                         kwargs={'pk': 1}), {
+                'email': 'chris@yahoo.com',
+                'address1': '1 Fetter Lane',
+                'address2': 'Waterloo',
+                'mobile': '07893839383',
+                'date_of_birth': date(year=1971, month=2, day=3),
+                'postcode': 'WC2R 2LS',
+                'bio': 'Here to serve you',
+
+            })
+
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile-edit',
+                         kwargs={'pk': 1}))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_patient_cannot_view_practitioner_profile_edit(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile-edit',
+                         kwargs={'pk': 1}))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/practitioner/login')
+
+    def test_redirect_practitioner_edit_if_not_logged_in(self):
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile-edit',
+                         kwargs={'pk': 1}))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/practitioner/login')
+
+    def test_practitioner_change_password(self):
+        response = self.client.post(
+            reverse_lazy('connect_therapy:practitioner-change-password'), {
+                'new_password1': 'password123',
+                'new_password2': 'password123',
+            })
+        self.assertEqual(response.status_code, 302)
+
+    def test_patient_cannot_change_practitioner_password(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-change-password'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_if_not_logged_in_cannot_change_practitioner_password(self):
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-change-password'))
+
+        self.assertEqual(response.status_code, 302)
+
+
+class ViewAllPractitionersTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
+        test_pat_1.save()
+
+        test_user_2 = User.objects.create_user(username='testuser3')
+        test_user_2.set_password('12345')
+
+        test_user_2.save()
+
+        test_prac_1 = Practitioner(user=test_user_2,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   is_approved=True,
+                                   email_confirmed=True)
+        test_prac_1.save()
+
+    def test_patient_view_all_practitioners(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:patient-view-practitioners'))
+
+        self.assertEqual(str(response.context['user']), 'testuser1')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, 'connect_therapy/patient/bookings/list-practitioners.html')
+
+    def test_practitioner_cannot_view_all_practitioners(self):
+        login = self.client.login(username="testuser2", password="12345")
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:patient-view-practitioners'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response,
+                             '/patient/login?next=/patient/view-practitioners')
+
+    def test_if_not_logged_in_cannot_view_all_practitioners(self):
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:patient-view-practitioners'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response,
+                             '/patient/login?next=/patient/view-practitioners')
