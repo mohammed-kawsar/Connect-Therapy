@@ -224,7 +224,7 @@
 </header>
 
 
-<div class="alert alert-warning alert-dismissible fade show" id="id_alert" role="alert">
+<div class="alert alert-warning alert-dismissible fade show" id="id_alert" role="alert" style="display: none;">
   <h4 class="alert-heading">Browser Warning</h4>
     <p class="alert-paragraph">You are using <b>Safari</b> to browse this website, please use <b>Chrome</b> for the best experience.</p>
     <hr class="my-2">
@@ -235,14 +235,16 @@
 </div>
 
 <script>
+
     var warning_alert =  document.getElementById('id_alert');
-    if ((!!window.safari) == false) {
-            warning_alert.style.display = 'none';
-    } else if((!!window.safari) == true) {
+
+    if((!!window.safari) == true) {
+        warning_alert.style.display = 'block';
             $(".alert").alert();
     } else {
         $('.alert').alert('close');
     }
+
 </script>
 
 
