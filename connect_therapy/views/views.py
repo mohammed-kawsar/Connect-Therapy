@@ -233,6 +233,8 @@ class SendEmailConfirmationView(generic.View):
     def get(self, requests):
         return redirect(reverse_lazy("connect_therapy:help"))
 
+    #TODO: Test this function/view
+
     def post(self, request):
         email = request.POST.get('email_address')
         valid_email_format = False
