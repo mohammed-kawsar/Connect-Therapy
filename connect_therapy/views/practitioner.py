@@ -196,6 +196,9 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
 
 class PractitionerProfile(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/profile.html'
+    model = Practitioner
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
+    redirect_field_name = None
 
     def test_func(self):
         if self.request.user.is_anonymous:
