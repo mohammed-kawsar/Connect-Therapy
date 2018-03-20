@@ -116,7 +116,8 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
         context['needing_notes'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
             patient_notes_by_practitioner="",
-            practitioner=self.request.user.practitioner
+            practitioner=self.request.user.practitioner,
+            patient__isnull=False
         ).order_by('-start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),

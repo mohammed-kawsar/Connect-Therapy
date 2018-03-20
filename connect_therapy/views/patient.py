@@ -115,7 +115,6 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         files_for_appointment = FileDownloadView.get_files_from_folder(str(self.object.id))
         downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
         context['downloadable_files'] = downloadable_file_list
@@ -231,7 +230,7 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
                                    "appointments": appointments,
                                    "object": self.get_object()})
         else:
-            return self.get(request)
+            return self.get(request, pk)
 
 
 class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
