@@ -1,7 +1,7 @@
 import re
 from datetime import timedelta
 
-from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
+from django.contrib.auth import update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -67,8 +67,8 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed
 
     def form_valid(self, form):
         self.object.practitioner_notes = form.cleaned_data['practitioner_notes']
@@ -142,8 +142,8 @@ class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed
 
 
 class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
@@ -160,8 +160,8 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed
 
 
 class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
@@ -223,8 +223,8 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().user.id and \
-            self.get_object().email_confirmed
+               self.request.user.id == self.get_object().user.id and \
+               self.get_object().email_confirmed
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
@@ -291,7 +291,7 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         if form.cleaned_data['length'] is not None:
             duration = decompress_duration(str(form.cleaned_data['length']))
             hour = duration[0]
-            minute = duration [1]
+            minute = duration[1]
 
         appointment = Appointment(
             patient=None,
@@ -308,7 +308,8 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
             return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html',
                           context={"overlaps": over_laps_str})
         else:
-            appointment.save()
+            Appointment.split_merged_appointment(
+                appointment)  # This method will split if needed and then save the appointment
             return super().form_valid(form)
 
 
@@ -329,8 +330,8 @@ class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed
 
     def delete(self, request, *args, **kwargs):
         message = request.POST['cancel-message']
