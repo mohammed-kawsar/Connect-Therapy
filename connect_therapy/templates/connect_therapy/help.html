@@ -11,7 +11,8 @@
 
     {# NEED THE FULL JQUERY LIBRARY #}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
+    {% load static %}
+    <script src="{% static 'connect_therapy/help_js/send-email-ajax.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -65,32 +66,6 @@
                     <p style="display: none; color: red" id="check-email">Please check your email address</p>
                     <p style="display: none; color: green" id="sent-email">If we found that email address in our
                         records, we sent the email again</p>
-                    <script type="text/javascript">
-                        $("#send-email").click(function (e) {
-                            e.preventDefault();
-                            var form = $("#resend_conf_email");
-
-                            $.ajax({
-                                type: "post",
-                                url: form.attr("form-submit-url"),
-                                data: {
-                                    "email_address": $("#id_email_address").val(),
-                                    'csrfmiddlewaretoken': CSRF_TOKEN
-                                },
-                                dataType: 'json',
-                                success: function (data) {
-                                    if (data.validEmailFormat) {
-                                        $("#check-email").css("display", "none");
-                                        $("#sent-email").css("display", "block");
-                                    } else {
-                                        $("#check-email").css("display", "block");
-                                        $("#sent-email").css("display", "none");
-                                    }
-                                }
-                            });
-                        })
-
-                    </script>
                 </div>
             </div>
         </div>

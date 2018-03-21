@@ -71,7 +71,7 @@ class PatientLoginForm(AuthenticationForm):
 
         if not user.patient.email_confirmed:
             raise forms.ValidationError(
-                "Your email address hasn't been verified yet, Please check you inbox and junk folder for the "
+                "Your email address hasn't been verified yet. Please check your inbox and junk folder for the "
                 "activation email. Visit the help pages to resend the verification email.",
                 code='email_unconfirmed'
             )

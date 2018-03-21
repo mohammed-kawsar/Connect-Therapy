@@ -84,7 +84,8 @@ class PatientLoginFormTests(TestCase):
         patient = Patient(user=user,
                           date_of_birth=date(year=1995, month=2, day=20),
                           gender='M',
-                          mobile='+447476565333'
+                          mobile='+447476565333',
+                          email_confirmed=True
                           )
         patient.save()
         form = PatientLoginForm(data={

@@ -4,6 +4,7 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import MultipleObjectsReturned
 from django.core.validators import validate_email
 from django.forms import forms
 from django.http import JsonResponse
@@ -233,7 +234,8 @@ class SendEmailConfirmationView(generic.View):
     def get(self, requests):
         return redirect(reverse_lazy("connect_therapy:help"))
 
-    #TODO: Test this function/view
+    # TODO: Test this function/view
+    # TODO: Also add email_confirmed check to practitioner login form as well
 
     def post(self, request):
         email = request.POST.get('email_address')
@@ -241,6 +243,7 @@ class SendEmailConfirmationView(generic.View):
         valid_user = False
         is_patient = False
         user = User
+        sent = False
         # first check for valid email
         try:
             validate_email(email)
@@ -256,7 +259,7 @@ class SendEmailConfirmationView(generic.View):
                 if not patient.email_confirmed:
                     valid_user = True
                     is_patient = True
-            except (Patient.DoesNotExist, User.DoesNotExist) as e:
+            except (Patient.DoesNotExist, User.DoesNotExist, MultipleObjectsReturned) as e:
                 pass
 
             # doesnt belong to patient so check practitioner
@@ -266,17 +269,21 @@ class SendEmailConfirmationView(generic.View):
                     practitioner = Practitioner.objects.get(user=user)
                     if not practitioner.email_confirmed:
                         valid_user = True
-                except (Practitioner.DoesNotExist,User.DoesNotExist) as e:
+                except (Practitioner.DoesNotExist, User.DoesNotExist, MultipleObjectsReturned) as e:
                     pass
 
         if valid_email_format and valid_user:
             if is_patient:
                 patient = Patient.objects.get(user=user)
                 send_patient_confirm_email(patient, get_current_site(self.request))
+                print("Sending the email")
             else:
                 practitioner = Practitioner.objects.get(user=user)
                 send_practitioner_confirm_email(practitioner, get_current_site(self.request))
+            sent = True
         data = {
-            'validEmailFormat': valid_email_format
+            'validEmailFormat': valid_email_format,
+            'sent': sent,
+            'validUser': valid_user,
         }
         return JsonResponse(data)
