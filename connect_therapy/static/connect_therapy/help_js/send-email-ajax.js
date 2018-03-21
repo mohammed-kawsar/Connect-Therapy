@@ -2,10 +2,9 @@ $(document).ready(function () {
     $("#send-email").click(function (e) {
         e.preventDefault();
         var form = $("#resend_conf_email");
-
         $.ajax({
             type: "post",
-            url: form.attr("form-submit-url"),
+            url: form.attr("form-submit-url"), // get the url from the form object itself
             data: {
                 "email_address": $("#id_email_address").val(),
                 'csrfmiddlewaretoken': CSRF_TOKEN

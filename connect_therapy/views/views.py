@@ -272,11 +272,11 @@ class SendEmailConfirmationView(generic.View):
                 except (Practitioner.DoesNotExist, User.DoesNotExist, MultipleObjectsReturned) as e:
                     pass
 
+        # send the email, if we can
         if valid_email_format and valid_user:
             if is_patient:
                 patient = Patient.objects.get(user=user)
                 send_patient_confirm_email(patient, get_current_site(self.request))
-                print("Sending the email")
             else:
                 practitioner = Practitioner.objects.get(user=user)
                 send_practitioner_confirm_email(practitioner, get_current_site(self.request))
