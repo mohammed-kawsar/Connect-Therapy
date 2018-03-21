@@ -74,7 +74,6 @@ class PractitionerLoginForm(AuthenticationForm):
                 "activation email. Visit the help pages to resend the verification email.",
                 code='email_unconfirmed'
             )
-
         super().confirm_login_allowed(user)
 
 
