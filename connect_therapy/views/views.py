@@ -42,7 +42,18 @@ class ChatView(UserPassesTestMixin, DetailView):
         super().get(request, *args, **kwargs)
         return render(request, self.get_template_names(), {"upload_form": form,
                                                            "object": self.get_object(),
-                                                           "downloadable_files": downloadable_file_list})
+                                                           "downloadable_files": downloadable_file_list,
+                                                           "is_practitioner": self._is_practitioner()})
+
+    def _is_practitioner(self):
+        is_practitioner = False
+        # check if the user is a practitioner or not
+        try:
+            practitioner = Practitioner.objects.get(user=self.request.user)
+            is_practitioner = True
+        except Practitioner.DoesNotExist:
+            pass
+        return is_practitioner
 
     def test_func(self):
         # if the patient is empty, we will let the user pass only to redirect them to the book appointment page
@@ -233,7 +244,6 @@ class SendEmailConfirmationView(generic.View):
 
     def get(self, requests):
         return redirect(reverse_lazy("connect_therapy:help"))
-
 
     def post(self, request):
         email = request.POST.get('email_address')
