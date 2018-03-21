@@ -396,4 +396,3 @@ class PractitionerNotesTest(TestCase):
                          kwargs={'pk': 1}))
 
         self.assertEqual(response.status_code, 302)
-
