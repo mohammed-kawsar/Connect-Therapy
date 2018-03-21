@@ -27,12 +27,12 @@
     <header>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     </header>
-    {% endblock %}
+{% endblock %}
 {% block content %}
     <div class="jumbotron col-sm-12">
-        <h3 class="">Practitioner Notes</h3>
-        <hr class="my-4">
-        <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_by_practitioner }}</p>
+    <h3 class="">Practitioner Notes</h3>
+    <hr class="my-4">
+    <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_by_practitioner }}</p>
 
     <script>
         window.onload = function () {
@@ -52,7 +52,8 @@
         <div class="jumbotron" style="margin-top: 10px;">
             <h2>Review your appointment with {{ appointment.practitioner.user.get_full_name }} </h2>
             <hr>
-            <h4>Which was on {{ appointment.start_date_and_time|date }} at {{ appointment.start_date_and_time|time }}</h4>
+            <h4>Which was on {{ appointment.start_date_and_time|date }}
+                at {{ appointment.start_date_and_time|time }}</h4>
             <hr>
             <p>You can also upload or download (if some files were added) any files related to the appointment.</p>
             <!-- Trigger the modal with a button -->
@@ -144,10 +145,10 @@
         </div>
         <!-- Modal end -->
         <div class="container">
+            <h3>Here are the notes added by your therapist at the end of this appointment:</h3>
             {% if appointment.patient_notes_by_practitioner|length > 0 %}
                 <div class="container" style="margin: 10px;">
                     <div class="row">
-                        <h3>Here are the notes added by your therapist at the end of this appointment:</h3>
                         <p>{{ appointment.patient_notes_by_practitioner }}</p>
                     </div>
                 </div>
@@ -156,8 +157,10 @@
                 <div class="container" style="margin: 10px;">
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
-                            <h3>It seems that {{ appointment.practitioner.user.get_full_name }} hasn't added any notes
-                                yet.</h3>
+                            <p>Oops. It seems that {{ appointment.practitioner.user.get_full_name }} hasn't added any
+                                notes
+                                yet.</p>
+                            <p>Check back later to see if they have been added.</p>
                         </div>
                     </div>
                 </div>
@@ -168,8 +171,25 @@
 
     <div class="jumbotron">
         <h3>Your Notes</h3>
-        <hr class="my-4">
-        <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_before_meeting }}</p>
+        {% if appointment.patient_notes_before_meeting|length > 0 %}
+            <div class="container" style="margin: 10px;">
+                <div class="row">
+                    <p>{{ appointment.patient_notes_before_meeting }}</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="container" style="margin: 10px;">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <h3>Oops. It seems that you haven't added any notes
+                            yet.</h3>
+                        <p>Don't worry <, you can add them <a
+                                href={% url 'connect_therapy:patient-make-notes' appointment.id %}>here</a>.
+                        <p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
     <a href="{% url 'connect_therapy:patient-my-appointments' %}" class="btn btn-primary"> Go Back</a>
 {% endblock %}
@@ -185,17 +205,18 @@
                 font-size: 25px;
             }
 
-            .lead{
+            .lead {
                 font-size: 17px;
             }
         }
 
-    .jumbotron {
-        padding-top: 15px;
-    }
-    .container-fluid {
-        padding-top: 20px;
-    }
+        .jumbotron {
+            padding-top: 15px;
+        }
+
+        .container-fluid {
+            padding-top: 20px;
+        }
     </style>
 {% endblock %}
 
