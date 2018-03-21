@@ -371,7 +371,6 @@ class PractitionerLogoutTest(TestCase):
         test_prac_1.save()
 
     def test_practitioner_logout_success_redirect(self):
-
         login = self.client.login(username="testuser2", password="12345")
 
         logout = self.client.logout()
