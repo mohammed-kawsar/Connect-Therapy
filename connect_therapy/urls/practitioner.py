@@ -48,7 +48,7 @@ urlpatterns = [
          ),
     path('view-notes/<int:pk>',
          PractitionerPreviousNotesView.as_view(),
-         name='practitioner-notes'
+         name='practitioner-view-notes'
          ),
     path('my-appointments',
          PractitionerMyAppointmentsView.as_view(),
