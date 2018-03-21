@@ -9,11 +9,11 @@
 
 
 {% block content %}
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p}}
-    <input type="submit" value="Update" class="btn btn-primary"/>
-</form>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update" class="btn btn-primary"/>
+    </form>
 {% endblock %}
 
 {% block styles %}
@@ -31,9 +31,9 @@
             resize: none;
         }
 
-    footer {
-        position: relative !important;
-    }
+        footer {
+            position: relative !important;
+        }
     </style>
 
 {% endblock %}
@@ -51,9 +51,7 @@
     </script>
 
     <script>
-          if ($(document).height() <= $(window).height()) {
-        document.getElementById('stickyFooter').className = 'fixed-bottom';
-    }
+
     </script>
 
 {% endblock %}

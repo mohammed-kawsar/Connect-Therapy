@@ -12,8 +12,8 @@
     <title>{% block title %}{% endblock %}</title>
     {% block header %}
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
+                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous"></script>
     {% endblock %}
 
     <style>
@@ -244,6 +244,9 @@
                                 <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-signup' %}">Practitioner
                                     Register</a>
                             </div>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'connect_therapy:help' %}">Help </a>
+                        </li>
                         </li>
                     </ul>
                 </div>
@@ -314,45 +317,11 @@
     }
 
 </script>
-<script>
-    $(window).on("resize load", function () {
-        var footerHeight = 0,
-            footerTop = 0,
-            $footer = $("#stickyFooter");
-
-        positionFooter();
-
-        function positionFooter() {
-            footerHeight = $footer.height();
-            footerTop = ($(window).scrollTop() + $(window).height() - footerHeight) + "px";
-
-            if (($(document.body).height() + footerHeight) < $(window).height()) {
-                $footer.css({
-                    position: "absolute"
-                })
-            } else {
-                $footer.css({
-                    position: "static"
-                })
-            }
-        }
-    })
-</script>
-
-
-<script>
-
-    if ($(document).height() <= $(window).height()) {
-        document.getElementById('stickyFooter').className = 'fixed-bottom';
-    }
-
-</script>
-
 
 <!--FOOTER 2-->
 
 <footer class="container-width text-center footer-bottom mt-4 container-fluid align-text-bottom" id="stickyFooter"
-        style="background-color: #262f36; padding: 10px; width: 100%; display: block; position: fixed; bottom: 0;">
+        style="background-color: #262f36; padding: 10px; width: 100%; display: block;">
     <div class="row">
 
         <div class="col-sm-4 col-lg-4 text-center">
