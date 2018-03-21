@@ -1,11 +1,56 @@
 {% extends 'connect_therapy/base.html' %}
+{% load static %}
 {% block title %}Patient Login{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
+<<<<<<< HEAD
 <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Login" />
 </form>
     <a href="{% url 'password_reset' %}">forgot password?</a>
+=======
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-info">
+
+            {% for message in messages %}
+                <p class="lead info-alert">  {% if message.tags %} {{ message }} {% endif %} </p>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-primary" value="Login"/>
+        <input type="submit" class="btn btn-warning" value="Reset Password"/>
+    </form>
+>>>>>>> develop
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.getElementById("id_password").className = "form-control";
+
+
+
+    </script>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .container-fluid {
+            padding-top: 20px !important;
+        }
+    </style>
 {% endblock %}

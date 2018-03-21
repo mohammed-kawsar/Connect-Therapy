@@ -1,0 +1,49 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Patient Edit Details{% endblock %}
+
+{% block header %}
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+{% endblock %}
+
+{% block content %}
+
+<form action="" method="post">
+<div class="form-group">
+    {% csrf_token %}
+    {{ form.as_p}}
+    <input type="submit" value="Update" class="btn btn-primary"/>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block styles %}
+
+    <style>
+        .container-fluid {
+            padding-top: 15px;
+        }
+
+        .btn {
+            margin-top: 10px;
+        }
+
+    footer {
+        position: relative !important;
+    }
+    </style>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.getElementById('id_user-first_name').className = 'form-control';
+        document.getElementById('id_user-last_name').className = 'form-control';
+        document.getElementById('id_user-email').className = 'form-control';
+        document.getElementById('id_patient-gender').className = 'form-control';
+        document.getElementById('id_patient-date_of_birth').className = 'form-control';
+        document.getElementById('id_patient-mobile').className = 'form-control';
+    </script>
+{% endblock %}

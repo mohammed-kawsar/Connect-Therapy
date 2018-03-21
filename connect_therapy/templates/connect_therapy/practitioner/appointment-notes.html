@@ -1,14 +1,58 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Practitioner Notes{% endblock %}
 
-{% block content %}
-    <h3>Practitioner Notes</h3>
-    <div class="practitionerNotes">
-        {{ appointment.practitioner_notes }}
-    </div>
+{% block header %}
 
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h3>Practitioner Notes</h3>
+    <hr class="my-4">
+    <p class="lead" style="word-wrap: break-word">{{ appointment.practitioner_notes }}</p>
+</div>
+
+<div class="jumbotron">
     <h3>Notes Before Meeting </h3>
-    <div class="practitionerMeetingNotes">
-        {{ appointment.patient_notes_before_meeting }}
-    </div>
+    <hr class="my-4">
+    <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_before_meeting }}</p>
+</div>
+    <br>
+    <a href="{% url 'connect_therapy:practitioner-my-appointments'%}" class="btn btn-primary"> Go Back</a>
+{% endblock %}
+
+
+{% block styles %}
+    <style>
+        @media (max-width: 600px) {
+            .container-fluid {
+                padding-top: 20px;
+            }
+
+            h3 {
+                font-size: 25px;
+            }
+
+            .lead{
+                font-size: 17px;
+            }
+        }
+
+    .jumbotron {
+        padding-top: 15px;
+    }
+    .container-fluid {
+        padding-top: 20px;
+    }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+    </script>
 {% endblock %}

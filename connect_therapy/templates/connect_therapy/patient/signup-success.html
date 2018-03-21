@@ -1,10 +1,25 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Patient signup success{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
 <h1>Congratulations you are signed up</h1>
 {% if user.is_authenticated and user.patient%}
     <p>Your name is {{ user.first_name }} {{ user.last_name }}, and you have
     gender {{ user.patient.gender }}</p>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+
+</script>
 {% endblock %}

@@ -1,0 +1,1 @@
+Appointment Cancelled - {{ appointment.start_date_and_time }} for {{ apppointment.length }} on Connect Therapy.
