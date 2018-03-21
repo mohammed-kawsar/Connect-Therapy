@@ -234,8 +234,6 @@ class SendEmailConfirmationView(generic.View):
     def get(self, requests):
         return redirect(reverse_lazy("connect_therapy:help"))
 
-    # TODO: Test this function/view
-    # TODO: Also add email_confirmed check to practitioner login form as well
 
     def post(self, request):
         email = request.POST.get('email_address')
