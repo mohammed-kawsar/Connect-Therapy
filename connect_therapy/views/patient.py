@@ -1,5 +1,4 @@
 from datetime import timedelta
-from decimal import Decimal
 
 from django import forms
 from django.contrib import messages
@@ -155,7 +154,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         )
         self.object.patient = None
         self.object.save()
-        self.split_merged_appointment()
+        Appointment.split_merged_appointment(self.object)
 
         return super(PatientCancelAppointmentView, self).form_valid(form)
 
@@ -166,35 +165,6 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
-
-    def split_merged_appointment(self):
-        original_length = self.object.length
-        original_length_hour, original_length_minute, original_length_seconds = \
-            Appointment.get_hour_minute_seconds(original_length)
-
-        if original_length_hour * 60 + original_length_minute == 30:
-            return
-
-        self.object.length = timedelta(minutes=30)
-        self.object.patient = None
-
-        # set the price to the default price set in the model
-        default_price = Decimal(Appointment._meta.get_field('price').get_default())
-        self.object.price = default_price
-
-        number_of_appointments = \
-            (original_length_hour * 60 + original_length_minute) // 30
-
-        for i in range(1, number_of_appointments):
-            appointment = Appointment(
-                practitioner=self.object.practitioner,
-                patient=None,
-                length=timedelta(minutes=30),
-                start_date_and_time=self.object.start_date_and_time + timedelta(minutes=(30 * i)),
-                price=default_price
-            )
-            appointment.save()
-            self.object.save()
 
 
 class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):

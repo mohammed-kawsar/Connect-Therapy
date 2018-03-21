@@ -1,0 +1,91 @@
+{% extends 'connect_therapy/base.html' %}
+{% load static %}
+{% block title %}Connect Therapy | Help{% endblock %}
+
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+
+    {# NEED THE FULL JQUERY LIBRARY #}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    {% load static %}
+    <script src="{% static 'connect_therapy/help_js/send-email-ajax.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-info">
+
+            {% for message in messages %}
+                <p class="lead info-alert">  {% if message.tags %} {{ message }} {% endif %} </p>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+
+    <div class="jumbotron">
+        <h2>Help page</h2>
+        <p>Please browse through the sections below to find a possible solution to your problem.</p>
+
+        <noscript>
+            <hr>
+            <h2>Help us help you</h2>
+            <p>JavaScript seems to be disabled in your browser.</p>
+            <p>The thing is, this page won't work properly without it 😢.</p>
+            <p>Please enable JavaScript via your browser settings for the best possible experience.</p>
+        </noscript>
+    </div>
+
+
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false"
+                            aria-controls="collapseOne">
+                        Didn't receive email confirmation email?
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    <span>
+                        <p>Please check your inbox <strong>and</strong> your <strong>spam </strong> folder</p>
+                        <p>Still can't find it? No problem!</p>
+                        <p>We can re-send the email, simply enter your email address below, and if its a match, another
+                            email will be sent your way</p>
+                    </span>
+                    <form method="post" id="resend_conf_email"
+                          form-submit-url="{% url 'connect_therapy:send-email-confirmation' %}">
+                        {% csrf_token %}
+                        <script>
+                            var CSRF_TOKEN =
+                                "{{  csrf_token }}";
+                        </script>
+                        {{ resend_email_confirmation_form.as_p }}
+                        <input type="submit" class="btn btn-primary" id="send-email" value="Send"/>
+                    </form>
+                    <hr>
+                    <p style="display: none; color: red" id="check-email">Please check your email address</p>
+                    <p style="display: none; color: green" id="sent-email">If we found that email address in our
+                        records, we sent the email again</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block styles %}
+    <style>
+        .container-fluid {
+            padding-top: 20px !important;
+        }
+    </style>
+{% endblock %}

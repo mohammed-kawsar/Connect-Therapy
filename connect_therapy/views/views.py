@@ -3,6 +3,10 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import MultipleObjectsReturned
+from django.core.validators import validate_email
+from django.forms import forms
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -12,7 +16,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.views import generic
 from django.views.generic import DetailView
 
+from connect_therapy.emails import send_patient_confirm_email, send_practitioner_confirm_email
 from connect_therapy.forms.forms import FileForm
+from connect_therapy.forms.patient import ResendConfirmationEmailForm
 from connect_therapy.models import Appointment, Patient, Practitioner
 from connect_therapy.tokens import account_activation_token
 
@@ -27,7 +33,7 @@ class ChatView(UserPassesTestMixin, DetailView):
         downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
 
         form = FileForm()
-        
+
         if self.get_object().patient is None:
             messages.info(request, "You should book an appointment to access this page")
             return redirect(reverse_lazy('connect_therapy:patient-book-appointment',
@@ -211,3 +217,71 @@ def activate(request, uidb64, token):
         return redirect('connect_therapy:index')
     else:
         return redirect('connect_therapy:index')
+
+
+class HelpView(generic.TemplateView):
+    template_name = "connect_therapy/help.html"
+    resend_confirmation_email_from = ResendConfirmationEmailForm()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['resend_email_confirmation_form'] = self.resend_confirmation_email_from
+        return context
+
+
+class SendEmailConfirmationView(generic.View):
+
+    def get(self, requests):
+        return redirect(reverse_lazy("connect_therapy:help"))
+
+
+    def post(self, request):
+        email = request.POST.get('email_address')
+        valid_email_format = False
+        valid_user = False
+        is_patient = False
+        user = User
+        sent = False
+        # first check for valid email
+        try:
+            validate_email(email)
+            valid_email_format = True
+        except forms.ValidationError:
+            pass
+
+        if valid_email_format:
+            # check if email belongs to patient
+            try:
+                user = User.objects.get(email=email)
+                patient = Patient.objects.get(user=user)
+                if not patient.email_confirmed:
+                    valid_user = True
+                    is_patient = True
+            except (Patient.DoesNotExist, User.DoesNotExist, MultipleObjectsReturned) as e:
+                pass
+
+            # doesnt belong to patient so check practitioner
+            if not valid_user:
+                try:
+                    user = User.objects.get(email=email)
+                    practitioner = Practitioner.objects.get(user=user)
+                    if not practitioner.email_confirmed:
+                        valid_user = True
+                except (Practitioner.DoesNotExist, User.DoesNotExist, MultipleObjectsReturned) as e:
+                    pass
+
+        # send the email, if we can
+        if valid_email_format and valid_user:
+            if is_patient:
+                patient = Patient.objects.get(user=user)
+                send_patient_confirm_email(patient, get_current_site(self.request))
+            else:
+                practitioner = Practitioner.objects.get(user=user)
+                send_practitioner_confirm_email(practitioner, get_current_site(self.request))
+            sent = True
+        data = {
+            'validEmailFormat': valid_email_format,
+            'sent': sent,
+            'validUser': valid_user,
+        }
+        return JsonResponse(data)

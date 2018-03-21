@@ -11,22 +11,29 @@
 {% endblock %}
 
 {% block content %}
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-info">
 
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" class="btn btn-primary" value="Login" />
-    <input type="submit" class="btn btn-warning" value="Reset Password" />
-</form>
+            {% for message in messages %}
+                <p class="lead info-alert">  {% if message.tags %} {{ message }} {% endif %} </p>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-primary" value="Login"/>
+        <input type="submit" class="btn btn-warning" value="Reset Password"/>
+    </form>
 {% endblock %}
 
 {% block scripts %}
     <script>
         document.getElementById("id_password").className = "form-control";
 
-        if ($(document).height() <= $(window).height()) {
-            document.getElementById('stickyFooter').className = 'fixed-bottom';
-        }
+
 
     </script>
 {% endblock %}
