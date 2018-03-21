@@ -67,6 +67,12 @@ class PractitionerLoginForm(AuthenticationForm):
                 "You have not been approved",
                 code='not-approved'
             )
+
+        if not user.practitioner.email_confirmed:
+            raise forms.ValidationError(
+                "Your email has not been confirmed - check your emails",
+                code='email-not-confirmd'
+            )
         super().confirm_login_allowed(user)
 
 

@@ -49,6 +49,7 @@ class PatientSignUpForm(UserCreationForm):
 
         }
 
+
 class PatientLoginForm(AuthenticationForm):
     username = UsernameField(
         max_length=254,
@@ -66,6 +67,11 @@ class PatientLoginForm(AuthenticationForm):
             raise forms.ValidationError(
                 "You are not a patient",
                 code='not-patient'
+            )
+        if not user.patient.email_confirmed:
+            raise forms.ValidationError(
+                "You have not confirmed your email address - check your emails",
+                code='email-not-confirmed'
             )
         super().confirm_login_allowed(user)
 
