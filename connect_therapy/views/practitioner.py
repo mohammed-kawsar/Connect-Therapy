@@ -1,7 +1,7 @@
 import re
 from datetime import timedelta
 
-from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
+from django.contrib.auth import update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -67,8 +67,9 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
     def form_valid(self, form):
         self.object.practitioner_notes = form.cleaned_data['practitioner_notes']
@@ -96,7 +97,7 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             practitioner = Practitioner.objects.get(user=self.request.user)
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False
 
@@ -116,7 +117,8 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
         context['needing_notes'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
             patient_notes_by_practitioner="",
-            practitioner=self.request.user.practitioner
+            practitioner=self.request.user.practitioner,
+            patient__isnull=False
         ).order_by('-start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
@@ -141,8 +143,9 @@ class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
 
 class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
@@ -159,8 +162,9 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
 
 class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
@@ -174,7 +178,7 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             practitioner = self.request.user.practitioner
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False
 
@@ -201,7 +205,7 @@ class PractitionerProfile(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             practitioner = self.request.user.practitioner
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False
 
@@ -222,8 +226,9 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().user.id and \
-            self.get_object().email_confirmed
+               self.request.user.id == self.get_object().user.id and \
+               self.get_object().email_confirmed and \
+               self.get_object().practitioner.is_approved
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
@@ -279,7 +284,7 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
     def test_func(self):
         try:
             practitioner = self.request.user.practitioner
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False
 
@@ -290,7 +295,7 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         if form.cleaned_data['length'] is not None:
             duration = decompress_duration(str(form.cleaned_data['length']))
             hour = duration[0]
-            minute = duration [1]
+            minute = duration[1]
 
         appointment = Appointment(
             patient=None,
@@ -307,7 +312,8 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
             return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html',
                           context={"overlaps": over_laps_str})
         else:
-            appointment.save()
+            Appointment.split_merged_appointment(
+                appointment)  # This method will split if needed and then save the appointment
             return super().form_valid(form)
 
 
@@ -328,8 +334,9 @@ class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
         except Practitioner.DoesNotExist:
             return False
         return self.get_object() is not None and \
-            self.request.user.id == self.get_object().practitioner.user.id and \
-            self.get_object().practitioner.email_confirmed
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
     def delete(self, request, *args, **kwargs):
         message = request.POST['cancel-message']
@@ -351,6 +358,6 @@ class PractitionerHomepageView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             practitioner = Practitioner.objects.get(user=self.request.user)
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False
