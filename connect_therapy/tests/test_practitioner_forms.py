@@ -86,11 +86,11 @@ class PractitionerLoginFormTests(TestCase):
                                         )
         practitioner = Practitioner(user=user,
                                     mobile="+44848482732",
+                                    email_confirmed=True,
                                     bio="ABC",
                                     address_line_1="XXX",
                                     address_line_2="XXXXX",
-                                    is_approved=True,
-                                    email_confirmed=True
+                                    is_approved=True
                                     )
         practitioner.save()
         form = PractitionerLoginForm(data={

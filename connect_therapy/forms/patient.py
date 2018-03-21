@@ -1,7 +1,7 @@
+from betterforms.multiform import MultiModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.contrib.auth.models import User
-from betterforms.multiform import MultiModelForm
 
 from connect_therapy.models import Patient
 
@@ -68,11 +68,14 @@ class PatientLoginForm(AuthenticationForm):
                 "You are not a patient",
                 code='not-patient'
             )
+
         if not user.patient.email_confirmed:
             raise forms.ValidationError(
-                "You have not confirmed your email address - check your emails",
-                code='email-not-confirmed'
+                "Your email address hasn't been verified yet. Please check your inbox and junk folder for the "
+                "activation email. Visit the help pages to resend the verification email.",
+                code='email_unconfirmed'
             )
+
         super().confirm_login_allowed(user)
 
 
@@ -83,15 +86,15 @@ class PatientNotesBeforeForm(forms.Form):
     )
 
 
-
 class AppointmentDateSelectForm(forms.Form):
     date = forms.DateField(widget=forms.SelectDateWidget(
-                            attrs={'class': 'form-control'}
+        attrs={'class': 'form-control'}
     ), label="Select Date")
 
     def is_valid(self):
         valid = super(AppointmentDateSelectForm, self).is_valid()
         return valid
+
 
 class PatientForm(forms.ModelForm):
     date_of_birth = forms.DateField(help_text=" Format: YYYY-MM-DD",
@@ -134,6 +137,10 @@ class PatientUserForm(forms.ModelForm):
 
 class PatientEditMultiForm(MultiModelForm):
     form_classes = {
-            'user': PatientUserForm,
-            'patient': PatientForm
+        'user': PatientUserForm,
+        'patient': PatientForm
     }
+
+
+class ResendConfirmationEmailForm(forms.Form):
+    email_address = forms.EmailField()
