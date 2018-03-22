@@ -7,10 +7,10 @@
 {% endblock %}
 {% block content %}
     <div class=" container-fluid text-center">
-        <table class="table table-hover">
+        <table class="table table-hover" id="practitionerTable">
             <tr>
                 <th>Practitioner.</th>
-                <th></th>
+                <th><input type="text" class="form-control mr-sm-2" id="searchField" placeholder="Search" onkeyup="searchFunction()"></th>
             </tr>
             {% for practitioner in practitioners %}
                 <tr>
@@ -85,6 +85,25 @@
 {% block scripts %}
     <script>
         document.getElementById("id_password").className = "form-control";
+    </script>
 
+    <script>
+        function searchFunction() {
+          var input, filter, table, tr, td, i;
+          input = document.getElementById("searchField");
+          filter = input.value.toUpperCase();
+          table = document.getElementById("practitionerTable");
+          tr = table.getElementsByTagName("tr");
+          for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+              if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else {
+                tr[i].style.display = "none";
+              }
+            }
+          }
+        }
     </script>
 {% endblock %}
