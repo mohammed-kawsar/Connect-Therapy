@@ -41,9 +41,9 @@ urlpatterns = [
          PatientMyAppointmentsView.as_view(),
          name='patient-my-appointments'
          ),
-    path('notes-before-appointment/<int:pk>',
+    path('make-notes/<int:pk>',
          PatientNotesBeforeView.as_view(),
-         name='patient-notes-before'
+         name='patient-make-notes'
          ),
     path('',
          PatientHomepageView.as_view(),
@@ -53,9 +53,9 @@ urlpatterns = [
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'
          ),
-    path('view-previous-notes/<int:pk>',
+    path('view-notes/<int:pk>',
          PatientPreviousNotesView.as_view(),
-         name='patient-appointment-notes',
+         name='patient-view-notes',
          ),
     path('cancel-appointment/<int:pk>',
          PatientCancelAppointmentView.as_view(),

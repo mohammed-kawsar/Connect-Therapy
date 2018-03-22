@@ -26,7 +26,7 @@
                                 {% if appointment.is_live %}
                                     <a href="{% url 'connect_therapy:chat' appointment.id %}">
                                 {% endif %}
-                                    {{ appointment.start_date_and_time }}
+                                {{ appointment.start_date_and_time }}
                                 {% if appointment.is_live %}
                                     </a>
                                 {% endif %}
@@ -35,6 +35,8 @@
                             <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
                             <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"
                                class="btn btn-info"> Cancel Appointment</a>
+                            <a href="{% url 'connect_therapy:patient-make-notes' appointment.id %}"
+                               class="btn btn-info"> Add message </a>
                         </div>
                     </div>
                 </div>
@@ -58,7 +60,7 @@
                                     style="white-space: nowrap;">{{ appointment.start_date_and_time }}</h4>
                                 <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                                 <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
-                                <a href="{% url 'connect_therapy:patient-appointment-notes' appointment.id %}"
+                                <a href="{% url 'connect_therapy:patient-view-notes' appointment.id %}"
                                    class="btn btn-info"> View Notes</a>
 
                             </div>
@@ -98,8 +100,6 @@
 
 {% block scripts %}
     <script>
-        if ($(document).height() <= $(window).height()) {
-            document.getElementById('stickyFooter').className = 'fixed-bottom';
-        }
+
     </script>
 {% endblock %}
