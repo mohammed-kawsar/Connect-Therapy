@@ -36,7 +36,7 @@
                         <tr>
                             <form action="{% url 'connect_therapy:patient-checkout' %}" method="post">
                                 {% csrf_token %}
-                                <input type="hidden" name="session_id" value="{{ app.session_id }}">
+                                <input type="hidden" name="delete" value="{{ app.session_id }}">
                                 <td>Dr. {{ app.practitioner.user.get_full_name }}</td>
                                 <td>{{ app.start_date_and_time }}</td>
                                 <td>{{ app.length }}</td>
@@ -46,44 +46,6 @@
 
                                     <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                                         <button type="submit" class="btn btn-warning">Delete</button>
-
-                                        <div class="btn-group" role="group">
-                                            <button id="btnGroupDrop1" type="button"
-                                                    class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                                                    aria-haspopup="true" aria-expanded="false">
-                                                Add to Calendar
-                                            </button>
-                                            <div class="dropdown-menu" id="compactICal" aria-labelledby="btnGroupDrop1">
-
-                                                <script type="text/javascript"
-                                                        src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-                                                <script src="{% static 'connect_therapy/scripts/add-to-calendar/jquery.icalendar.js' %}"></script>
-                                                <script>
-                                                    EventObject = {
-                                                        start: new Date({{ app.start_date_and_time.year }},
-                                                            {{ app.start_date_and_time.month }}-1,
-                                                            {{ app.start_date_and_time.day }},
-                                                            {{ app.start_date_and_time.hour }},
-                                                            {{ app.start_date_and_time.minute }},
-                                                            {{ app.start_date_and_time.second }}),
-                                                        end: new Date({{ app.start_date_and_time.year }},
-                                                            {{ app.start_date_and_time.month }}-1,
-                                                            {{ app.start_date_and_time.day }},
-                                                            {{ app.start_date_and_time.hour }}+1,
-                                                            {{ app.start_date_and_time.minute }},
-                                                            {{ app.start_date_and_time.second }}),
-                                                        title: "Meeting with Dr. {{ app.practitioner.user.get_full_name }} at Connect Therapy",
-                                                        description: "Meeting with Dr. {{ app.practitioner.user.get_full_name }} at Connect Therapy (Description about the Meeting)",
-                                                        location: 'Connect Therapy - Websites URL'
-                                                    };
-
-
-                                                    $('#compactICal').icalendar(
-                                                        $.extend({sites: ['google', 'yahoo', 'outlook']}, EventObject));
-
-                                                </script>
-                                            </div>
-                                        </div>
                                     </div>
 
                                 </td>
