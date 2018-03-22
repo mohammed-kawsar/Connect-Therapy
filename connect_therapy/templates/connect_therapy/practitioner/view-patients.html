@@ -2,7 +2,9 @@
 {% block title %}Your Patients{% endblock %}
 {% load staticfiles %}
 {% block content %}
-    <h2>patients:</h2>
+    <label class="heading">patients:
+    <input class="form-control mr-sm-2" id="searchField" type="search" placeholder="Search" aria-label="Search" onkeydown="searchFunction()">
+    </label>
     <table id="patients" class="table table-bordered table-hover">
         <thead>
             <tr>
@@ -23,6 +25,23 @@
         </tbody>
     </table>
 {% endblock %}
+
+{% block styles %}
+    <style>
+        label.heading {
+            font-size: 40px;
+            text-transform: capitalize;
+            font-weight: 500;
+            letter-spacing: 2px;
+            padding-top: 10px;
+        }
+
+        #searchField {
+            vertical-align: middle;
+            height: 45px;
+        }
+    </style>
+{% endblock %}
 {% block scripts %}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.16/datatables.min.css"/>
     <script type="text/javascript" src="{% static 'connect_therapy/js/jquery.dataTables.min.js' %}"></script>
@@ -34,6 +53,25 @@
                 "bInfo": false
             })
         });
+    </script>
+    <script>
+ function searchFunction() {
+          var input, filter, table, tr, td, i;
+          input = document.getElementById("searchField");
+          filter = input.value.toUpperCase();
+          table = document.getElementById("patients");
+          tr = table.getElementsByTagName("tr");
+          for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+              if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else {
+                tr[i].style.display = "none";
+              }
+            }
+          }
+        }
     </script>
 {% endblock %}
 
