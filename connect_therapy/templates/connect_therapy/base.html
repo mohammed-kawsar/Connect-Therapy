@@ -11,9 +11,7 @@
 
     <title>{% block title %}{% endblock %}</title>
     {% block header %}
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-                crossorigin="anonymous"></script>
+
     {% endblock %}
 
     <style>
@@ -208,9 +206,8 @@
             </nav>
         {% else %}
             <!-- Logged out navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top fixed-top" id="sticky_navbar">
-                <a class="navbar-brand" href="{% url 'connect_therapy:index' %}"><img
-                        src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+             <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top fixed-top" id="sticky_navbar">
+                <a class="navbar-brand" href="{% url 'connect_therapy:index' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                         aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -218,35 +215,31 @@
 
                 <div class="collapse navbar-collapse" id="appNavBar">
                     <ul class="navbar-nav">
-                        <li class="nav-item ">
+                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">
-                                Login
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{% url 'connect_therapy:patient-login' %}">Patient
-                                    Login</a>
-                                <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-login' %}">Practitioner
-                                    Login</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">
-                                Register
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{% url 'connect_therapy:patient-signup' %}">Patient
-                                    Register</a>
-                                <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-signup' %}">Practitioner
-                                    Register</a>
-                            </div>
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Login
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-login' %}">Patient Login</a>
+                            <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-login' %}">Practitioner Login</a>
+                        </div>
+                    </li>
+                     <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Sign-up
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-signup' %}">Patient Sign-up</a>
+                            <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-signup' %}">Practitioner Sign-up</a>
+                        </div>
+                    </li>
                         <li class="nav-item ">
                             <a class="nav-link" href="{% url 'connect_therapy:help' %}">Help </a>
-                        </li>
                         </li>
                     </ul>
                 </div>
@@ -283,7 +276,9 @@
 
 </div>
 <div class="content container-fluid">{% block content %}{% endblock %}</div>
-
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
         crossorigin="anonymous"></script>
