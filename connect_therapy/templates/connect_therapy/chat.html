@@ -36,6 +36,7 @@
 
 
     <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/webrtc.css' %}" type="text/css">
+
 {% endblock %}
 
 {% block content %}
@@ -51,17 +52,31 @@
         // need these as we cannot access template data in other .js files
         var session_id = "{{ object.session_id }}";
         var ajax_download_url = "{% url 'connect_therapy:file-download' object.id %}"
+        var practitioner_notes_url = "{% url 'connect_therapy:practitioner-make-notes' object.id %}"
+        var patient_notes_url = "{% url 'connect_therapy:patient-view-notes' object.id %}"
+
     </script>
 
     <div class="jumbotron">
         <h1>Welcome to your appointment</h1>
-        <!-- Trigger the modal with a button -->
-        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+
+        <div class="container">
+            <!-- Trigger the modal with a button -->
             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
                 Upload/Download files
             </button>
-        </nav>
+            {% if is_practitioner %}
+                <button type="button" class="btn btn-danger btn-lg" onclick="closeSessionPractitioner()">
+                    End Appointment Practitioner
+                </button>
+            {% else %}
+                <button type="button" class="btn btn-danger btn-lg" onclick="closeSessionPatient()">
+                    End Appointment Patient
+                </button>
+            {% endif %}
+        </div>
     </div>
+
 
     <div id="loading">
         <div class="loader"></div>
@@ -201,24 +216,27 @@
 
 
     <!--Modal Window for Safari (Only opens if the used browser is Safari)-->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalLabel">Browser Warning</h5>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Browser Warning</h5>
 
-          </div>
-          <div class="modal-body">
-            <p class="">We have detected you using Safari, the Chat feature is not supported in <b>Safari</b></p>
-            <p class="">Please use <b>Chrome</b></p>
-          </div>
-          <div class="modal-footer">
-              <p>Click Close to go to Home</p>
-            <button type="button" class="btn btn-primary" onclick=window.location.href="{% url 'connect_therapy:index' %}" data-dismiss="modal">Close</button>
-          </div>
+                </div>
+                <div class="modal-body">
+                    <p class="">We have detected you using Safari, the Chat feature is not supported in <b>Safari</b>
+                    </p>
+                    <p class="">Please use <b>Chrome</b></p>
+                </div>
+                <div class="modal-footer">
+                    <p>Click Close to go to Home</p>
+                    <button type="button" class="btn btn-primary"
+                            onclick=window.location.href="{% url 'connect_therapy:index' %}" data-dismiss="modal">Close
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-</div>
+    </div>
 
 {% endblock %}
 
@@ -230,9 +248,9 @@
         }
 
         div.modal-footer p {
-                vertical-align: middle;
-                margin-bottom: 0px;
-                font-size: 14px;
+            vertical-align: middle;
+            margin-bottom: 0px;
+            font-size: 14px;
         }
 
         @media (max-width: 600px) {
@@ -268,13 +286,9 @@
 {% block scripts %}
     <script>
 
-    </script>
-
-    <script>
-
-    $("#myModal").modal({
-        show: false
-    });
+        $("#myModal").modal({
+            show: false
+        });
         if ((!!window.safari) == true) {
             $("#myModal").modal('show');
 

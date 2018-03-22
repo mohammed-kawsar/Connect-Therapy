@@ -16,7 +16,7 @@
             <tr>
                 <td>{{ appointment.patient.user.first_name }}</td>
                 <td>{{ appointment.patient.user.last_name }}</td>
-                <td><a href="{% url 'connect_therapy:practitioner-appointment-notes' appointment.id %}">
+                <td><a href="{% url 'connect_therapy:practitioner-view-notes' appointment.id %}">
                     {{ appointment.start_date_and_time }}</a></td>
             </tr>
         {% endfor %}
