@@ -31,13 +31,14 @@ ALLOWED_HOSTS = ['*'] # should be [] unless doing test on local network (then it
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
+    'connect_therapy.apps.ConnectTherapyConfig',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'connect_therapy.apps.ConnectTherapyConfig',
+    'django.contrib.auth',
+    'password_reset',
+    'django.contrib.admin',
     "sslserver", # used to test video chat
 ]
 
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['connect_therapy/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,3 +129,9 @@ TWILIO_AUTH_TOKEN = '13af9344123ac994e18e922379fd260b'
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'test@gmail.com'

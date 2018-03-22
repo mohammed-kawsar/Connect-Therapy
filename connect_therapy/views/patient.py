@@ -86,7 +86,7 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
     form_class = PatientNotesBeforeForm
     template_name = 'connect_therapy/patient/notes-before-appointment.html'
     success_url = reverse_lazy('connect_therapy:patient-my-appointments')
-    login_url = reverse_lazy('connect_therapy:patient-my-appointments')
+    login_url = reverse_lazy('connect_therapy:patient-login')
     redirect_field_name = None
     model = Appointment
 
@@ -105,7 +105,7 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
         self.object.save()
         return super().form_valid(form)
 
-    def post(self, **kwargs):
+    def post(self, request, pk):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
@@ -118,6 +118,7 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
         files_for_appointment = FileDownloadView.get_files_from_folder(str(self.object.id))
         downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
         context['downloadable_files'] = downloadable_file_list
+        return context
 
 
 class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):

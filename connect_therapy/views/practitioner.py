@@ -68,7 +68,8 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
-               self.get_object().practitioner.email_confirmed
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
     def form_valid(self, form):
         self.object.practitioner_notes = form.cleaned_data['practitioner_notes']
@@ -96,7 +97,7 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             practitioner = Practitioner.objects.get(user=self.request.user)
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False
 
@@ -143,7 +144,8 @@ class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
-               self.get_object().practitioner.email_confirmed
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
 
 class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
@@ -161,7 +163,8 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
-               self.get_object().practitioner.email_confirmed
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
 
 class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
@@ -175,7 +178,7 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             practitioner = self.request.user.practitioner
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False
 
@@ -205,7 +208,7 @@ class PractitionerProfile(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             practitioner = self.request.user.practitioner
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False
 
@@ -227,7 +230,8 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().user.id and \
-               self.get_object().email_confirmed
+               self.get_object().email_confirmed and \
+               self.get_object().practitioner.is_approved
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
@@ -283,7 +287,7 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
     def test_func(self):
         try:
             practitioner = self.request.user.practitioner
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False
 
@@ -334,7 +338,8 @@ class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
-               self.get_object().practitioner.email_confirmed
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
     def delete(self, request, *args, **kwargs):
         message = request.POST['cancel-message']
@@ -356,6 +361,6 @@ class PractitionerHomepageView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             practitioner = Practitioner.objects.get(user=self.request.user)
-            return practitioner.email_confirmed
+            return practitioner.email_confirmed and practitioner.is_approved
         except Practitioner.DoesNotExist:
             return False

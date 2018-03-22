@@ -10,113 +10,117 @@
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <title>{% block title %}{% endblock %}</title>
-    {% block header %}{% endblock %}
+    {% block header %}
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous"></script>
+    {% endblock %}
 
-<style>
+    <style>
 
-    a.nav-link {
-        text-transform: uppercase;
-        font-size: 15px;
-        font-weight: 500;
-        letter-spacing: 1px;
-    }
-
-    div.dropdown-menu.show {
-        font-size: 15px;
-        text-transform: capitalize;
-    }
-
-
-    @media (max-width: 600px) {
-        #stickyFooter h5 {
-            font-size: 14px;
-            font-weight: 100;
+        a.nav-link {
+            text-transform: uppercase;
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 1px;
         }
 
-        #stickyFooter a {
+        div.dropdown-menu.show {
             font-size: 15px;
-            font-weight: 100;
+            text-transform: capitalize;
+        }
+
+        @media (max-width: 600px) {
+            #stickyFooter h5 {
+                font-size: 14px;
+                font-weight: 100;
+            }
+
+            #stickyFooter a {
+                font-size: 15px;
+                font-weight: 100;
+            }
+
+            div.alert.alert-warning {
+                margin-bottom: 0px;
+                border-radius: 0px;
+                padding-left: 15px;
+            }
+
+            p.alert-paragraph {
+                margin-bottom: 0px;
+                font-size: 14px;
+            }
+
+            p.alert-paragraph.final-message {
+                font-weight: 400;
+            }
+
+            button.close {
+                font-size: 50px;
+                font-weight: 300;
+                text-align: center;
+                padding-top: 30px !important;
+            }
+
+            h4.alert-heading {
+                font-size: 20px;
+            }
+
+            button.close > span {
+                font-size: 40px;
+
+            }
+        }
+
+        body {
+            padding-top: 59px;
+        }
+
+        @media (max-width: 600px) {
+            .fixed-top {
+                position: relative !important;
+
+            }
+
+            body {
+                padding-top: 0px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .fixed-top {
+                position: relative !important;
+
+            }
+
+            body {
+                padding-top: 0px;
+            }
+
         }
 
         div.alert.alert-warning {
-        margin-bottom: 0px;
-        border-radius: 0px;
-        padding-left: 15px;
-    }
+            margin-bottom: 0px;
+            border-radius: 0px;
+        }
 
         p.alert-paragraph {
             margin-bottom: 0px;
-            font-size: 14px;
-        }
-
-        p.alert-paragraph.final-message {
-            font-weight: 400;
         }
 
         button.close {
-            font-size: 50px;
+            font-size: 60px;
             font-weight: 300;
-            text-align: center;
-            padding-top: 30px !important;
-        }
-
-
-        h4.alert-heading {
-            font-size: 20px;
+            padding-top: 25px !important;
         }
 
         button.close > span {
-            font-size: 40px;
-
+            vertical-align: middle;
         }
-    }
-
-    body {
-     padding-top: 59px;
-    }
-
-     @media (max-width: 600px) {
-        .fixed-top {
-            position: relative !important;
-
-     }
-        body {
-            padding-top: 0px;
-     }
-    }
-
-    @media (max-width: 800px) {
-        .fixed-top {
-            position: relative !important;
-
-     }
-        body {
-            padding-top: 0px;
-     }
-
-    }
-
-    div.alert.alert-warning {
-        margin-bottom: 0px;
-        border-radius: 0px;
-    }
-
-    p.alert-paragraph {
-        margin-bottom: 0px;
-    }
-
-    button.close {
-        font-size: 60px;
-        font-weight: 300;
-        padding-top: 25px !important;
-    }
-
-    button.close > span {
-        vertical-align: middle;
-    }
 
 
-</style>
+    </style>
 
 </head>
 
@@ -124,8 +128,9 @@
 <header>
     {% if user.is_authenticated and user.patient %}
         <!-- Logged in Patient navbar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top img-responsive">
-            <a class="navbar-brand" href="{% url 'connect_therapy:patient-homepage' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+        <nav id="global-nav" class="navbar navbar-expand-lg navbar-light bg-light fixed-top img-responsive">
+            <a class="navbar-brand" href="{% url 'connect_therapy:patient-homepage' %}"><img
+                    src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                     aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -137,7 +142,8 @@
                         <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'connect_therapy:patient-view-practitioners' %}">Book Appointment</a>
+                        <a class="nav-link" href="{% url 'connect_therapy:patient-view-practitioners' %}">Book
+                            Appointment</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Live Chat</a>
@@ -148,8 +154,10 @@
                             Profile
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-my-appointments' %}">Manage Appointments</a>
-                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-profile' %}">Change Details</a>
+                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-my-appointments' %}">Manage
+                                Appointments</a>
+                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-profile' %}">Change
+                                Details</a>
                             <a class="dropdown-item" href="{% url 'connect_therapy:patient-logout' %}">Logout</a>
                         </div>
                     </li>
@@ -162,7 +170,8 @@
         {% if user.is_authenticated and user.practitioner %}
             <!-- Logged in Practitioner navbar -->
             <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top fixed-top" id="sticky_navbar">
-                <a class="navbar-brand" href="{% url 'connect_therapy:practitioner-homepage' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+                <a class="navbar-brand" href="{% url 'connect_therapy:practitioner-homepage' %}"><img
+                        src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                         aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -174,7 +183,8 @@
                             <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'connect_therapy:practitioner-set-appointments' %}">Set Appointments</a>
+                            <a class="nav-link" href="{% url 'connect_therapy:practitioner-set-appointments' %}">Set
+                                Appointments</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="">Live Chat</a>
@@ -186,8 +196,10 @@
                                 Profile
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-profile' %}">Change Details</a>
-                                <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-logout' %}">Logout</a>
+                                <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-profile' %}">Change
+                                    Details</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'connect_therapy:practitioner-logout' %}">Logout</a>
                             </div>
                         </li>
                     </ul>
@@ -197,7 +209,8 @@
         {% else %}
             <!-- Logged out navbar -->
             <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-top fixed-top" id="sticky_navbar">
-                <a class="navbar-brand" href="{% url 'connect_therapy:index' %}"><img src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
+                <a class="navbar-brand" href="{% url 'connect_therapy:index' %}"><img
+                        src="{% static '/connect_therapy/images/logo.png' %}" height="32"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavBar"
                         aria-controls="appNavBar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -209,25 +222,32 @@
                             <a class="nav-link" href="{% url 'connect_therapy:about' %}">About </a>
                         </li>
                         <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                            Login
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-login' %}">Patient Login</a>
-                            <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-login' %}">Practitioner Login</a>
-                        </div>
-                    </li>
-                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
-                            Register
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{% url 'connect_therapy:patient-signup' %}">Patient Register</a>
-                            <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-signup' %}">Practitioner Register</a>
-                        </div>
-                    </li>
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                Login
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{% url 'connect_therapy:patient-login' %}">Patient
+                                    Login</a>
+                                <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-login' %}">Practitioner
+                                    Login</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                Register
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{% url 'connect_therapy:patient-signup' %}">Patient
+                                    Register</a>
+                                <a class="dropdown-item" href="{% url 'connect_therapy:practitioner-signup' %}">Practitioner
+                                    Register</a>
+                            </div>
+                        <li class="nav-item ">
+                            <a class="nav-link" href="{% url 'connect_therapy:help' %}">Help </a>
+                        </li>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -236,36 +256,34 @@
 </header>
 
 
-<div class="alert alert-warning alert-dismissible fade show" id="id_alert" role="alert">
+<div class="alert alert-warning alert-dismissible fade show" id="id_alert" role="alert" style="display: none;">
   <h4 class="alert-heading">Browser Warning</h4>
     <p class="alert-paragraph">You are using <b>Safari</b> to browse this website, please use <b>Chrome</b> for the best experience.</p>
     <hr class="my-2">
     <p class="alert-paragraph final-message"><b>Sorry for any inconvenience caused.</b></p>
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 
 <script>
     var warning_alert =  document.getElementById('id_alert');
-    if ((!!window.safari) == false) {
-            warning_alert.style.display = 'none';
-    } else if((!!window.safari) == true) {
+
+    if((!!window.safari) == true) {
+        warning_alert.style.display = 'block';
             $(".alert").alert();
     } else {
         $('.alert').alert('close');
     }
-</script>
 
+</script>
 
 
 <div class="container">
 
 </div>
 <div class="content container-fluid">{% block content %}{% endblock %}</div>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
         crossorigin="anonymous"></script>
@@ -279,10 +297,11 @@
 <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
 
 
-
 <script>
 
-    window.onscroll = function() { myFunction() };
+    window.onscroll = function () {
+        myFunction()
+    };
     var navbar = document.getElementById("sticky_navbar");
     navbar.style.position = "fixed";
     navbar.style.width = "100%";
@@ -290,7 +309,7 @@
     var stickyNav = navbar.offsetTop;
 
     function myFunction() {
-        if (window.pageXOffset >= stickyNav){
+        if (window.pageXOffset >= stickyNav) {
             navbar.classList.add("stickyNav");
         } else {
             navbar.classList.remove("stickyNav");
@@ -298,58 +317,22 @@
     }
 
 </script>
-<script>
-    $(window).on("resize load", function() {
-        var footerHeight = 0,
-            footerTop = 0,
-            $footer = $("#stickyFooter");
-
-        positionFooter();
-
-        function positionFooter() {
-            footerHeight = $footer.height();
-            footerTop = ($(window).scrollTop()+$(window).height()-footerHeight)+"px";
-
-            if(($(document.body).height()+footerHeight) < $(window).height()) {
-                $footer.css({
-                    position: "absolute"
-                })
-            }else{
-                $footer.css({
-                    position: "static"
-                })
-            }
-        }
-    })
-</script>
-
-
-<script>
-
-    if ($(document).height() <= $(window).height()) {
-        document.getElementById('stickyFooter').className = 'fixed-bottom';
-    }
-
-</script>
-
-
-
-
 
 <!--FOOTER 2-->
 
-<footer class="container-width text-center footer-bottom mt-4 container-fluid align-text-bottom" id="stickyFooter" style="background-color: #262f36; padding: 10px; width: 100%; display: block; position: fixed; bottom: 0;">
+<footer class="container-width text-center footer-bottom mt-4 container-fluid align-text-bottom" id="stickyFooter"
+        style="background-color: #262f36; padding: 10px; width: 100%; display: block;">
     <div class="row">
 
-            <div class="col-sm-4 col-lg-4 text-center">
-                <a href="{% url 'connect_therapy:about' %}" style="color:white; text-decoration: none">About Us</a>
-            </div>
-            <div class="col-sm-4 col-lg-4 text-center">
-               <a href="" style="color:white; text-decoration: none">Terms & Conditions</a>
-            </div>
-            <div class="col-sm-4 col-lg-4 text-center">
-                <a href="" style="color:white; text-decoration: none">Contact Us</a>
-            </div>
+        <div class="col-sm-4 col-lg-4 text-center">
+            <a href="{% url 'connect_therapy:about' %}" style="color:white; text-decoration: none">About Us</a>
+        </div>
+        <div class="col-sm-4 col-lg-4 text-center">
+            <a href="" style="color:white; text-decoration: none">Terms & Conditions</a>
+        </div>
+        <div class="col-sm-4 col-lg-4 text-center">
+            <a href="" style="color:white; text-decoration: none">Contact Us</a>
+        </div>
     </div>
     <br>
     <div class="row text-center">
@@ -361,5 +344,6 @@
 
 </body>
 {% block styles %}{% endblock %}
-{% block scripts %}{% endblock %}
+{% block scripts %}
+{% endblock %}
 </html>
