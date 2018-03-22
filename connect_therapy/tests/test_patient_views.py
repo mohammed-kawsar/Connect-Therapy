@@ -4,10 +4,8 @@ import pytz
 from decimal import Decimal
 from django.test import TestCase
 
+from connect_therapy.forms.patient import *
 from connect_therapy.views.patient import *
-
-
-# from django.contrib.sites.models import Site
 
 
 class PatientSignUpTest(TestCase):
@@ -22,7 +20,6 @@ class PatientSignUpTest(TestCase):
             'password1': 'meowmeow1',
             'password2': 'meowmeow1',
         })
-
         response = self.client.get(reverse_lazy('connect_therapy:patient-homepage'))
 
         self.assertEqual(response.status_code, 302)
@@ -149,7 +146,6 @@ class TestPatientCancel(TestCase):
         pcav = PatientCancelAppointmentView()
         pcav.object = appointment
         pcav.form_valid(None)
-
 
     def test_split_merged_appointment_into_3(self):
         user = User.objects.create_user('split@yahoo.co.uk',
@@ -341,7 +337,6 @@ class PatientProfileTest(TestCase):
         response = self.client.get(
             reverse_lazy('connect_therapy:patient-profile'))
 
-        self.assertEqual(str(response.context['user']), 'testuser1')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'connect_therapy/patient/profile.html')
 
@@ -395,6 +390,7 @@ class PatientProfileTest(TestCase):
         self.assertRedirects(response, '/patient/login')
 
     def test_patient_change_password(self):
+        login = self.client.login(username="testuser1", password="12345")
         response = self.client.post(
             reverse_lazy('connect_therapy:patient-change-password'), {
                 'new_password1': 'newpassword',
@@ -522,3 +518,53 @@ class PatientHomepageViewTest(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, '/patient/login')
+
+
+class PatientNotesBeforeTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
+        test_pat_1.save()
+
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        test_prac_1 = Practitioner(user=test_user_3,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   email_confirmed=True,
+                                   is_approved=True)
+        test_prac_1.save()
+
+        appointment = Appointment(practitioner=test_prac_1,
+                                  patient=test_pat_1,
+                                  start_date_and_time=datetime(year=2018,
+                                                               month=4,
+                                                               day=17,
+                                                               hour=15,
+                                                               minute=10,
+                                                               tzinfo=pytz.utc),
+                                  length=timedelta(hours=1))
+        appointment.save()
+
+    def test_practitioner_cannot_add_before_appointment_notes(self):
+        login = self.client.login(username="testuser3", password="12345")
+        response = self.client.post(
+            reverse_lazy('connect_therapy:patient-notes-before',
+                         kwargs={'pk': 1}), {
+                'patient_notes_before_meeting': 'Test notes before meeting.'})
+
+        response = self.client.get(reverse_lazy('connect_therapy:patient-login'))
+
+        self.assertEqual(response.status_code, 200)
