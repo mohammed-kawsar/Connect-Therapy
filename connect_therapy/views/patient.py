@@ -248,6 +248,12 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
         except Patient.DoesNotExist:
             return False
 
+    """
+        TODO: To help fix the 'update basket content issue' you might wanna do this:
+            - Add to the post method below to load the contents of the basket to the deal with appointments part.
+            - In deal with appointments, add to the basket rather than overriding the session variable
+    """
+
     def post(self, request, *args, **kwargs):
         app_ids = request.POST.getlist('app_id')
         practitioner_id = kwargs['pk']
