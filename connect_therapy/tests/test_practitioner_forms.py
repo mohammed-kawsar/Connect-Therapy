@@ -86,6 +86,7 @@ class PractitionerLoginFormTests(TestCase):
                                         )
         practitioner = Practitioner(user=user,
                                     mobile="+44848482732",
+                                    email_confirmed=True,
                                     bio="ABC",
                                     address_line_1="XXX",
                                     address_line_2="XXXXX",
@@ -98,6 +99,25 @@ class PractitionerLoginFormTests(TestCase):
         })
         self.assertTrue(form.is_valid())
 
+    def test_when_practitioner_exists_and_valid_but_email_not_approved(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12'
+                                        )
+        practitioner = Practitioner(user=user,
+                                    mobile="+44848482732",
+                                    bio="ABC",
+                                    address_line_1="XXX",
+                                    address_line_2="XXXXX",
+                                    is_approved=True,
+                                    email_confirmed=False
+                                    )
+        practitioner.save()
+        form = PractitionerLoginForm(data={
+            'username': 'test@example.com',
+            'password': 'woofwoof12'
+        })
+        self.assertFalse(form.is_valid())
+
     def test_when_practitioner_exists_and_valid_but_not_approved(self):
         user = User.objects.create_user(username='test@example.com',
                                         password='woofwoof12'
@@ -107,7 +127,8 @@ class PractitionerLoginFormTests(TestCase):
                                     bio="ABC",
                                     address_line_1="XXX",
                                     address_line_2="XXXXX",
-                                    is_approved=False
+                                    is_approved=False,
+                                    email_confirmed=True
                                     )
         practitioner.save()
         form = PractitionerLoginForm(data={
@@ -135,7 +156,8 @@ class PractitionerLoginFormTests(TestCase):
                                     bio="ABC",
                                     address_line_1="XXX",
                                     address_line_2="XXXXX",
-                                    is_approved=True
+                                    is_approved=True,
+                                    email_confirmed=True
                                     )
         practitioner.save()
         form = PractitionerLoginForm(data={
@@ -153,7 +175,8 @@ class PractitionerLoginFormTests(TestCase):
                                     bio="ABC",
                                     address_line_1="XXX",
                                     address_line_2="XXXXX",
-                                    is_approved=True
+                                    is_approved=True,
+                                    email_confirmed=True
                                     )
         practitioner.save()
         form = PractitionerLoginForm(data={

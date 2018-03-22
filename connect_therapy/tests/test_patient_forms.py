@@ -84,7 +84,8 @@ class PatientLoginFormTests(TestCase):
         patient = Patient(user=user,
                           date_of_birth=date(year=1995, month=2, day=20),
                           gender='M',
-                          mobile='+447476565333'
+                          mobile='+447476565333',
+                          email_confirmed=True
                           )
         patient.save()
         form = PatientLoginForm(data={
@@ -92,6 +93,23 @@ class PatientLoginFormTests(TestCase):
             'password': 'woofwoof12'
         })
         self.assertTrue(form.is_valid())
+
+    def test_when_patient_valid_and_valid_butemail_not_confirmed(self):
+        user = User.objects.create_user(username='test@example.com',
+                                        password='woofwoof12'
+                                        )
+        patient = Patient(user=user,
+                          date_of_birth=date(year=1995, month=2, day=20),
+                          gender='M',
+                          mobile='+447476565333',
+                          email_confirmed=False
+                          )
+        patient.save()
+        form = PatientLoginForm(data={
+            'username': 'test@example.com',
+            'password': 'woofwoof12'
+        })
+        self.assertFalse(form.is_valid())
 
     def test_when_patient_does_not_exist(self):
         user = User.objects.create_user(username='test@example.com',
@@ -110,7 +128,8 @@ class PatientLoginFormTests(TestCase):
         patient = Patient(user=user,
                           date_of_birth=date(year=1995, month=2, day=20),
                           gender='M',
-                          mobile='+447476565333'
+                          mobile='+447476565333',
+                          email_confirmed=True
                           )
         patient.save()
         form = PatientLoginForm(data={
@@ -126,7 +145,8 @@ class PatientLoginFormTests(TestCase):
         patient = Patient(user=user,
                           date_of_birth=date(year=1995, month=2, day=20),
                           gender='M',
-                          mobile='+447476565333'
+                          mobile='+447476565333',
+                          email_confirmed=True
                           )
         patient.save()
         form = PatientLoginForm(data={

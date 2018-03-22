@@ -25,7 +25,7 @@
                                 {% if appointment.is_live %}
                                     <a href="{% url 'connect_therapy:chat' appointment.id %}">
                                 {% endif %}
-                                    {{ appointment.start_date_and_time }}
+                                {{ appointment.start_date_and_time }}
                                 {% if appointment.is_live %}
                                     </a>
                                 {% endif %}
@@ -34,7 +34,7 @@
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
                             <p class="card-text"><b>Price:</b> £{{ appointment.price }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}"
+                            <a href="{% url 'connect_therapy:practitioner-view-notes' appointment.id %}"
                                class="btn btn-info">View Notes</a>
                             <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"
                                class="btn btn-info">Cancel Appointment</a>
@@ -80,7 +80,7 @@
                                 style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-notes' appointment.id %}"
+                            <a href="{% url 'connect_therapy:practitioner-make-notes' appointment.id %}"
                                class="btn btn-info">Add Notes</a><br>
                             <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"
                                class="btn btn-info">Cancel Appointment</a>
@@ -105,7 +105,7 @@
                                 style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-appointment-notes' appointment.id %}"
+                            <a href="{% url 'connect_therapy:practitioner-view-notes' appointment.id %}"
                                class="btn btn-info">View Notes</a><br>
                         </div>
                     </div>
@@ -114,6 +114,7 @@
                 <p class="lead"> No past appointments. </p>
             {% endfor %}
         </div>
+        <a href="{% url 'connect_therapy:practitioner-view-patients' %}" class="btn btn-info">View My Patients</a><br>
     </div>
 
 {% endblock %}
