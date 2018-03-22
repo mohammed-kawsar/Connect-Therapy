@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import UserAdmin as UserAdminParent
 
-from connect_therapy.models import Practitioner
+from connect_therapy.models import Practitioner, Appointment, Patient
 
 
 @admin.register(Practitioner)
@@ -29,9 +29,11 @@ class PractitionerAdmin(admin.ModelAdmin):
     mark_not_approved.short_description = "Mark as not approved"
     list_display = (get_user_first_name,
                     get_user_last_name,
-                    get_user_email, 'is_approved'
+                    get_user_email,
+                    'is_approved',
+                    'email_confirmed',
                     )
-    list_filter = ('is_approved',)
+    list_filter = ('is_approved', 'email_confirmed')
     actions = (mark_approved, mark_not_approved)
     search_fields = ('user__first_name', 'user__last_name', 'user__email')
 

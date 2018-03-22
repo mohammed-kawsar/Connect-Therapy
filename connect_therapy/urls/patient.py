@@ -1,5 +1,4 @@
 from django.urls import path
-from django.views.generic import TemplateView
 
 from connect_therapy.views.patient import *
 
@@ -28,7 +27,7 @@ urlpatterns = [
          auth_views.logout,
          {
              'next_page':
-                 reverse_lazy('connect_therapy:patient-logout-success'),
+                 reverse_lazy('connect_therapy:index'),
          },
          name='patient-logout'
          ),
@@ -42,26 +41,50 @@ urlpatterns = [
          PatientMyAppointmentsView.as_view(),
          name='patient-my-appointments'
          ),
-    path('notes-before-appointment/<int:appointment_id>',
+    path('make-notes/<int:pk>',
          PatientNotesBeforeView.as_view(),
-         name='patient-notes-before'
+         name='patient-make-notes'
          ),
     path('',
-         TemplateView.as_view(
-             template_name='connect_therapy/patient/homepage.html'
-         ),
+         PatientHomepageView.as_view(),
          name='patient-homepage'
          ),
     path('cancel-appointment/<int:pk>',
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'
          ),
-    path('view-previous-notes/<int:pk>',
+    path('view-notes/<int:pk>',
          PatientPreviousNotesView.as_view(),
-         name='patient-appointment-notes',
+         name='patient-view-notes',
          ),
     path('cancel-appointment/<int:pk>',
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'
          ),
+    path('book-appointment/<int:pk>',
+         ViewBookableAppointmentsView.as_view(),
+         name='patient-book-appointment'
+         ),
+    path('book-appointment/<int:pk>/review',
+         ReviewSelectedAppointmentsView.as_view(),
+         name='patient-book-appointment-review'),
+    path('checkout',
+         CheckoutView.as_view(),
+         name='patient-checkout'),
+    path('profile',
+         PatientProfileView.as_view(),
+         name='patient-profile'
+         ),
+    path('profile/edit/<int:pk>',
+         PatientEditDetailsView.as_view(),
+         name='patient-profile-edit'
+         ),
+    path('profile/change-password',
+         change_password,
+         name='patient-change-password'),
+    path('view-practitioners',
+         ViewAllPractitionersView.as_view(),
+         name='patient-view-practitioners'
+         ),
+
 ]

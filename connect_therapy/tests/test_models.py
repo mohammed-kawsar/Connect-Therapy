@@ -1,8 +1,9 @@
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 
 import pytz
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.utils import timezone
 
 from connect_therapy.models import Patient, Practitioner, Appointment
 
@@ -51,11 +52,11 @@ class AppointmentModelTests(TestCase):
                                          hour=15,
                                          minute=16,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertEqual(str(appointment),
-                         'John Smith - 2018-03-02 15:16:00+00:00 for 01:00:00')
+                         'John Smith - 2018-03-02 15:16:00+00:00 for 1:00:00')
 
     def test_session_salt_generation(self):
         u = User(first_name="John", last_name="Smith")
@@ -83,7 +84,7 @@ class AppointmentModelTests(TestCase):
                                          hour=15,
                                          minute=16,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertTrue(len(appointment.session_salt) == 10)
@@ -114,7 +115,111 @@ class AppointmentModelTests(TestCase):
                                          hour=15,
                                          minute=16,
                                          tzinfo=pytz.utc),
-            length=time(hour=1)
+            length=timedelta(hours=1)
         )
         appointment.save()
         self.assertTrue(len(appointment.session_id) > 0)
+
+    def test_is_live_when_under_5_mins(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        patient = Patient(user=u,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+
+        patient.save()
+
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+
+        appointment = Appointment(
+            practitioner=practitioner,
+            patient=patient,
+            start_date_and_time=timezone.now() + timedelta(minutes=4, seconds=59),
+            length=timedelta(hours=1)
+        )
+        appointment.save()
+        self.assertTrue(appointment.is_live())
+
+    def test_is_live_when_too_early(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        patient = Patient(user=u,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+
+        patient.save()
+
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+
+        appointment = Appointment(
+            practitioner=practitioner,
+            patient=patient,
+            start_date_and_time=timezone.now() + timedelta(minutes=10),
+            length=timedelta(hours=1)
+        )
+        appointment.save()
+        self.assertFalse(appointment.is_live())
+
+    def test_is_live_when_during(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        patient = Patient(user=u,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+
+        patient.save()
+
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+
+        appointment = Appointment(
+            practitioner=practitioner,
+            patient=patient,
+            start_date_and_time=timezone.now() - timedelta(minutes=10),
+            length=timedelta(hours=1)
+        )
+        appointment.save()
+        self.assertTrue(appointment.is_live())
+
+    def test_is_live_when_after(self):
+        u = User(first_name="John", last_name="Smith")
+        u.save()
+        patient = Patient(user=u,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+
+        patient.save()
+
+        practitioner = Practitioner(user=u,
+                                    address_line_1="My home",
+                                    postcode="EC12 1CV",
+                                    mobile="+447577293232",
+                                    bio="Hello")
+        practitioner.save()
+
+        appointment = Appointment(
+            practitioner=practitioner,
+            patient=patient,
+            start_date_and_time=timezone.now() - timedelta(hours=1),
+            length=timedelta(hours=1)
+        )
+        appointment.save()
+        self.assertFalse(appointment.is_live())

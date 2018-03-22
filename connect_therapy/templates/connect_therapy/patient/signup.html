@@ -1,10 +1,81 @@
 {% extends 'connect_therapy/base.html' %}
+{% load staticfiles %}
 {% block title %}Patient signup{% endblock %}
 
+{% block header %}
+
+    <header>
+       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
+    <div class="container-fluid">
 <form action="" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Sign up" />
+    <div class="form-group">
+        {{ form.as_p }}
+    </div>
+    <input type="submit" class="btn btn-success" value="Sign up" />
 </form>
+    <p>Just to let you know, you won't be able to login until your email is confirmed</p>
+    </div>
 {% endblock %}
+
+{% block styles %}
+
+    <style>
+
+    @media (max-width: 600px) {
+        div.ui-datepicker{ /* Overrides this class in Jquery Library */
+            font-size:12px !important;
+        }
+    }
+
+    #id_date_of_birth {
+        background-color: white;
+    }
+    /* Overrides these classes in Jquery Library */
+    .ui-datepicker-next,
+    .ui-datepicker-prev {
+        display: none;
+    }
+
+    .container-fluid {
+        padding-top: 20px !important;
+    }
+
+    </style>
+
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script>
+        document.getElementById("id_date_of_birth").readOnly = true; //Only allows to input dates using the DatePicker
+        $("#id_date_of_birth").datepicker({
+            changeMonth:true, //Month Drop-down
+            changeYear:true, //Year Drop-down
+            dateFormat: 'dd/mm/yy',
+            yearRange: "-100:+0" //Range of Years to Display
+        });
+
+        document.getElementById("id_password1").className="form-control";
+        document.getElementById("id_password2").className="form-control";
+        document.getElementById("id_date_of_birth").className="form-control";
+
+
+    </script>
+
+{% endblock %}
+
+
+
+
+

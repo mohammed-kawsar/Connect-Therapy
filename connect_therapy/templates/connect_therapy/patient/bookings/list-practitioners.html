@@ -1,0 +1,90 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}List of Therapists{% endblock %}
+{% block header %}
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{% static 'connect_therapy/css/list-practitoners.css' %}" type="text/css">
+{% endblock %}
+{% block content %}
+    <div class=" container-fluid text-center">
+        <table class="table table-hover">
+            <tr>
+                <th>Practitioner.</th>
+                <th></th>
+            </tr>
+            {% for practitioner in practitioners %}
+                <tr>
+                    <td>Dr. {{ practitioner.user.get_full_name }}</td>
+
+                    <td>
+                        <button class="btn"><a style="text-decoration: none"
+                                                        href="{% url 'connect_therapy:patient-book-appointment' practitioner.id %}">
+                            View Appointments
+                        </a></button>
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+{% endblock %}
+
+{% block styles %}
+
+    <style>
+
+        th {
+            font-size: 23px;
+            font-weight: 500;
+            background-color: lightgray;
+            text-transform: uppercase;
+        }
+
+        .container-fluid {
+            padding-right: 0px;
+            padding-left: 0px;
+        }
+
+        td {
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: uppercase;
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+    a {
+        text-transform: uppercase !important;
+        font-size: 14px;
+        font-weight: 400;
+        text-decoration: none;
+    }
+    
+    @media (max-width: 600px) {
+        th {
+            font-size: 20px;
+        }
+        a {
+            font-size: 12px;
+        }
+
+        .btn {
+            padding-right: 5px;
+            padding-left: 5px;
+        }
+
+        td {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    }
+    </style>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.getElementById("id_password").className = "form-control";
+
+    </script>
+{% endblock %}

@@ -1,10 +1,56 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Practitioner notes{% endblock %}
 
+{% block header %}
+
+    <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+
+{% endblock %}
+
 {% block content %}
 <form action="" method="post">
+    <h3 class="text-center display-4" style="font-weight: normal">Notes</h3>
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="submit" />
+    <br>
+    <p class="">Click <b><em>Submit</em></b> to Save Notes</p>
+    <input type="submit" class="btn btn-primary" value="submit" />
 </form>
+{% endblock %}
+{% block styles %}
+    <style>
+        textarea{
+            resize: none;
+        }
+
+        textarea{
+            font-size: 10px;
+        }
+
+        label {
+            font-size: 22px;
+            padding-top: 20px;
+        }
+    
+        @media (max-width: 600px) {
+
+            .display-4 {
+                font-size: 30px;
+            }
+
+            label {
+            font-size: 18px;
+            padding-top: 12px;
+
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+    </script>
 {% endblock %}
