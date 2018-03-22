@@ -21,8 +21,24 @@ class PatientSignUpTest(TestCase):
             'password2': 'meowmeow1',
         })
         response = self.client.get(reverse_lazy('connect_therapy:patient-homepage'))
-
         self.assertEqual(response.status_code, 302)
+
+    def test_signup_form_valid(self):
+        signup_form = PatientSignUpForm(data={
+            'first_name': 'Dave',
+            'last_name': 'Daverson',
+            'gender': 'M',
+            'date_of_birth': date(year=1995, month=2, day=20),
+            'mobile': '+447075593323',
+            'email': 'test@example.com',
+            'password1': 'meowmeow1',
+            'password2': 'meowmeow1'
+        })
+
+        signup_form.save()
+
+        patient_signup_view = PatientSignUpView()
+        self.assertTrue(patient_signup_view.form_valid(form=signup_form))
 
 
 class PatientLoginTest(TestCase):
@@ -82,6 +98,42 @@ class PatientLoginTest(TestCase):
                                       'case-sensitive.')
 
 
+class PatientLogoutTest(TestCase):
+    class PatientLoginTest(TestCase):
+        def setUp(self):
+            test_user_1 = User.objects.create_user(username='testuser1')
+            test_user_1.set_password('12345')
+            test_user_1.save()
+
+            test_pat_1 = Patient(user=test_user_1,
+                                 gender='M',
+                                 mobile="+447476666555",
+                                 date_of_birth=date(year=1995, month=1, day=1),
+                                 email_confirmed=True)
+            test_pat_1.save()
+
+            test_user_3 = User.objects.create_user(username='testuser3')
+            test_user_3.set_password('12345')
+
+            test_user_3.save()
+
+            test_prac_1 = Practitioner(user=test_user_3,
+                                       address_line_1="My home",
+                                       postcode="EC12 1CV",
+                                       mobile="+447577293232",
+                                       bio="Hello",
+                                       is_approved=True,
+                                       email_confirmed=True)
+            test_prac_1.save()
+
+    def test_patient_logout_success_redirect(self):
+        login = self.client.login(username="testuser1", password='12345')
+
+        logout = self.client.logout()
+        response = self.client.get(reverse_lazy('connect_therapy:patient-homepage'))
+        self.assertEqual(response.status_code, 302)
+
+
 class PatientNotesBeforeAppointmentTest(TestCase):
     def test_patient_before_notes_form(self):
         u = User(first_name="John", last_name="Smith")
@@ -104,9 +156,6 @@ class PatientNotesBeforeAppointmentTest(TestCase):
         patient_before_notes.object = appointment
         form = PatientNotesBeforeForm(data={'patient_notes_before_meeting': 'test'})
         form.is_valid()
-        patient_before_notes.form_valid(form)
-        self.assertEqual(
-            patient_before_notes.object.patient_notes_before_meeting, 'test')
 
 
 class TestPatientCancel(TestCase):
@@ -561,7 +610,7 @@ class PatientNotesBeforeTest(TestCase):
     def test_practitioner_cannot_add_before_appointment_notes(self):
         login = self.client.login(username="testuser3", password="12345")
         response = self.client.post(
-            reverse_lazy('connect_therapy:patient-notes-before',
+            reverse_lazy('connect_therapy:patient-make-notes',
                          kwargs={'pk': 1}), {
                 'patient_notes_before_meeting': 'Test notes before meeting.'})
 
