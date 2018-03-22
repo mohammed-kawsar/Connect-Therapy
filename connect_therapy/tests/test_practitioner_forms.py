@@ -226,7 +226,7 @@ class PractitionerDefineAppointmentTests(TestCase):
 
     def test_valid_set_appointment_form(self):
         form = PractitionerDefineAppointmentForm(data={
-            'start_date_and_time': datetime.datetime.now(),
+            'start_date_and_time': datetime.datetime.now() + datetime.timedelta(minutes=30),
             'length_0': 2,
             'length_1': 0
         })
@@ -234,7 +234,7 @@ class PractitionerDefineAppointmentTests(TestCase):
 
     def test_invalid_set_appointment_form_one(self):
         form = PractitionerDefineAppointmentForm(data={
-            'start_date_and_time': datetime.datetime.now(),
+            'start_date_and_time': datetime.datetime.now() + datetime.timedelta(minutes=30),
             'length_0': 34535,
             'length_1': 3455
         })
@@ -242,7 +242,7 @@ class PractitionerDefineAppointmentTests(TestCase):
 
     def test_invalid_set_appointment_form_two(self):
         form = PractitionerDefineAppointmentForm(data={
-            'start_date_and_time': datetime.datetime.now(),
+            'start_date_and_time': datetime.datetime.now() + datetime.timedelta(minutes=30),
             'length_0': "aa",
             'length_1': "bb"
         })
