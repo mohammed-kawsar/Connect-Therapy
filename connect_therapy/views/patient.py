@@ -248,6 +248,12 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
         except Patient.DoesNotExist:
             return False
 
+    """
+        TODO: To help fix the 'update basket content issue' you might wanna do this:
+            - Add to the post method below to load the contents of the basket to the deal with appointments part.
+            - In deal with appointments, add to the basket rather than overriding the session variable
+    """
+
     def post(self, request, *args, **kwargs):
         app_ids = request.POST.getlist('app_id')
         practitioner_id = kwargs['pk']
@@ -320,18 +326,21 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
         return render(request, self.get_template_names(), {"appointments": appointments_to_book})
 
     def post(self, request, *args, **kwargs):
-        # session_id would only be passed in to identify an appointment to delete
-        if 'session_id' in request.POST:
-            list_of_appointments = request.session['bookable_appointments']
-            if list_of_appointments is None:
-                return self.get(request, *args, **kwargs)
-            for app in list_of_appointments:
-                if app['session_id'] == request.POST['session_id']:
-                    request.session['bookable_appointments'] = list_of_appointments.remove(app)
-                    return self.get(request, *args, *kwargs)
+
+        if 'delete' in request.POST:
+            apps = request.session['bookable_appointments']
+            app_list = Appointment.convert_dictionaries_to_appointments(apps)
+
+            for app in app_list:
+                if app.session_id == request.POST['delete']:
+                    app_list.remove(app)
+                    # delete the appointment and update the session data
+                    request.session['bookable_appointments'] = Appointment.appointments_to_dictionary_list(app_list)
+                    return self.get(request, args, kwargs)
+
+            return self.get(request, args, kwargs)
         elif 'checkout' in request.POST:
             # TODO: Add payment gateway stuff here...probably
-
             appointment_dictionary = request.session['bookable_appointments']
             if appointment_dictionary is None:
                 return self.get(request, *args, **kwargs)
@@ -353,6 +362,8 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
                     'appointment': appointments_to_book})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
+
+            return self.get(request, args, kwargs)
 
 
 class PatientProfileView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):

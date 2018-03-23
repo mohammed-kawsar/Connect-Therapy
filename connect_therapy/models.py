@@ -72,20 +72,12 @@ class Appointment(models.Model):
     """These are notes left before the appointment by the patient,
     for the benefit of the practitioner
     """
-    """session salt is used to ensure that the session id is less likely to collide.
-    make_random_password is considered 'cryptographically secure' by Django
-    """
-    session_salt = models.CharField(max_length=255,
-                                    default=partial(User.objects.make_random_password, 10), editable=False)
+
     """This is used to associate an appointment to a specific chat session.
     This id can then be used to join that chat session
     """
     session_id = models.CharField(max_length=255,
-                                  default=partial(generate_session_id,
-                                                  salt=session_salt,
-                                                  practitioner=practitioner,
-                                                  patient=patient,
-                                                  date_time=start_date_and_time)
+                                  default=partial(User.objects.make_random_password, 50)
                                   , editable=False)
 
     """
@@ -93,6 +85,7 @@ class Appointment(models.Model):
     Max price is £999.
     """
     price = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(50))
+
     @classmethod
     def split_merged_appointment(cls, appointment):
         """
@@ -186,7 +179,6 @@ class Appointment(models.Model):
                                           start_date_and_time=parser.parse(app_dict['start_date_and_time']),
                                           length=cls._get_timedelta_from_datetime(parser.parse(app_dict['length'])),
                                           session_id=app_dict['session_id'],
-                                          session_salt=app_dict['session_salt'],
                                           price=Decimal(app_dict['price']))
                 appointments.append(appointment)
             else:
@@ -208,7 +200,7 @@ class Appointment(models.Model):
         for app in appointments:
             appointment_dict = {'id': app.id, 'practitioner_id': app.practitioner.id,
                                 'start_date_and_time': str(app.start_date_and_time), 'length': str(app.length),
-                                'session_id': str(app.session_id), 'session_salt': str(app.session_salt),
+                                'session_id': str(app.session_id),
                                 'price': str(app.price)}
             dict_list.append(appointment_dict)
         return dict_list

@@ -130,8 +130,3 @@ TWILIO_AUTH_TOKEN = '13af9344123ac994e18e922379fd260b'
 
 STATIC_URL = '/static/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-# EMAIL_USE_TLS = True
-# DEFAULT_FROM_EMAIL = 'test@gmail.com'
