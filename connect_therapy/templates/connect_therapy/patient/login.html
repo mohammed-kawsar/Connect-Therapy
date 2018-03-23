@@ -11,14 +11,6 @@
 {% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Login" />
-</form>
-    <a href="{% url 'password_reset' %}">forgot password?</a>
-=======
     <!-- Display messages -->
     {% if messages %}
         <div class="alert alert-info">
@@ -35,7 +27,6 @@
         <input type="submit" class="btn btn-primary" value="Login"/>
         <input type="submit" class="btn btn-warning" value="Reset Password"/>
     </form>
->>>>>>> develop
 {% endblock %}
 
 {% block scripts %}
