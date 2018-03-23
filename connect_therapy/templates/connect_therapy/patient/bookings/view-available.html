@@ -56,7 +56,9 @@
                             <label style="min-width: 100%">
                                 <h5 class="card-title">Slot {{ forloop.counter }}</h5>
                                 <div class="card-body">
-                                    {{ app }}
+                                    Date: {{ app.start_date_and_time|date }} <br>
+                                    Time: {{ app.start_date_and_time|time }} <br>
+                                    Practitioner: {{ app.practitioner}}
                                 </div>
                                 <input type="checkbox" class="card-text" name="app_id" style="display: none" value={{ app.id }}>
                             </label>
