@@ -206,11 +206,13 @@ class AppointmentBookingViewTest(TestCase):
         self.assertRedirects(resp, '/patient/login?next=/patient/view-practitioners')
 
     def test_view_bookable_appointments_page_post_valid_form(self):
-        # this tests what happens when we submit some data to the view page by post method
+        # this tests what happens when we submit some data to the view page using the post method
         login = self.client.login(username="testuser1", password="12345")
         resp_get = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment', kwargs={'pk': 1}))
 
         self.assertEquals(resp_get.status_code, 200)
+        # only one test has been done as the user input is limited to entering only what we want.
+        # so the user cannot submit erroneous data
 
         data = urlencode({
             'date': datetime.now().date()
@@ -226,12 +228,14 @@ class AppointmentBookingViewTest(TestCase):
         resp_get = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}))
 
         self.assertEquals(resp_get.status_code, 200)
+
+        # the app_is's below belong to valid appointments defined in the setUp(...) method
         resp_post = self.client.post(reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}),
                                      {
                                          'app_id': [4, 5, 6]
                                      })
 
-        # check that the appoinments have been added to the basket
+        # check that the appointments have been added to the basket
         apps = self.client.session['bookable_appointments']
         apps_list = Appointment.convert_dictionaries_to_appointments(apps)
         self.assertEquals(len(apps_list), 1)  # 1 appointment as 3 appointments would be merged
@@ -248,6 +252,12 @@ class AppointmentBookingViewTest(TestCase):
                                          'app_id': [1, 2, 3]
                                      })
 
+        # the basket should not have been created as no appointments should be added to it
+        try:
+            self.client.session['bookable_appointments']
+            self.assertTrue(False)
+        except KeyError:
+            self.assertTrue(True)
         self.assertEquals(resp_post.status_code, 200)
 
     def test_review_bookable_appointments_page_post_with_invalid_appointments(self):
@@ -259,6 +269,13 @@ class AppointmentBookingViewTest(TestCase):
                                      {
                                          'app_id': [12, 13, 14]
                                      })
+
+        # the basket should not have been created as no appointments should be added to it
+        try:
+            self.client.session['bookable_appointments']
+            self.assertTrue(False)
+        except KeyError:
+            self.assertTrue(True)
 
         self.assertEquals(resp_post.status_code, 200)
 
@@ -272,5 +289,119 @@ class AppointmentBookingViewTest(TestCase):
                                          'app_id': []
                                      })
 
+        # the basket should not have been created as no appointments should be added to it
+        try:
+            self.client.session['bookable_appointments']
+            self.assertTrue(False)
+        except KeyError:  # KeyError means we cant find the basket key
+            self.assertTrue(True)
+
         self.assertEquals(resp_post.status_code, 302)
         self.assertRedirects(resp_post, reverse_lazy("connect_therapy:patient-book-appointment", kwargs={'pk': 1}))
+
+    def test_checkout_page_booking_mergeable_appointments(self):
+        # some repetition to start with as we need to add some stuff to our checkout and I want this test to work
+        # in isolation to all other tests - as it should - i think...
+
+        login = self.client.login(username="testuser1", password="12345")
+        resp_get_review = self.client.get(
+            reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}))
+
+        self.assertEquals(resp_get_review.status_code, 200)
+
+        # the app_is's below belong to valid appointments defined in the setUp(...) method
+        resp_post_review = self.client.post(
+            reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}),
+            {
+                'app_id': [4, 5, 6]
+            })
+
+        # check that the appointments have been added to the basket
+        apps = self.client.session['bookable_appointments']
+        apps_list = Appointment.convert_dictionaries_to_appointments(apps)
+        self.assertEquals(len(apps_list), 1)  # 1 appointment as 3 appointments above would be merged into 1
+
+        # check that the appointments are unbooked
+        for app in apps_list:
+            self.assertEquals(app.patient, None)
+
+        self.assertEquals(resp_post_review.status_code, 200)
+
+        resp_get_checkout = self.client.get(reverse_lazy('connect_therapy:patient-checkout'))
+
+        self.assertEquals(resp_get_checkout.status_code, 200)
+        self.assertTemplateUsed("connect_therapy/patient/booking/checkout.html")
+
+        # checkout - book appointments with post request below
+        resp_get_checkout = self.client.post(reverse_lazy("connect_therapy:patient-checkout"), {
+            "checkout": "checkout"
+        })
+
+        # the basket (and contents) should have been deleted
+        try:
+            self.client.session['bookable_appointments']
+            self.assertTrue(False)
+        except KeyError:  # KeyError means we cant find the basket key
+            self.assertTrue(True)
+
+        # the mergeable appointments should have been deleted from session storage
+        try:
+            self.client.session['merged_appointments']
+            self.assertTrue(False)
+        except KeyError:  # KeyError means we cant find the basket key
+            self.assertTrue(True)
+
+        # finally check that the appointment we booked has indeed been booked.
+        # only one appointment should belong to the user with username "testuser1"
+        appointments = Appointment.objects.all().filter(patient__user__username="testuser1")
+        self.assertEquals(len(appointments), 1)
+
+    def test_checkout_page_booking_unmergeable_appointments(self):
+        # some repetition to start with as we need to add some stuff to our checkout and I want this test to work
+        # in isolation to all other tests - as it should - i think...
+
+        login = self.client.login(username="testuser1", password="12345")
+        resp_get_review = self.client.get(
+            reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}))
+
+        self.assertEquals(resp_get_review.status_code, 200)
+
+        # the app_is's below belong to valid appointments defined in the setUp(...) method
+        resp_post_review = self.client.post(
+            reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}),
+            {
+                'app_id': [4]
+            })
+
+        # check that the appointments have been added to the basket
+        apps = self.client.session['bookable_appointments']
+        apps_list = Appointment.convert_dictionaries_to_appointments(apps)
+        self.assertEquals(len(apps_list), 1)  # 1 appointment should be in the basket
+
+        # check that the appointments are unbooked
+        for app in apps_list:
+            self.assertEquals(app.patient, None)
+
+        self.assertEquals(resp_post_review.status_code, 200)
+
+        resp_get_checkout = self.client.get(reverse_lazy('connect_therapy:patient-checkout'))
+
+        self.assertEquals(resp_get_checkout.status_code, 200)
+        self.assertTemplateUsed("connect_therapy/patient/booking/checkout.html")
+
+        # checkout - book appointments with post request below
+        resp_get_checkout = self.client.post(reverse_lazy("connect_therapy:patient-checkout"), {
+            "checkout": "checkout"
+        })
+
+        # the basket (and contents) should have been deleted
+        try:
+            self.client.session['bookable_appointments']
+            self.assertTrue(False)
+        except KeyError:  # KeyError means we cant find the basket key
+            self.assertTrue(True)
+
+        # finally check that the appointment we booked has indeed been booked.
+        # only one appointment should belong to the user with username "testuser1"
+        appointments = Appointment.objects.all().filter(patient__user__username="testuser1")
+        self.assertEquals(len(appointments), 1)

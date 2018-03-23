@@ -341,12 +341,14 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
         elif 'checkout' in request.POST:
             # TODO: Add payment gateway stuff here...probably
             appointment_dictionary = request.session['bookable_appointments']
+            del request.session['bookable_appointments']  # empty the shopping basket
             if appointment_dictionary is None:
                 return self.get(request, *args, **kwargs)
             appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
 
             # first delete the appointments we merged, if any
             merged_dictionary = request.session['merged_appointments']
+            del request.session['merged_appointments'] # delete the merged appointments
             if merged_dictionary is None:
                 # no merges where made so we don't need to do anything with them
                 pass
@@ -356,6 +358,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
 
             # go ahead and book those appointments
             if Appointment.book_appointments(appointments_to_book, self.patient):
+
                 notifications.multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
                 return render(request, "connect_therapy/patient/bookings/booking-success.html", {
                     'appointment': appointments_to_book})
