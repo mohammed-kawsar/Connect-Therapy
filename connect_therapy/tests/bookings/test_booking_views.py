@@ -206,6 +206,7 @@ class AppointmentBookingViewTest(TestCase):
         self.assertRedirects(resp, '/patient/login?next=/patient/view-practitioners')
 
     def test_view_bookable_appointments_page_post_valid_form(self):
+        # this tests what happens when we submit some data to the view page by post method
         login = self.client.login(username="testuser1", password="12345")
         resp_get = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment', kwargs={'pk': 1}))
 
@@ -220,6 +221,7 @@ class AppointmentBookingViewTest(TestCase):
         self.assertEquals(resp_post.status_code, 200)
 
     def test_review_bookable_appointments_page_post_with_valid_appointments(self):
+        # this tests what happens when we submit some data to the review page by post method
         login = self.client.login(username="testuser1", password="12345")
         resp_get = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}))
 
@@ -228,6 +230,11 @@ class AppointmentBookingViewTest(TestCase):
                                      {
                                          'app_id': [4, 5, 6]
                                      })
+
+        # check that the appoinments have been added to the basket
+        apps = self.client.session['bookable_appointments']
+        apps_list = Appointment.convert_dictionaries_to_appointments(apps)
+        self.assertEquals(len(apps_list), 1)  # 1 appointment as 3 appointments would be merged
 
         self.assertEquals(resp_post.status_code, 200)
 
