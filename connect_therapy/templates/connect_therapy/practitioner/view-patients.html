@@ -56,15 +56,17 @@
     </script>
     <script>
  function searchFunction() {
-          var input, filter, table, tr, td, i;
+          var input, filter, table, tr, colOne, colTwo, colThree, i;
           input = document.getElementById("searchField");
           filter = input.value.toUpperCase();
           table = document.getElementById("patients");
           tr = table.getElementsByTagName("tr");
           for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[0];
-            if (td) {
-              if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            colOne = tr[i].getElementsByTagName("td")[0];
+            colTwo = tr[i].getElementsByTagName('td')[1];
+            colThree = tr[i].getElementsByTagName('td')[2];
+            if (colOne) {
+              if (colOne.innerHTML.toUpperCase().indexOf(filter) > -1 || colTwo.innerHTML.toUpperCase().indexOf(filter) > -1 || colThree.innerHTML.toUpperCase().indexOf(filter) > -1) {
                 tr[i].style.display = "";
               } else {
                 tr[i].style.display = "none";
