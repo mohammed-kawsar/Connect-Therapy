@@ -91,9 +91,6 @@ class AppointmentDateSelectForm(forms.Form):
         attrs={'class': 'form-control'}
     ), label="Select Date")
 
-    def is_valid(self):
-        valid = super(AppointmentDateSelectForm, self).is_valid()
-        return valid
 
 
 class PatientForm(forms.ModelForm):

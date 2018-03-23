@@ -1,11 +1,13 @@
 import datetime
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
 from betterforms.multiform import MultiModelForm
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from django.contrib.auth.models import User
 
-from connect_therapy.forms.practitioner.custom_duration_field import DurationField
+from connect_therapy.forms.practitioner.custom_duration_field import DurationField, decompress_duration
 from connect_therapy.models import Practitioner
 
 
@@ -142,21 +144,35 @@ class PractitionerDefineAppointmentForm(forms.Form):
         (00, '00'),
         (30, '30'),
     )
-    length = DurationField(required=False,
+    length = DurationField(required=True,
                            minute_interval_choices=minute_interval_choices,
                            help_text="Hour(s) Minute(s)")
 
     def clean_start_date_and_time(self):
         start_datetime = self.cleaned_data['start_date_and_time']
 
-        # Check appointment date is not in past.
-        if start_datetime.date() < datetime.date.today():
-            raise forms.ValidationError("Invalid date, cannot enter a past date!",
+        # Check appointment date and time is not in the past.
+        if start_datetime < timezone.now():
+            raise forms.ValidationError("Invalid date, cannot enter a time that has already passed!",
                                         code='invalid'
                                         )
-        if start_datetime.date() > datetime.date.today() + datetime.timedelta(weeks=12):
+        # Check appointment date is not greater than three months
+        if start_datetime.date() > datetime.date.today() + relativedelta(months=+3):
             raise forms.ValidationError("Invalid date, cannot enter a date more than 3 months ahead!",
                                         code='invalid'
                                         )
 
         return start_datetime
+
+    def clean_length(self):
+        length_ = self.cleaned_data['length']
+        if decompress_duration(length_) == [0, 0] :
+            raise forms.ValidationError(
+                "Invalid length, minimum length required is 30 minutes",
+                code='invalid'
+                )
+        return length_
+
+
+
+
