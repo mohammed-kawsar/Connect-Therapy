@@ -299,3 +299,5 @@ class PractitionerEditProfileTests(TestCase):
 
         data = ""
         self.assertEquals(decompress_duration(data), [None, None])
+
+

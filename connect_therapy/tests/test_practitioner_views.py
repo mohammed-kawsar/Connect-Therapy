@@ -384,14 +384,14 @@ class PractitionerNotesTest(TestCase):
     def test_sign_up_redirect(self):
         login = self.client.login(username="testuser2", password="12345")
         response = self.client.post(
-            reverse_lazy('connect_therapy:practitioner-notes',
+            reverse_lazy('connect_therapy:practitioner-view-notes',
                          kwargs={'pk': 1}), {
                 'text_1': 'Discuss this',
                 'text_2': 'Do this',
             })
 
         response = self.client.get(
-            reverse_lazy('connect_therapy:practitioner-notes',
+            reverse_lazy('connect_therapy:practitioner-view-notes',
                          kwargs={'pk': 1}))
 
         self.assertEqual(response.status_code, 302)
