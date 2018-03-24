@@ -9,14 +9,19 @@
     <div class=" container-fluid text-center">
         <table class="table table-hover" id="practitionerTable">
             <tr>
-                <th>Practitioner.</th>
-                <th><input type="text" class="form-control mr-sm-2" id="searchField" placeholder="Search" onkeyup="searchFunction()"></th>
+                <th>Practitioners</th>
+                <th><input type="text" class="form-control mr-sm-2" id="searchField" placeholder="Search Practitioners"
+                           onkeyup="searchFunction()"></th>
             </tr>
             {% for practitioner in practitioners %}
                 <tr>
                     <td>Dr. {{ practitioner.user.get_full_name }}</td>
 
                     <td>
+                        <a style="text-decoration: none"
+                           href="{% url 'connect_therapy:patient-practitioner-profile' practitioner.id %}">
+                            <button class="btn">View Profile</button>
+                        </a>
                         <a style="text-decoration: none"
                            href="{% url 'connect_therapy:patient-book-appointment' practitioner.id %}">
                             <button class="btn">View Appointments</button>
@@ -38,6 +43,13 @@
             font-weight: 500;
             background-color: lightgray;
             text-transform: uppercase;
+            vertical-align: middle !important;
+        }
+
+        th > input {
+            height: 45px;
+            vertical-align: middle;
+            width: 100%;
         }
 
         .container-fluid {
@@ -90,21 +102,21 @@
 
     <script>
         function searchFunction() {
-          var input, filter, table, tr, td, i;
-          input = document.getElementById("searchField");
-          filter = input.value.toUpperCase();
-          table = document.getElementById("practitionerTable");
-          tr = table.getElementsByTagName("tr");
-          for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[0];
-            if (td) {
-              if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-              } else {
-                tr[i].style.display = "none";
-              }
+            var input, filter, table, tr, td, i;
+            input = document.getElementById("searchField");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("practitionerTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
             }
-          }
         }
     </script>
 {% endblock %}
