@@ -231,7 +231,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().user.id and \
                self.get_object().email_confirmed and \
-               self.get_object().practitioner.is_approved
+               self.get_object().is_approved
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
