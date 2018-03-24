@@ -348,7 +348,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
 
             # first delete the appointments we merged, if any
             merged_dictionary = request.session['merged_appointments']
-            del request.session['merged_appointments'] # delete the merged appointments
+            del request.session['merged_appointments']  # delete the merged appointments
             if merged_dictionary is None:
                 # no merges where made so we don't need to do anything with them
                 pass
@@ -497,3 +497,9 @@ class PatientHomepageView(UserPassesTestMixin, generic.TemplateView):
             return patient.email_confirmed
         except Patient.DoesNotExist:
             return False
+
+
+class PractitionerProfileView(LoginRequiredMixin, DetailView):
+    model = Practitioner
+    login_url = reverse_lazy("connect_therapy:patient-login")
+    template_name = "connect_therapy/patient/practitioner-profile.html"
