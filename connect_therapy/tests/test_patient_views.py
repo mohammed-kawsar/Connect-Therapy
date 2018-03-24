@@ -6,6 +6,7 @@ from django.test import TestCase, RequestFactory
 
 from connect_therapy.forms.patient import *
 from connect_therapy.views.patient import *
+from urllib.parse import urlencode
 
 
 class PatientSignUpTest(TestCase):
@@ -19,12 +20,16 @@ class PatientSignUpTest(TestCase):
             'email': 'dave@example.com',
             'password1': 'meowmeow1',
             'password2': 'meowmeow1',
-        })
+        }, follow=True)
+        print(str(User.objects.count()))
         response = self.client.get(reverse_lazy('connect_therapy:patient-homepage'))
         self.assertEqual(response.status_code, 302)
 
-    def test_signup_form_valid(self):
-        signup_form = PatientSignUpForm(data={
+    def test_form_valid(self):
+        response_get = self.client.get(reverse_lazy('connect_therapy:patient-signup'))
+        self.assertEqual(response_get.status_code, 200)
+
+        data = urlencode({
             'first_name': 'Dave',
             'last_name': 'Daverson',
             'gender': 'M',
@@ -35,13 +40,14 @@ class PatientSignUpTest(TestCase):
             'password2': 'meowmeow1'
         })
 
-        signup_form.save()
+        response_post = self.client.post(reverse_lazy('connect_therapy:patient-signup'), data,
+                                         content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response_post.status_code, 200)
 
         patient_signup_view = PatientSignUpView()
         factory = RequestFactory()
         patient_signup_view.request = factory.get('patient/signup')
         self.assertTrue(patient_signup_view.form_valid(form=signup_form))
-
 
 class PatientLoginTest(TestCase):
     def setUp(self):
@@ -137,10 +143,11 @@ class PatientLogoutTest(TestCase):
 
 
 class PatientNotesBeforeAppointmentTest(TestCase):
-    def test_patient_before_notes_form(self):
-        u = User(first_name="John", last_name="Smith")
-        u.save()
-        patient = Patient(user=u,
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+        patient = Patient(user=test_user_1,
                           gender='M',
                           mobile="+447476666555",
                           date_of_birth=date(year=1995, month=1, day=1))
@@ -154,10 +161,22 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                                                                tzinfo=pytz.utc),
                                   length=timedelta(hours=1))
         appointment.save()
-        patient_before_notes = PatientNotesBeforeView()
-        patient_before_notes.object = appointment
-        form = PatientNotesBeforeForm(data={'patient_notes_before_meeting': 'test'})
-        form.is_valid()
+
+    def test_patient_make_notes_before_appointment(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response_get = self.client.get(
+            reverse_lazy('connect_therapy:patient-make-notes',
+                         kwargs={'pk': 1}))
+
+        self.assertEqual(response_get.status_code, 302)
+        data = urlencode({
+            'notes before appointment': 'Test make notes.'
+        })
+
+        response_post = self.client.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                                      kwargs={'pk': 1}), data,
+                                         content_type="application/x-www-form-urlencoded")
+        self.assertEqual(response_post.status_code, 302)
 
 
 class TestPatientCancel(TestCase):
