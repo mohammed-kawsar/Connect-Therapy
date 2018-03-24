@@ -2,7 +2,7 @@ from datetime import date, datetime
 
 import pytz
 from decimal import Decimal
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 
 from connect_therapy.forms.patient import *
 from connect_therapy.views.patient import *
@@ -38,6 +38,8 @@ class PatientSignUpTest(TestCase):
         signup_form.save()
 
         patient_signup_view = PatientSignUpView()
+        factory = RequestFactory()
+        patient_signup_view.request = factory.get('patient/signup')
         self.assertTrue(patient_signup_view.form_valid(form=signup_form))
 
 
