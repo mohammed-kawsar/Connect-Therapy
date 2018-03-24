@@ -44,10 +44,6 @@ class PatientSignUpTest(TestCase):
                                          content_type="application/x-www-form-urlencoded")
         self.assertEqual(response_post.status_code, 200)
 
-        patient_signup_view = PatientSignUpView()
-        factory = RequestFactory()
-        patient_signup_view.request = factory.get('patient/signup')
-        self.assertTrue(patient_signup_view.form_valid(form=signup_form))
 
 class PatientLoginTest(TestCase):
     def setUp(self):
@@ -564,6 +560,16 @@ class PatientHomepageViewTest(TestCase):
                                    email_confirmed=True)
         test_prac_1.save()
 
+        test_user_3 = User.objects.create_user(username='testuser2')
+        test_user_3.set_password('12345')
+        test_user_3.save()
+
+        test_pat_2 = Patient(user=test_user_3,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1))
+        test_pat_2.save()
+
     def test_logged_in_patient_view_homepage(self):
         login = self.client.login(username="testuser1", password="12345")
         response = self.client.get(reverse_lazy(
@@ -583,6 +589,14 @@ class PatientHomepageViewTest(TestCase):
         self.assertRedirects(response, '/patient/login')
 
     def test_if_not_logged_in_cannot_view_patient_homepage(self):
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:patient-homepage'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/patient/login')
+
+    def test_logged_in_patient_without_email_confirmed(self):
+        login = self.client.login(username="testuser3", password="12345")
         response = self.client.get(reverse_lazy(
             'connect_therapy:patient-homepage'))
 
