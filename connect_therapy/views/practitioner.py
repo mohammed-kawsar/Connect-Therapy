@@ -312,10 +312,8 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
                                                                                       self.request.user.practitioner)
         if not over_lap_free:
-            over_laps_str = re.sub("<|>|\[\[|\]\]", "", str(over_laps))
-            over_laps_str1, over_laps_str2 = over_laps_str.split(",")
-            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html',
-                          context={"overlaps1": over_laps_str1, "overlaps2": over_laps_str2})
+            clashes = over_laps
+            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html', context={"clashes": clashes})
         else:
             Appointment.split_merged_appointment(
                 appointment)  # This method will split if needed and then save the appointment
