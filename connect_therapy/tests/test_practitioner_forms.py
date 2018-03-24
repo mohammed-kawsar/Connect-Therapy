@@ -348,3 +348,4 @@ class PractitionerDefineAppointmentTests(TestCase):
             'length_1': 0
         })
         self.assertFalse(form.is_valid())
+
