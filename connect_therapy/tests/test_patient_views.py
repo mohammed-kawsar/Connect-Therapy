@@ -477,6 +477,13 @@ class PatientProfileTest(TestCase):
 
         self.assertEqual(response.status_code, 302)
 
+    def test_logged_in_patient_view_change_password_page(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:patient-change-password')
+        )
+        self.assertEqual(response.status_code, 200)
+
 
 class ViewAllPractitionersTest(TestCase):
     def setUp(self):
@@ -639,7 +646,8 @@ class PatientNotesBeforeTest(TestCase):
                                                                hour=15,
                                                                minute=10,
                                                                tzinfo=pytz.utc),
-                                  length=timedelta(hours=1))
+                                  length=timedelta(hours=1),
+                                  patient_notes_before_meeting='Test Notes')
         appointment.save()
 
     def test_practitioner_cannot_add_before_appointment_notes(self):
