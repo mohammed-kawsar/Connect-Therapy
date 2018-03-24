@@ -8,9 +8,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     </header>
 
-
-    {# NEED THE FULL JQUERY LIBRARY #}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     {% load static %}
     <script src="{% static 'connect_therapy/help_js/send-email-ajax.js' %}"></script>
 {% endblock %}
@@ -40,7 +37,7 @@
             <p>Please enable JavaScript via your browser settings for the best possible experience.</p>
         </noscript>
 
-<div class="jumbotron main-jumbotron">
+<div class="jumbotron">
     <button class="btn btn-link btn-block" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false"
             aria-controls="collapseOne">
         <div id="accordion">
@@ -164,7 +161,7 @@
         letter-spacing: 3px;
         text-transform: uppercase;
     }
-    
+
     @media (max-width: 600px) {
         h2.main-heading {
             padding-top: 0px;
