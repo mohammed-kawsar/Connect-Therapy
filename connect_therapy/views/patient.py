@@ -231,7 +231,7 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
                                    "appointments": appointments,
                                    "object": self.get_object()})
         else:
-            return self.get(request, pk)
+            return self.get(request)
 
 
 class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
@@ -365,17 +365,9 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
 
-            return self.get(request, args, kwargs)
-
 
 class PatientProfileView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'connect_therapy/patient/profile.html'
-
-    @login_required
-    def view_profile(self, request):
-        user = request.user
-        args = {'user': user}
-        return render(request, args)
 
 
 class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
