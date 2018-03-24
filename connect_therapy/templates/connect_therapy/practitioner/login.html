@@ -32,8 +32,6 @@
 {% block scripts %}
     <script>
         document.getElementById("id_password").className = "form-control";
-
-
     </script>
 {% endblock %}
 
@@ -42,5 +40,29 @@
         .container-fluid {
             padding-top: 20px !important;
         }
+
+        ul.errorlist.nonfield {
+            padding-left: 0px;
+        }
+
+        li {
+            font-size: 16px;
+            text-transform: capitalize;
+            font-weight: 500;
+            line-height: 22px;
+            list-style: none;
+            color: crimson;
+        }
+    
+    @media (max-width: 600px) {
+        li {
+            font-size: 15px;
+            line-height: 28px;
+            text-align: center;
+            font-weight: 400;
+        }
+
+    }
     </style>
 {% endblock %}
+

@@ -30,8 +30,8 @@
 {% endblock %}
 {% block content %}
     <div class="jumbotron col-sm-12">
-    <h3 class="">Practitioner Notes</h3>
-    <hr class="my-4">
+    <h3 class="heading3">Practitioner Notes</h3>
+    <hr>
     <p class="lead" style="word-wrap: break-word">{{ appointment.patient_notes_by_practitioner }}</p>
 
     <script>
@@ -50,12 +50,12 @@
 
     <div class="notes">
         <div class="jumbotron" style="margin-top: 10px;">
-            <h2>Review your appointment with {{ appointment.practitioner.user.get_full_name }} </h2>
+            <h2 class="practitioner-name">Review your appointment with {{ appointment.practitioner.user.get_full_name }} </h2>
             <hr>
-            <h4>Which was on {{ appointment.start_date_and_time|date }}
+            <h4 class="appointment-time-and-date">Which was on {{ appointment.start_date_and_time|date }}
                 at {{ appointment.start_date_and_time|time }}</h4>
             <hr>
-            <p>You can also upload or download (if some files were added) any files related to the appointment.</p>
+            <p class="info-text">You can also upload or download (if some files were added) any files related to the appointment.</p>
             <!-- Trigger the modal with a button -->
             <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
                 <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
 
@@ -145,7 +145,7 @@
         </div>
         <!-- Modal end -->
         <div class="container">
-            <h3>Here are the notes added by your therapist at the end of this appointment:</h3>
+            <h3 class="notes-heading">Here are the notes added by your therapist at the end of this appointment:</h3>
             {% if appointment.patient_notes_by_practitioner|length > 0 %}
                 <div class="container" style="margin: 10px;">
                     <div class="row">
@@ -157,10 +157,11 @@
                 <div class="container" style="margin: 10px;">
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
-                            <p>Oops. It seems that {{ appointment.practitioner.user.get_full_name }} hasn't added any
+                            <p class="alert-text">Oops. It seems that {{ appointment.practitioner.user.get_full_name }} hasn't added any
                                 notes
                                 yet.</p>
-                            <p>Check back later to see if they have been added.</p>
+                            <p class="alert-text-lead">Check back later to see if they have been added.</p>
+                            <hr>
                         </div>
                     </div>
                 </div>
@@ -169,8 +170,8 @@
         </div>
     </div>
 
-    <div class="jumbotron">
-        <h3>Your Notes</h3>
+    <div class="jumbotron new-section">
+        <h3 class="heading3-new-section">Your Notes</h3>
         {% if appointment.patient_notes_before_meeting|length > 0 %}
             <div class="container" style="margin: 10px;">
                 <div class="row">
@@ -181,10 +182,10 @@
             <div class="container" style="margin: 10px;">
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <h3>Oops. It seems that you haven't added any notes
+                        <h3 class="alert-text new-section">Oops. It seems that you haven't added any notes
                             yet.</h3>
-                        <p>Don't worry <, you can add them <a
-                                href={% url 'connect_therapy:patient-make-notes' appointment.id %}>here</a>.
+                        <p class="info-text new-section">Don't worry, you can add them <a class="btn btn-default"
+                                href={% url 'connect_therapy:patient-make-notes' appointment.id %}><b>here</b></a>
                         <p>
                     </div>
                 </div>
@@ -196,17 +197,227 @@
 
 {% block styles %}
     <style>
+
+        h3.heading3 {
+            text-align: center;
+            font-size: 30px;
+            letter-spacing: 1px;
+        }
+
+        h2.practitioner-name {
+            padding-bottom: 15px;
+            text-align: center;
+            text-transform: capitalize;
+            letter-spacing: 1px;
+            font-weight: 500;
+            font-size: 36px;
+        }
+
+        p.info-text {
+            font-size: 20px;
+            font-weight: 400;
+        }
+
+        div.jumbotron {
+            margin-bottom: 0px;
+            padding-bottom: 15px;
+        }
+
+        h3.notes-heading {
+            padding-top: 20px;
+            font-size: 26px;
+            text-transform: capitalize;
+            padding-bottom: 10px;
+        }
+
+        p.alert-text {
+            font-size: 20px;
+            font-weight: 400;
+        }
+
+        p.alert-text-lead {
+            font-size: 20px;
+            font-weight: 400;
+        }
+
+        h3.heading3-new-section {
+            text-align: center;
+            font-size: 30px;
+            letter-spacing: 1px;
+            padding-bottom: 14px;
+        }
+
+        p > a.btn.btn-default {
+            padding-left: 0px;
+            padding-top: 0px;
+            padding-right: 0px;
+            padding-bottom: 0px;
+        }
+
+        div.modal-header {
+            padding-top: 5px;
+        }
+
+        h4.modal-title {
+            padding-top: 10px;
+        }
+
+        button.close {
+            font-size: 40px;
+        }
+
+        #upload-tab:hover, #download-tab:hover{
+            background-color: lightgrey;
+        }
+
+        button.btn.btn-primary.btn-lg {
+            font-size: 16px;
+            text-transform: capitalize;
+        }
+
+
+
         @media (max-width: 600px) {
             .container-fluid {
                 padding-top: 20px;
             }
 
-            h3 {
+            .jumbotron {
+                margin-bottom: 0px;
+                padding-bottom: 13px;
+            }
+
+            h3.heading3 {
                 font-size: 25px;
+                vertical-align: middle;
+                text-align: center;
+                font-size: 30px;
+                padding-top: 6px;
+                letter-spacing: 1px;
+                font-weight: 500;
+            }
+
+            h2.practitioner-name {
+                text-align: center;
+                text-transform: capitalize;
+                line-height: 50px;
+                padding-bottom: 15px;
+                font-weight: 500;
+                letter-spacing: 1px;
+            }
+
+            h4.appointment-time-and-date {
+                text-align: center;
+                vertical-align: middle;
+                line-height: 40px;
+                letter-spacing: 1px;
+                font-weight: 500;
+                font-size: 23px;
+            }
+
+            p.info-text {
+                text-align: center;
+                vertical-align: middle;
+                font-size: 17px;
+                font-weight: 400;
+                letter-spacing: 0px;
+                line-height: 25px;
+            }
+
+            h3.notes-heading {
+                text-align: center;
+                line-height: 40px;
+                text-transform: capitalize;
+                font-size: 25px;
+                letter-spacing: 1px;
+                font-weight: 500
+            }
+
+            p.alert-text {
+                text-align: center;
+                padding-top: 20px;
+                line-height: 25px;
+                font-size: 17px;
+                font-weight: 400;
+                letter-spacing: 0px;
+                color: crimson;
+            }
+
+            p.alert-text-lead {
+                text-align: center;
+                font-size: 16px;
+                line-height: 25px;
+                color: black;
+                font-weight: 500;
+            }
+
+            h3.heading3-new-section {
+                font-size: 25px;
+                vertical-align: middle;
+                text-align: center;
+                font-size: 30px;
+                padding-top: 6px;
+                letter-spacing: 1px;
+                font-weight: 500;
+            }
+
+            .jumbotron.new-section {
+                padding-top: 0px;
+            }
+
+            h3.alert-text.new-section {
+                font-size: 22px;
+                font-weight: 400;
+                padding-top: 10px;
+                text-align: center;
+                line-height: 33px;
+            }
+
+            p.info-text.new-section {
+                line-height: 25px;
+                font-size: 15px;
+                text-align: center;
+                vertical-align: middle;
+                font-weight: 500;
+            }
+
+            p.info-text.new-section > a > b {
+                font-size: 15px;
+                font-weight: 700;
+                text-transform: capitalize;
+            }
+
+            a.btn.btn-primary {
+                font-size: 15px;
+                letter-spacing: 1px;
+                font-weight: 200;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            h4.modal-title {
+                font-size: 22px;
+            }
+
+            button.close {
+                font-size: 30px;
+            }
+
+            div#download-form.form-group > h3 {
+                font-size: 20px;
+                padding-top: 10px;
+                text-align: center;
             }
 
             .lead {
                 font-size: 17px;
+            }
+
+            button.btn.btn-primary.btn-lg {
+                width: 100%;
+                font-size: 17px;
+                letter-spacing: 0px;
+                font-weight: 300;
             }
         }
 
