@@ -290,6 +290,16 @@ class PatientNotesBeforeAppointmentTest(TestCase):
         response = view.post(request, 1)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_context_data(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': 1}))
+        view = PatientNotesBeforeView()
+        view.request = request
+        view.object = self.appointment
+        context = view.get_context_data()
+        self.assertEqual(len(context), 5)
+
 
 class TestPatientCancel(TestCase):
     def test_patient_cancel_form(self):
