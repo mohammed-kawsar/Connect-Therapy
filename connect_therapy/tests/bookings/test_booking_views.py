@@ -53,8 +53,7 @@ class AppointmentBookingViewTest(TestCase):
                                          month=4,
                                          day=2,
                                          hour=15,
-                                         minute=16,
-                                         tzinfo=pytz.utc),
+                                         minute=16),
             length=timedelta(hours=1)
         )
         test_appointment_1.save()
@@ -65,8 +64,7 @@ class AppointmentBookingViewTest(TestCase):
                                          month=4,
                                          day=2,
                                          hour=15,
-                                         minute=16,
-                                         tzinfo=pytz.utc),
+                                         minute=16),
             length=timedelta(hours=1)
         )
         test_appointment_2.save()
@@ -77,8 +75,7 @@ class AppointmentBookingViewTest(TestCase):
                                          month=4,
                                          day=2,
                                          hour=15,
-                                         minute=16,
-                                         tzinfo=pytz.utc),
+                                         minute=16),
             length=timedelta(hours=1)
         )
         test_appointment_3.save()
@@ -89,8 +86,7 @@ class AppointmentBookingViewTest(TestCase):
                                          month=4,
                                          day=2,
                                          hour=16,
-                                         minute=16,
-                                         tzinfo=pytz.utc),
+                                         minute=16),
             length=timedelta(hours=1)
         )
         test_appointment_4.save()
@@ -101,8 +97,7 @@ class AppointmentBookingViewTest(TestCase):
                                          month=4,
                                          day=2,
                                          hour=17,
-                                         minute=16,
-                                         tzinfo=pytz.utc),
+                                         minute=16),
             length=timedelta(hours=1)
         )
         test_appointment_5.save()
@@ -113,8 +108,7 @@ class AppointmentBookingViewTest(TestCase):
                                          month=4,
                                          day=2,
                                          hour=18,
-                                         minute=16,
-                                         tzinfo=pytz.utc),
+                                         minute=16),
             length=timedelta(hours=1)
         )
         test_appointment_6.save()

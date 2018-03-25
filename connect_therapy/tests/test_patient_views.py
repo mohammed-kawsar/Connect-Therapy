@@ -183,8 +183,7 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
 
@@ -436,8 +435,7 @@ class TestPatientCancel(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         pcav = PatientCancelAppointmentView()
@@ -460,8 +458,7 @@ class TestPatientCancel(TestCase):
                                        month=3,
                                        day=11,
                                        hour=12,
-                                       minute=00,
-                                       tzinfo=pytz.utc)
+                                       minute=00)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
                                   length=timedelta(hours=1, minutes=30))
@@ -495,8 +492,7 @@ class TestPatientCancel(TestCase):
                                        month=3,
                                        day=11,
                                        hour=12,
-                                       minute=00,
-                                       tzinfo=pytz.utc)
+                                       minute=00)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
                                   length=timedelta(hours=3))
@@ -530,8 +526,7 @@ class TestPatientCancel(TestCase):
                                        month=3,
                                        day=11,
                                        hour=12,
-                                       minute=00,
-                                       tzinfo=pytz.utc)
+                                       minute=00)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
                                   length=timedelta(minutes=30))

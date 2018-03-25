@@ -57,8 +57,7 @@ class EmailTests(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_patient_appointment_booked(appointment)
@@ -143,8 +142,7 @@ class EmailTests(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_patient_cancelled_in_good_time(patient, appointment)
@@ -185,8 +183,7 @@ class EmailTests(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_patient_cancelled_under_24_hours(patient, appointment)
@@ -259,8 +256,7 @@ class EmailTests(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_patient_practitioner_has_cancelled(appointment)
@@ -302,8 +298,7 @@ class EmailTests(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_practitioner_appointment_booked(appointment)
@@ -394,8 +389,7 @@ class EmailTests(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_practitioner_cancelled(appointment)
@@ -474,8 +468,7 @@ class EmailTests(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_practitioner_patient_cancelled_in_good_time(appointment)
@@ -516,8 +509,7 @@ class EmailTests(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_practitioner_patient_cancelled_in_under_24_hours(appointment)

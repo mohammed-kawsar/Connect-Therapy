@@ -16,8 +16,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(hours=3)
         )
         a1.save()
@@ -30,8 +29,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(hours=3)
         )
         a1.save()
@@ -41,8 +39,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=1,
                                          hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(hours=3)
         )
         a2.save()
@@ -56,8 +53,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=19,
                                          hour=18,
-                                         minute=10,
-                                         tzinfo=pytz.utc),
+                                         minute=10),
             length=timedelta(minutes=30),
             price=Decimal(50.00)
         )
@@ -68,8 +64,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=19,
                                          hour=18,
-                                         minute=40,
-                                         tzinfo=pytz.utc),
+                                         minute=40),
 
             length=timedelta(minutes=30),
             price=Decimal(50.00)
@@ -87,8 +82,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(hours=1),
             price=Decimal(50.00)
         )
@@ -99,8 +93,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=15,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
 
             length=timedelta(hours=1),
             price=Decimal(50.00)
@@ -113,8 +106,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=17,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
 
             length=timedelta(hours=1),
             price=Decimal(50.00)
@@ -132,8 +124,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
 
             length=timedelta(hours=1),
             price=Decimal(50.00)
@@ -145,8 +136,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=15,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(hours=1),
             price=Decimal(50.00)
 
@@ -158,8 +148,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=16,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(hours=1),
             price=Decimal(50.00)
         )
@@ -170,8 +159,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=17,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(hours=1),
             price=Decimal(50.00)
         )
@@ -182,8 +170,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=18,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
 
             length=timedelta(hours=1),
             price=Decimal(50.00)
@@ -196,8 +183,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=19,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(hours=1),
             price=Decimal(50.00)
         )
@@ -213,8 +199,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(minutes=30),
             price=Decimal(50.00)
         )
@@ -225,8 +210,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=15,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(minutes=45),
             price=Decimal(50.00)
 
@@ -238,8 +222,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=16,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(minutes=59),
             price=Decimal(50.00)
         )
@@ -250,8 +233,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=17,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
 
             length=timedelta(hours=1),
             price=Decimal(50.00)
@@ -263,8 +245,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=18,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(minutes=50),
             price=Decimal(50.00)
         )
@@ -275,8 +256,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=19,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
 
             length=timedelta(hours=1),
             price=Decimal(50.00)
@@ -294,8 +274,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=20,
-                                         tzinfo=pytz.utc),
+                                         minute=20),
             length=timedelta(minutes=30),
             price=Decimal(50.00)
         )
@@ -306,8 +285,7 @@ class TestAppointmentMerge(TestCase):
                                          month=3,
                                          day=2,
                                          hour=14,
-                                         minute=50,
-                                         tzinfo=pytz.utc),
+                                         minute=50),
             length=timedelta(minutes=30),
             price=Decimal(50.00)
         )
