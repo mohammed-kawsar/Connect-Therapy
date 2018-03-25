@@ -131,7 +131,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist or AttributeError:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object().patient is not None and \
                self.request.user.id == self.get_object().patient.user.id and \
