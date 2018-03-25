@@ -402,13 +402,10 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
         form = self.get_form()
         try:
             user = User.objects.get(username=form.cleaned_data['user']['email'])
-            if user == self.object.user:
+            if user == self.object.user and form.is_valid():
                 return self.form_valid(form)
         except User.DoesNotExist:
-            # if User.objects.get(email=user.email) == user.email:
-            #     return self.form_valid(form)
-            if form.is_valid():
-                return self.form_valid(form)
+            pass
 
         return self.form_invalid(form)
 
