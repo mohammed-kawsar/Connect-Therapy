@@ -269,17 +269,21 @@
 </div>
 
 <script>
-    var warning_alert = document.getElementById('id_alert');
-
-    if ((!!window.safari) == true) {
-        warning_alert.style.display = 'block';
-        $(".alert").alert();
-    } else {
-        $('.alert').alert('close');
-    }
-
+        $(document).ready( function () {
+            var warning_alert = document.getElementById('id_alert');
+            var isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+            var iOS = /iPad|iPhone|iPod|mac/.test(navigator.userAgent) && !window.MSStream;
+                if (isSafari && iOS) {
+                    warning_alert.style.display = 'block';
+                    $(".alert").alert();
+                } else if(isSafari) {
+                    warning_alert.style.display = 'block';
+                    $(".alert").alert();
+                } else {
+                    $('.alert').alert('close');
+                }
+        })
 </script>
-
 
 <div class="container">
 

@@ -285,13 +285,21 @@
 
 {% block scripts %}
     <script>
-
-        $("#myModal").modal({
-            show: false
-        });
-        if ((!!window.safari) == true) {
-            $("#myModal").modal('show');
-
-        }
+        $(document).ready( function () {
+            $("#myModal").modal({
+                show: false
+            });
+            var isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+            var iOS = /iPad|iPhone|iPod|mac/.test(navigator.userAgent) && !window.MSStream;
+                if (isSafari && iOS) {
+                    $("#myModal").modal('show');
+                } else if(isSafari) {
+                    $("#myModal").modal('show');
+                } else {
+                    $("#myModal").modal({
+                        show: false
+                    });
+                }
+        })
     </script>
 {% endblock %}
