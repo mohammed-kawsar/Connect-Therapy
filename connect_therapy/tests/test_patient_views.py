@@ -29,7 +29,7 @@ class PatientSignUpTest(TestCase):
         response_get = self.client.get(reverse_lazy('connect_therapy:patient-signup'))
         self.assertEqual(response_get.status_code, 200)
 
-        data = urlencode({
+        data = {
             'first_name': 'Dave',
             'last_name': 'Daverson',
             'gender': 'M',
@@ -38,11 +38,19 @@ class PatientSignUpTest(TestCase):
             'email': 'test@example.com',
             'password1': 'meowmeow1',
             'password2': 'meowmeow1'
-        })
+        }
 
-        response_post = self.client.post(reverse_lazy('connect_therapy:patient-signup'), data,
-                                         content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response_post.status_code, 200)
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-signup'))
+        view = PatientSignUpView()
+        view.request = request
+        form = PatientSignUpForm(data=data)
+        response = view.form_valid(form)
+        try:
+            user = User.objects.get(username='test@example.com')
+            self.assertEqual(user.first_name, 'Dave')
+        except User.DoesNotExist:
+            self.assertTrue(False, 'This should not have been reached')
 
 
 class PatientLoginTest(TestCase):
@@ -103,32 +111,31 @@ class PatientLoginTest(TestCase):
 
 
 class PatientLogoutTest(TestCase):
-    class PatientLoginTest(TestCase):
-        def setUp(self):
-            test_user_1 = User.objects.create_user(username='testuser1')
-            test_user_1.set_password('12345')
-            test_user_1.save()
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
 
-            test_pat_1 = Patient(user=test_user_1,
-                                 gender='M',
-                                 mobile="+447476666555",
-                                 date_of_birth=date(year=1995, month=1, day=1),
-                                 email_confirmed=True)
-            test_pat_1.save()
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
+        test_pat_1.save()
 
-            test_user_3 = User.objects.create_user(username='testuser3')
-            test_user_3.set_password('12345')
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
 
-            test_user_3.save()
+        test_user_3.save()
 
-            test_prac_1 = Practitioner(user=test_user_3,
-                                       address_line_1="My home",
-                                       postcode="EC12 1CV",
-                                       mobile="+447577293232",
-                                       bio="Hello",
-                                       is_approved=True,
-                                       email_confirmed=True)
-            test_prac_1.save()
+        test_prac_1 = Practitioner(user=test_user_3,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   is_approved=True,
+                                   email_confirmed=True)
+        test_prac_1.save()
 
     def test_patient_logout_success_redirect(self):
         login = self.client.login(username="testuser1", password='12345')
