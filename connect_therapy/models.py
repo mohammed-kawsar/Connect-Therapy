@@ -269,7 +269,7 @@ class Appointment(models.Model):
         for _id in selected_appointments_id:
             try:
                 appointment = Appointment.objects.get(pk=_id)
-                if appointment.start_date_and_time >= datetime.now(pytz.UTC) and \
+                if appointment.start_date_and_time >= datetime.now() and \
                         appointment.practitioner == selected_practitioner and \
                         appointment.patient is None:
                     appointments_to_book.append(Appointment.objects.get(pk=_id))

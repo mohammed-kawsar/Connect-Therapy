@@ -13,8 +13,7 @@ class TestAppointmentSplit(TestCase):
                                        month=3,
                                        day=11,
                                        hour=12,
-                                       minute=00,
-                                       tzinfo=pytz.utc)
+                                       minute=00)
         appointment = Appointment(
             start_date_and_time=start_date_and_time,
             length=timedelta(hours=1, minutes=30))
@@ -37,8 +36,7 @@ class TestAppointmentSplit(TestCase):
                                        month=3,
                                        day=11,
                                        hour=12,
-                                       minute=00,
-                                       tzinfo=pytz.utc)
+                                       minute=00)
         appointment = Appointment(start_date_and_time=start_date_and_time,
                                   length=timedelta(hours=3))
 
@@ -60,8 +58,7 @@ class TestAppointmentSplit(TestCase):
                                        month=3,
                                        day=11,
                                        hour=12,
-                                       minute=00,
-                                       tzinfo=pytz.utc)
+                                       minute=00)
         appointment = Appointment(start_date_and_time=start_date_and_time,
                                   length=timedelta(minutes=30))
         appointment.save()

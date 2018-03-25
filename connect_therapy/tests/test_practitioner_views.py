@@ -101,8 +101,7 @@ class TestPractitionerNotes(TestCase):
                                                                         month=4,
                                                                         day=17,
                                                                         hour=15,
-                                                                        minute=10,
-                                                                        tzinfo=pytz.utc),
+                                                                        minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         pnv = PractitionerNotesView()
@@ -149,8 +148,7 @@ class TestPractitionerAllPatientsView(TestCase):
                                                                          month=4,
                                                                          day=15,
                                                                          hour=15,
-                                                                         minute=10,
-                                                                         tzinfo=pytz.utc),
+                                                                         minute=10),
                                    length=timedelta(hours=1))
         appointment1.save()
         appointment2 = Appointment(practitioner=practitioner,
@@ -159,8 +157,7 @@ class TestPractitionerAllPatientsView(TestCase):
                                                                          month=4,
                                                                          day=17,
                                                                          hour=15,
-                                                                         minute=10,
-                                                                         tzinfo=pytz.utc),
+                                                                         minute=10),
                                    length=timedelta(hours=1))
         appointment2.save()
         appointment3 = Appointment(practitioner=practitioner,
@@ -169,8 +166,7 @@ class TestPractitionerAllPatientsView(TestCase):
                                                                          month=6,
                                                                          day=14,
                                                                          hour=15,
-                                                                         minute=10,
-                                                                         tzinfo=pytz.utc),
+                                                                         minute=10),
                                    length=timedelta(hours=1))
         appointment3.save()
         c = Client()

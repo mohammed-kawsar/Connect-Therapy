@@ -50,13 +50,12 @@ class AppointmentModelTests(TestCase):
                                          month=3,
                                          day=2,
                                          hour=15,
-                                         minute=16,
-                                         tzinfo=pytz.utc),
+                                         minute=16),
             length=timedelta(hours=1)
         )
         appointment.save()
         self.assertEqual(str(appointment),
-                         'John Smith - 2018-03-02 15:16:00+00:00 for 1:00:00')
+                         'John Smith - 2018-03-02 15:16:00 for 1:00:00')
 
     def test_is_live_when_under_5_mins(self):
         u = User(first_name="John", last_name="Smith")
