@@ -258,6 +258,38 @@ class PatientNotesBeforeAppointmentTest(TestCase):
         self.assertEqual(self.appointment.patient_notes_before_meeting,
                          'Test make notes.')
 
+    def test_post_when_form_valid(self):
+        data = {
+            'patient_notes_before_meeting': 'Test make notes.'
+        }
+        form = PatientNotesBeforeForm(data=data)
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': 1}))
+        view = PatientNotesBeforeView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        view.get_form = lambda form_class=None: form
+        view.post(request, 1)
+        self.assertEqual(self.appointment.patient_notes_before_meeting,
+                         'Test make notes.')
+
+    def test_post_when_form_invalid(self):
+        data = {
+            'patient_notes_before_meeting': 'Test make notes.'
+        }
+        form = PatientNotesBeforeForm(data=data)
+        form.is_valid = lambda: False
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': 1}))
+        view = PatientNotesBeforeView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        view.get_form = lambda form_class=None: form
+        response = view.post(request, 1)
+        self.assertEqual(response.status_code, 200)
+
 
 class TestPatientCancel(TestCase):
     def test_patient_cancel_form(self):
