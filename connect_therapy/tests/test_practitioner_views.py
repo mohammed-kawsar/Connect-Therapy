@@ -2,7 +2,8 @@ from datetime import datetime, time, date
 
 import pytz
 from django.contrib.auth.models import User
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
+from django.contrib.auth.models import AnonymousUser
 
 from connect_therapy.forms.practitioner.practitioner import PractitionerNotesForm
 from connect_therapy.models import Practitioner, Appointment, Patient
@@ -28,6 +29,37 @@ class PractitionerSignUpTest(TestCase):
         response = self.client.get(reverse_lazy('connect_therapy:practitioner-homepage'))
 
         self.assertEqual(response.status_code, 302)
+
+    # def test_form_valid(self):
+    #     response_get = self.client.get(reverse_lazy('connect_therapy:practitioner-signup'))
+    #     self.assertEqual(response_get.status_code, 200)
+    #
+    #     data = {
+    #         'first_name': 'Chris',
+    #         'last_name': 'Harris',
+    #         'email': 'chris@yahoo.com',
+    #         'mobile': '07893839383',
+    #         'date_of_birth': date(year=1971, month=1, day=1),
+    #         'address1': '1 Fetter Lane',
+    #         'address2': '',
+    #         'postcode': 'E1 WCX',
+    #         'bio': 'Here to serve',
+    #         'password1': 'makapaka!',
+    #         'password2': 'makapaka!'
+    #     }
+    #
+    #     factory = RequestFactory()
+    #     request = factory.post(reverse_lazy('connect_therapy:practitioner-signup'))
+    #     view = PractitionerSignUpView()
+    #     view.request = request
+    #     form = PractitionerSignUpForm(data=data)
+    #     form.is_valid()
+    #     response = view.form_valid(form)
+    #     try:
+    #         user = User.objects.get(username='chris@yahoo.com')
+    #         self.assertEqual(user.first_name, 'Chris')
+    #     except User.DoesNotExist:
+    #         self.assertTrue(False, 'This should not have been reached')
 
 
 class PractitionerLoginTest(TestCase):
@@ -113,6 +145,35 @@ class TestPractitionerNotes(TestCase):
         pnv.form_valid(form)
         self.assertEqual(pnv.object.practitioner_notes, 'test')
         self.assertEqual(pnv.object.patient_notes_by_practitioner, 'text')
+
+    def test_test_func_when_user_has_no_practitioner(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
+                                            kwargs={'pk': 1}))
+        request.user = AnonymousUser()
+        view = PractitionerNotesView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    # def test_test_func_when_appointment_has_no_patient(self):
+    #     appointment = Appointment(patient=None,
+    #                               start_date_and_time=datetime.datetime(year=2018,
+    #                                                            month=4,
+    #                                                            day=17,
+    #                                                            hour=15,
+    #                                                            minute=10,
+    #                                                            tzinfo=pytz.utc),
+    #                               length=timedelta(hours=1))
+    #     appointment.save()
+    #
+    #     factory = RequestFactory()
+    #     request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
+    #                                         kwargs={'pk': appointment.pk}))
+    #     request.user = self.request.user.practitioner
+    #     view = PractitionerNotesView()
+    #     view.request = request
+    #     view.get_object = lambda queryset=None: appointment
+    #     self.assertFalse(view.test_func())
 
 
 class TestPractitionerAllPatientsView(TestCase):
