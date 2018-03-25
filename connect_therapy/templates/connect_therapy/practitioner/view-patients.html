@@ -1,6 +1,11 @@
 {% extends 'connect_therapy/base.html' %}
 {% block title %}Your Patients{% endblock %}
 {% load staticfiles %}
+{% block header %}
+    <header>
+         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    </header>
+{% endblock %}
 {% block content %}
     <label class="heading">patients</label>
      <input class="form-control mr-sm-2" id="searchField" type="search" placeholder="Search" aria-label="Search" onkeydown="searchFunction()">
