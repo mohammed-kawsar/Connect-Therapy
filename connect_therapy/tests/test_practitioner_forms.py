@@ -334,7 +334,7 @@ class PractitionerDefineAppointmentTests(TestCase):
     # Test that a practitioner should not be able to set appointment with a time that has already passed.
     def test_set_appointment_form_time_in_past(self):
         form = PractitionerDefineAppointmentForm(data={
-            'start_date_and_time': datetime.datetime.today() - datetime.timedelta(hours=1),
+            'start_date_and_time': timezone.now() - datetime.timedelta(hours=1),
             'length_0': 2,
             'length_1': 0
         })
