@@ -385,9 +385,6 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
-
         try:
             self.request.user.patient
         except (Patient.DoesNotExist, AttributeError) as e:
