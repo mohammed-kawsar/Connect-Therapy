@@ -147,9 +147,7 @@ class Appointment(models.Model):
         :param patient: The patient booking the appointment
         """
         for appointment in appointments:
-            try:
-                appointment.patient
-            except Patient.DoesNotExist:
+            if appointment.patient is not None:
                 return False
 
         for app in appointments:

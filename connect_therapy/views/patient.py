@@ -66,7 +66,7 @@ class PatientMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
         try:
             patient = Patient.objects.get(user=self.request.user)
             return patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     def get_context_data(self, *args, **kwargs):
@@ -93,7 +93,7 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object().patient is not None and \
                self.request.user.id == self.get_object().patient.user.id and \
@@ -131,7 +131,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object().patient is not None and \
                self.request.user.id == self.get_object().patient.user.id and \
@@ -177,7 +177,7 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object().patient is not None and \
                self.request.user.id == self.get_object().patient.user.id and \
@@ -205,7 +205,7 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
         try:
             patient = Patient.objects.get(user=self.request.user)
             return patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     def get(self, request, **kwargs):
@@ -231,7 +231,7 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
                                    "appointments": appointments,
                                    "object": self.get_object()})
         else:
-            return self.get(request, pk)
+            return self.get(request)
 
 
 class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
@@ -245,7 +245,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
         try:
             self.patient = Patient.objects.get(user=self.request.user)
             return self.patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     """
@@ -278,10 +278,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
                 # all valid
                 bookable_appointments, merged_appointments = Appointment.merge_appointments(appointments_to_book)
 
-                # show user message about merged appointments
-                if len(merged_appointments) == 1:
-                    messages.success(request, str(len(merged_appointments)) + " appointment was merged")
-                elif len(merged_appointments) > 1:
+                if len(merged_appointments) > 1:
                     messages.success(request, str(len(merged_appointments)) + " appointments were merged")
 
                 # add to session data - used by the checkout
@@ -310,7 +307,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
         try:
             self.patient = Patient.objects.get(user=self.request.user)
             return self.patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     def get(self, request, *args, **kwargs):
@@ -318,8 +315,6 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
         try:
             appointment_dictionary = request.session['bookable_appointments']
         except KeyError:
-            return render(request, self.get_template_names(), {"appointments": appointments_to_book})
-        if appointment_dictionary is None:
             return render(request, self.get_template_names(), {"appointments": appointments_to_book})
         appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
         return render(request, self.get_template_names(), {"appointments": appointments_to_book})
@@ -340,19 +335,18 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             return self.get(request, args, kwargs)
         elif 'checkout' in request.POST:
             # TODO: Add payment gateway stuff here...probably
-            appointment_dictionary = request.session['bookable_appointments']
-            del request.session['bookable_appointments']  # empty the shopping basket
-            if appointment_dictionary is None:
+            try:
+                appointment_dictionary = request.session['bookable_appointments']
+            except KeyError:
                 return self.get(request, *args, **kwargs)
+            del request.session['bookable_appointments']  # empty the shopping basket
+
             appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
 
             # first delete the appointments we merged, if any
             merged_dictionary = request.session['merged_appointments']
             del request.session['merged_appointments']  # delete the merged appointments
-            if merged_dictionary is None:
-                # no merges where made so we don't need to do anything with them
-                pass
-            else:
+            if merged_dictionary is not None:
                 merged_appointment_list = Appointment.convert_dictionaries_to_appointments(merged_dictionary)
                 Appointment.delete_appointments(merged_appointment_list)
 
@@ -364,8 +358,6 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
                     'appointment': appointments_to_book})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
-
-            return self.get(request, args, kwargs)
 
 
 class PatientProfileView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
@@ -383,12 +375,6 @@ class PatientProfileView(LoginRequiredMixin, UserPassesTestMixin, generic.Templa
         except Patient.DoesNotExist:
             return False
 
-    @login_required
-    def view_profile(self, request):
-        user = request.user
-        args = {'user': user}
-        return render(request, args)
-
 
 class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
     model = Patient
@@ -399,12 +385,9 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
-
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().user.id and \
@@ -495,7 +478,7 @@ class PatientHomepageView(UserPassesTestMixin, generic.TemplateView):
         try:
             patient = Patient.objects.get(user=self.request.user)
             return patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
 
