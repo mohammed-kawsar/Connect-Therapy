@@ -278,10 +278,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
                 # all valid
                 bookable_appointments, merged_appointments = Appointment.merge_appointments(appointments_to_book)
 
-                # show user message about merged appointments
-                if len(merged_appointments) == 1:
-                    messages.success(request, str(len(merged_appointments)) + " appointment was merged")
-                elif len(merged_appointments) > 1:
+                if len(merged_appointments) > 1:
                     messages.success(request, str(len(merged_appointments)) + " appointments were merged")
 
                 # add to session data - used by the checkout
