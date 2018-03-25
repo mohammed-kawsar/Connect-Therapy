@@ -92,7 +92,6 @@ class AppointmentDateSelectForm(forms.Form):
     ), label="Select Date")
 
 
-
 class PatientForm(forms.ModelForm):
     date_of_birth = forms.DateField(help_text=" Format: YYYY-MM-DD",
                                     input_formats=[
