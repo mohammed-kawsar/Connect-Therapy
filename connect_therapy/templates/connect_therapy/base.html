@@ -272,7 +272,7 @@
         $(document).ready( function () {
             var warning_alert = document.getElementById('id_alert');
             var isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
-            var iOS = /iPad|iPhone|iPod|mac/.test(navigator.userAgent) && !window.MSStream;
+            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
                 if (isSafari && iOS) {
                     warning_alert.style.display = 'block';
                     $(".alert").alert();
