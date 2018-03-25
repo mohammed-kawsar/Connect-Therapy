@@ -11,11 +11,22 @@
     <div class="container-fluid">
         <h1>You have overlaps for the following appointments</h1></br>
         <div class="jumbotron" style="text-align: center; line-height: 29px; padding-bottom: 29px">
-            <p class="lead">{{ overlaps1 }}</p>
-            <p class="lead">{{ "and" }}</p>
-            <p class="lead">{{ overlaps2 }}</p>
+            <table class="table table-hover">
+                {% for i,j in clashes %}
+                    <tr>
+                        <td>Dr. {{ i.practitioner.user.get_full_name }}
+                            on {{ i.start_date_and_time }}</td>
+
+                        <td>clashes with</td>
+
+                        <td>Dr. {{ j.practitioner.user.get_full_name }}
+                            on {{ j.start_date_and_time }}</td>
+                    </tr>
+                {% endfor %}
+
+            </table>
             <hr class="my-4">
-            <a href="{% url 'connect_therapy:practitioner-set-appointments'%}" class="btn btn-primary">Back</a>
+            <a href="{% url 'connect_therapy:practitioner-set-appointments' %}" class="btn btn-primary">Back</a>
         </div>
     </div>
 {% endblock %}

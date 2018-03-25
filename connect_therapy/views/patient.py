@@ -368,8 +368,20 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             return self.get(request, args, kwargs)
 
 
-class PatientProfileView(LoginRequiredMixin, generic.TemplateView):
+class PatientProfileView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/patient/profile.html'
+    model = Patient
+    login_url = reverse_lazy('connect_therapy:patient-login')
+    redirect_field_name = None
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            patient = Patient.objects.get(user=self.request.user)
+            return patient.email_confirmed
+        except Patient.DoesNotExist:
+            return False
 
     @login_required
     def view_profile(self, request):
@@ -389,6 +401,7 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
     def test_func(self):
         if self.request.user.is_anonymous:
             return False
+
         try:
             self.request.user.patient
         except Patient.DoesNotExist:
