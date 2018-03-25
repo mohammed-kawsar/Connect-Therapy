@@ -41,10 +41,10 @@
                             <tr>
                                 {% if i.patient is None %}
                                     <td>Dr. {{ i.practitioner.user.get_full_name }}
-                                        on {{ i.start_date_and_time }}</td>
+                                        on {{ i.start_date_and_time }} for {{ i.length }}</td>
                                 {% else %}
                                     <td bgcolor="#ccd4e2">Dr. {{ i.practitioner.user.get_full_name }}
-                                        on {{ i.start_date_and_time }}</td>
+                                        on {{ i.start_date_and_time }} for {{ i.length }}</td>
                                 {% endif %}
 
 
@@ -52,10 +52,10 @@
 
                                 {% if j.patient is None %}
                                     <td>Dr. {{ j.practitioner.user.get_full_name }}
-                                        on {{ j.start_date_and_time }}</td>
+                                        on {{ j.start_date_and_time }} for {{ i.length }}</td>
                                 {% else %}
                                     <td bgcolor="#ccd4e2">Dr. {{ j.practitioner.user.get_full_name }}
-                                        on {{ j.start_date_and_time }}</td>
+                                        on {{ j.start_date_and_time }} for {{ i.length }}</td>
                                 {% endif %}
                             </tr>
                         {% endfor %}
@@ -195,21 +195,21 @@
             font-size: 17px;
         }
 
-         .btn.btn-info{
+        .btn.btn-info {
             margin-bottom: 20px;
         }
 
-         .alert.alert-info {
-             border-radius: 0px;
-         }
+        .alert.alert-info {
+            border-radius: 0px;
+        }
 
-         p.lead.info-alert {
+        p.lead.info-alert {
             vertical-align: middle;
             margin-bottom: 0px !important;
             text-transform: capitalize;
             font-weight: 500;
             font-size: 25px;
-         }
+        }
 
         @media (max-width: 600px) {
             h3.panel-title {
@@ -277,7 +277,7 @@
                 padding-top: 0px;
                 letter-spacing: 1px;
 
-         }
+            }
 
         }
     </style>
