@@ -25,8 +25,9 @@
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" class="btn btn-primary" value="Login"/>
-        <input class="btn btn-warning" value="Reset Password"/>
+        <a class="btn btn-warning" href="{% url 'password_reset' %}">Reset Password</a>
     </form>
+
 {% endblock %}
 
 {% block scripts %}
