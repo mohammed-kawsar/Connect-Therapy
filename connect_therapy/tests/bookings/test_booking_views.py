@@ -1,10 +1,11 @@
 from datetime import date
 from urllib.parse import urlencode
 
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.urls import reverse_lazy
 
 from connect_therapy.models import *
+from connect_therapy.views.patient import ViewBookableAppointmentsView
 
 
 class AppointmentBookingViewTest(TestCase):
@@ -483,3 +484,27 @@ class AppointmentBookingViewTest(TestCase):
         apps = self.client.session['bookable_appointments']
         apps_list = Appointment.convert_dictionaries_to_appointments(apps)
         self.assertEquals(len(apps_list), 2)  # 2 appointment should be in the basket nothing should be deleted
+
+    def test_view_bookable_when_form_invalid(self):
+        test_user_2 = User.objects.create_user(username='testuser3943')
+        test_user_2.set_password('12345')
+
+        test_user_2.save()
+
+        test_prac_1 = Practitioner(user=test_user_2,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   is_approved=True,
+                                   email_confirmed=True)
+        test_prac_1.save()
+
+        factory = RequestFactory()
+        request = factory.post('patient/book-appointment/{}'.format(test_prac_1.pk))
+        request.POST = {}
+        view = ViewBookableAppointmentsView()
+        view.request = request
+        view.get_object = lambda queryset=None: test_prac_1
+        response = view.post(request, 1)
+        self.assertEqual(response.status_code, 200)
