@@ -163,8 +163,7 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         self.appointment.save()
 
@@ -327,8 +326,7 @@ class TestPatientCancel(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         self.appointment.save()
 
@@ -347,8 +345,7 @@ class TestPatientCancel(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
 
@@ -606,8 +603,7 @@ class PatientPreviousNotesViewTest(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                        length=timedelta(hours=1),
                                        patient_notes_before_meeting='Hola',
                                        patient_notes_by_practitioner='Hello'
@@ -629,8 +625,7 @@ class PatientPreviousNotesViewTest(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1),
                                   patient_notes_before_meeting='Hola',
                                   patient_notes_by_practitioner='Hello')
@@ -1029,8 +1024,7 @@ class PatientNotesBeforeTest(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1),
                                   patient_notes_before_meeting='Test Notes')
         appointment.save()
