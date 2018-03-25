@@ -248,6 +248,12 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
         except Patient.DoesNotExist:
             return False
 
+    """
+        TODO: To help fix the 'update basket content issue' you might wanna do this:
+            - Add to the post method below to load the contents of the basket to the deal with appointments part.
+            - In deal with appointments, add to the basket rather than overriding the session variable
+    """
+
     def post(self, request, *args, **kwargs):
         app_ids = request.POST.getlist('app_id')
         practitioner_id = kwargs['pk']
@@ -255,7 +261,6 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
         if len(app_ids) == 0:
             messages.warning(request, "You haven't selected any appointments")
             return redirect('connect_therapy:patient-book-appointment', pk=practitioner_id)
-
         return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id)
 
     def _deal_with_appointments(self, request, app_ids, practitioner_id):
@@ -320,25 +325,30 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
         return render(request, self.get_template_names(), {"appointments": appointments_to_book})
 
     def post(self, request, *args, **kwargs):
-        # session_id would only be passed in to identify an appointment to delete
-        if 'session_id' in request.POST:
-            list_of_appointments = request.session['bookable_appointments']
-            if list_of_appointments is None:
-                return self.get(request, *args, **kwargs)
-            for app in list_of_appointments:
-                if app['session_id'] == request.POST['session_id']:
-                    request.session['bookable_appointments'] = list_of_appointments.remove(app)
-                    return self.get(request, *args, *kwargs)
+
+        if 'delete' in request.POST:
+            apps = request.session['bookable_appointments']
+            app_list = Appointment.convert_dictionaries_to_appointments(apps)
+
+            for app in app_list:
+                if app.session_id == request.POST['delete']:
+                    app_list.remove(app)
+                    # delete the appointment and update the session data
+                    request.session['bookable_appointments'] = Appointment.appointments_to_dictionary_list(app_list)
+                    return self.get(request, args, kwargs)
+
+            return self.get(request, args, kwargs)
         elif 'checkout' in request.POST:
             # TODO: Add payment gateway stuff here...probably
-
             appointment_dictionary = request.session['bookable_appointments']
+            del request.session['bookable_appointments']  # empty the shopping basket
             if appointment_dictionary is None:
                 return self.get(request, *args, **kwargs)
             appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
 
             # first delete the appointments we merged, if any
             merged_dictionary = request.session['merged_appointments']
+            del request.session['merged_appointments']  # delete the merged appointments
             if merged_dictionary is None:
                 # no merges where made so we don't need to do anything with them
                 pass
@@ -348,11 +358,14 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
 
             # go ahead and book those appointments
             if Appointment.book_appointments(appointments_to_book, self.patient):
+
                 notifications.multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
                 return render(request, "connect_therapy/patient/bookings/booking-success.html", {
                     'appointment': appointments_to_book})
             else:
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
+
+            return self.get(request, args, kwargs)
 
 
 class PatientProfileView(LoginRequiredMixin, generic.TemplateView):
@@ -471,3 +484,9 @@ class PatientHomepageView(UserPassesTestMixin, generic.TemplateView):
             return patient.email_confirmed
         except Patient.DoesNotExist:
             return False
+
+
+class PractitionerProfileView(LoginRequiredMixin, DetailView):
+    model = Practitioner
+    login_url = reverse_lazy("connect_therapy:patient-login")
+    template_name = "connect_therapy/patient/practitioner-profile.html"

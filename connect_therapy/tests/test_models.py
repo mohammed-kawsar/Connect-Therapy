@@ -1,4 +1,4 @@
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, timedelta
 
 import pytz
 from django.contrib.auth.models import User
@@ -57,68 +57,6 @@ class AppointmentModelTests(TestCase):
         appointment.save()
         self.assertEqual(str(appointment),
                          'John Smith - 2018-03-02 15:16:00+00:00 for 1:00:00')
-
-    def test_session_salt_generation(self):
-        u = User(first_name="John", last_name="Smith")
-        u.save()
-        patient = Patient(user=u,
-                          gender='M',
-                          mobile="+447476666555",
-                          date_of_birth=date(year=1995, month=1, day=1))
-
-        patient.save()
-
-        practitioner = Practitioner(user=u,
-                                    address_line_1="My home",
-                                    postcode="EC12 1CV",
-                                    mobile="+447577293232",
-                                    bio="Hello")
-        practitioner.save()
-
-        appointment = Appointment(
-            practitioner=practitioner,
-            patient=patient,
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=15,
-                                         minute=16,
-                                         tzinfo=pytz.utc),
-            length=timedelta(hours=1)
-        )
-        appointment.save()
-        self.assertTrue(len(appointment.session_salt) == 10)
-
-    def test_session_id_generation(self):
-        u = User(first_name="John", last_name="Smith")
-        u.save()
-        patient = Patient(user=u,
-                          gender='M',
-                          mobile="+447476666555",
-                          date_of_birth=date(year=1995, month=1, day=1))
-
-        patient.save()
-
-        practitioner = Practitioner(user=u,
-                                    address_line_1="My home",
-                                    postcode="EC12 1CV",
-                                    mobile="+447577293232",
-                                    bio="Hello")
-        practitioner.save()
-
-        appointment = Appointment(
-            practitioner=practitioner,
-            patient=patient,
-            start_date_and_time=datetime(year=2018,
-                                         month=3,
-                                         day=2,
-                                         hour=15,
-                                         minute=16,
-                                         tzinfo=pytz.utc),
-            length=timedelta(hours=1)
-        )
-        appointment.save()
-        self.assertTrue(len(appointment.session_id) > 0)
 
     def test_is_live_when_under_5_mins(self):
         u = User(first_name="John", last_name="Smith")

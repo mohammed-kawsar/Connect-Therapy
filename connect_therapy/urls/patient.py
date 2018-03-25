@@ -81,10 +81,14 @@ urlpatterns = [
          ),
     path('profile/change-password',
          change_password,
-         name='patient-change-password'),
+         name='patient-change-password'
+         ),
     path('view-practitioners',
          ViewAllPractitionersView.as_view(),
          name='patient-view-practitioners'
          ),
-
+    path('practitioner-profile/<int:pk>',
+         PractitionerProfileView.as_view(),
+         name='patient-practitioner-profile'
+         ),
 ]
