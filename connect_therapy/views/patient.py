@@ -316,8 +316,6 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             appointment_dictionary = request.session['bookable_appointments']
         except KeyError:
             return render(request, self.get_template_names(), {"appointments": appointments_to_book})
-        if appointment_dictionary is None:
-            return render(request, self.get_template_names(), {"appointments": appointments_to_book})
         appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
         return render(request, self.get_template_names(), {"appointments": appointments_to_book})
 
@@ -337,10 +335,12 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             return self.get(request, args, kwargs)
         elif 'checkout' in request.POST:
             # TODO: Add payment gateway stuff here...probably
-            appointment_dictionary = request.session['bookable_appointments']
-            del request.session['bookable_appointments']  # empty the shopping basket
-            if appointment_dictionary is None:
+            try:
+                appointment_dictionary = request.session['bookable_appointments']
+            except KeyError:
                 return self.get(request, *args, **kwargs)
+            del request.session['bookable_appointments']  # empty the shopping basket
+
             appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
 
             # first delete the appointments we merged, if any

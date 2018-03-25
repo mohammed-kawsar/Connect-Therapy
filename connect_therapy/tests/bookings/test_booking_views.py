@@ -351,6 +351,19 @@ class AppointmentBookingViewTest(TestCase):
         appointments = Appointment.objects.all().filter(patient__user__username="testuser1")
         self.assertEquals(len(appointments), 1)
 
+    def test_checkout_page_booking_no_appointments(self):
+        # some repetition to start with as we need to add some stuff to our checkout and I want this test to work
+        # in isolation to all other tests - as it should - i think...
+
+        login = self.client.login(username="testuser1", password="12345")
+        self.client.session['bookable_appointments'] = None
+
+        # checkout - book appointments with post request below
+        resp_get_checkout = self.client.post(reverse_lazy("connect_therapy:patient-checkout"), {
+            "checkout": "checkout"
+        })
+        self.assertEquals(resp_get_checkout.status_code, 200)
+
     def test_checkout_page_booking_unmergeable_appointments(self):
         # some repetition to start with as we need to add some stuff to our checkout and I want this test to work
         # in isolation to all other tests - as it should - i think...
