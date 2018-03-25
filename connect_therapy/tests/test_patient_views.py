@@ -2,6 +2,8 @@ from datetime import date, datetime
 
 import pytz
 from decimal import Decimal
+
+from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase, RequestFactory
 
 from connect_therapy.forms.patient import *
@@ -151,12 +153,12 @@ class PatientNotesBeforeAppointmentTest(TestCase):
         test_user_1 = User.objects.create_user(username='testuser1')
         test_user_1.set_password('12345')
         test_user_1.save()
-        patient = Patient(user=test_user_1,
+        self.patient = Patient(user=test_user_1,
                           gender='M',
                           mobile="+447476666555",
                           date_of_birth=date(year=1995, month=1, day=1))
-        patient.save()
-        self.appointment = Appointment(patient=patient,
+        self.patient.save()
+        self.appointment = Appointment(patient=self.patient,
                                   start_date_and_time=datetime(year=2018,
                                                                month=4,
                                                                day=17,
@@ -165,6 +167,80 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                                                                tzinfo=pytz.utc),
                                   length=timedelta(hours=1))
         self.appointment.save()
+
+    def test_test_func_when_user_has_no_patient(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': 1}))
+        request.user = AnonymousUser()
+        view = PatientNotesBeforeView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_appointment_has_no_patient(self):
+        appointment = Appointment(patient=None,
+                                  start_date_and_time=datetime(year=2018,
+                                                               month=4,
+                                                               day=17,
+                                                               hour=15,
+                                                               minute=10,
+                                                               tzinfo=pytz.utc),
+                                  length=timedelta(hours=1))
+        appointment.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': appointment.pk}))
+        request.user = self.patient.user
+        view = PatientNotesBeforeView()
+        view.request = request
+        view.get_object = lambda queryset=None: appointment
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_different_patient(self):
+        user = User(username='robert@greener.com', password='meowmeow12')
+        user.save()
+        patient = Patient(
+            user=user,
+            gender='M',
+            mobile="+447476666555",
+            date_of_birth=date(year=1995, month=1, day=1)
+        )
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = patient.user
+        view = PatientNotesBeforeView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_not_confirmed(self):
+        self.patient.email_confirmed = False
+        self.patient.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = self.patient.user
+        view = PatientNotesBeforeView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_confirmed(self):
+        self.patient.email_confirmed = True
+        self.patient.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = self.patient.user
+        view = PatientNotesBeforeView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertTrue(view.test_func())
 
     def test_patient_make_notes_before_appointment(self):
         data = {
@@ -181,12 +257,6 @@ class PatientNotesBeforeAppointmentTest(TestCase):
         view.form_valid(form)
         self.assertEqual(self.appointment.patient_notes_before_meeting,
                          'Test make notes.')
-
-
-        # response_post = self.client.post(reverse_lazy('connect_therapy:patient-make-notes',
-        #                                               kwargs={'pk': 1}), data,
-        #                                  content_type="application/x-www-form-urlencoded")
-        # self.assertEqual(response_post.status_code, 302)
 
 
 class TestPatientCancel(TestCase):

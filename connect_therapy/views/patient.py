@@ -66,7 +66,7 @@ class PatientMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
         try:
             patient = Patient.objects.get(user=self.request.user)
             return patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     def get_context_data(self, *args, **kwargs):
@@ -93,7 +93,7 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object().patient is not None and \
                self.request.user.id == self.get_object().patient.user.id and \
@@ -131,7 +131,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except Patient.DoesNotExist or AttributeError:
             return False
         return self.get_object().patient is not None and \
                self.request.user.id == self.get_object().patient.user.id and \
@@ -177,7 +177,7 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object().patient is not None and \
                self.request.user.id == self.get_object().patient.user.id and \
@@ -205,7 +205,7 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
         try:
             patient = Patient.objects.get(user=self.request.user)
             return patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     def get(self, request, **kwargs):
@@ -245,7 +245,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
         try:
             self.patient = Patient.objects.get(user=self.request.user)
             return self.patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     """
@@ -310,7 +310,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
         try:
             self.patient = Patient.objects.get(user=self.request.user)
             return self.patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     def get(self, request, *args, **kwargs):
@@ -383,7 +383,7 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
             return False
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().user.id and \
@@ -474,7 +474,7 @@ class PatientHomepageView(UserPassesTestMixin, generic.TemplateView):
         try:
             patient = Patient.objects.get(user=self.request.user)
             return patient.email_confirmed
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
 
