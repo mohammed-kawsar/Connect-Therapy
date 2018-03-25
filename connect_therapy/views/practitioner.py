@@ -199,6 +199,9 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
 
 class PractitionerProfile(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/profile.html'
+    model = Practitioner
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
+    redirect_field_name = None
 
     def test_func(self):
         if self.request.user.is_anonymous:
@@ -228,7 +231,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().user.id and \
                self.get_object().email_confirmed and \
-               self.get_object().practitioner.is_approved
+               self.get_object().is_approved
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
@@ -309,10 +312,8 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
                                                                                       self.request.user.practitioner)
         if not over_lap_free:
-            over_laps_str = re.sub("<|>|\[\[|\]\]", "", str(over_laps))
-            over_laps_str1, over_laps_str2 = over_laps_str.split(",")
-            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html',
-                          context={"overlaps1": over_laps_str1, "overlaps2": over_laps_str2})
+            clashes = over_laps
+            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html', context={"clashes": clashes})
         else:
             Appointment.split_merged_appointment(
                 appointment)  # This method will split if needed and then save the appointment
