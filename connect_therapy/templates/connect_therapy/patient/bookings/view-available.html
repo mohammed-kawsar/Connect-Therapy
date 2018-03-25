@@ -59,13 +59,15 @@
                             <label style="min-width: 100%">
                                 <h5 class="card-title">Slot {{ forloop.counter }}</h5>
                                 <div class="card-body">
-                                    Date: {{ app.start_date_and_time|date }} <br>
-                                    Time: {{ app.start_date_and_time|time }} <br>
-                                    Practitioner: {{ app.practitioner}}
+                                    <b>Date:</b> {{ app.start_date_and_time|date }} <br>
+                                    <b>Time:</b> {{ app.start_date_and_time|time }} <br>
+                                    <b>Practitioner:</b> <capitalize style="text-transform: capitalize">{{ app.practitioner}}</capitalize>
                                 </div>
                                 <input type="checkbox" class="card-text" name="app_id" style="display: none" value={{ app.id }}>
                             </label>
                         </div>
+                    </p>
+            </div>
                     {% endfor %}
                 </div>
                 <input type="submit" class="btn btn-success text-center" value="Continue"/>
@@ -149,6 +151,7 @@
             padding-top: 10px;
             letter-spacing: 2px;
             padding-bottom: 10px;
+            margin-bottom: 0px;
         }
 
         .card-group {
@@ -164,15 +167,27 @@
         }
 
         div.container-fluid > form > p {
-            font-size: 25px;
+            font-size: 30px;
             letter-spacing: 1px;
             margin-bottom: 5px;
+            text-align: center;
         }
 
         p#lead-text {
             text-align: center;
             font-size: 20px;
         }
+
+        div.card-body {
+                line-height: 29px;
+                text-align: left;
+                font-size: 17px;
+            }
+
+        div.card-body > b {
+            font-weight: 600;
+            font-size: 18px;
+            }
 
         @media (max-width: 649px) {
             div.ui-datepicker-inline { /* Overrides this class in Jquery Library */
@@ -340,12 +355,20 @@
             }
 
             div.card-body {
+                line-height: 29px;
                 font-size: 16px;
+                letter-spacing: 0px;
+            }
+
+            div.card-body > b {
+                font-size: 17px;
+                font-weight: 500;
             }
 
             .btn.btn-success {
                 margin-bottom: 10px;
-            }
+                width: 100%;
+            }ß
 
             .card {
                 border-radius: 5px;
