@@ -27,17 +27,10 @@
     <div class="container-fluid text-center" style="padding: 15px 0px">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-6" id="feature-text">
-                <h6> Incredible feature</h6>
-                <h2>Totally incredible website</h2>
-                <p class="lead">
-                           Niduci tisa suyofos natenix po, nute ieros dorurij ofodu na nomer begora imil
-                           dit be. Cili wihidi ludelu nonihie bugil.
-                            Ugurot ivah co erevun tieleret lar. Royaru usacinen lodie lo reteri. Fape lite lono une
-                            seto. Ilefi gut sonoyis oyora l
-                            imebe rur. Sielore ener honuz yikete pe sehi. Ci sase nicot rat nuted temiv sepuhi
-                            telalos
-                            sosofa! Kosit orietino ehire?
-             </p>
+                <h2>Remember</h2>
+                <p class="lead" id="changeText">
+                    If the plan doesn't work, change the plan but never the goal
+                </p>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-6">
                 <img class="d-block float-right text-center d-block float-right img-fluid" id="feature-image"
@@ -127,6 +120,24 @@
 
 {% block scripts %}
     <script>
+        if ($(document).height() <= $(window).height()) {
+            document.getElementById('stickyFooter').className = 'fixed-bottom';
+        }
 
+        var text = ["Be patient with patients who are not patient.",
+                    "We make a living by what we get, but we make a life by what we give.",
+                    "The best way to get things Done is to simply Begin.",
+                    "The most effective way to cope with changes is to help create it."];
+    var counter = 0;
+    var elem = document.getElementById("changeText");
+    var inst = setInterval(change, 10000);
+
+    function change() {
+        elem.innerHTML = text[counter];
+        counter++;
+        if (counter >= text.length){
+            counter = 0;
+        }
+    }
     </script>
 {% endblock %}
