@@ -82,8 +82,6 @@
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
                             <a href="{% url 'connect_therapy:practitioner-make-notes' appointment.id %}"
                                class="btn btn-info" style="margin-bottom: 5px;">Add Notes</a>
-                            <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"
-                               class="btn btn-warning" style="margin-bottom: 5px;">Cancel Appointment</a>
                         </div>
                     </div>
                 </div>
