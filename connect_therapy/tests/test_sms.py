@@ -59,8 +59,7 @@ class TestSMS(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_appointment_booked(patient, appointment)
@@ -101,8 +100,7 @@ class TestSMS(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_appointment_cancelled(patient, appointment)
@@ -143,8 +141,7 @@ class TestSMS(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         send_appointment_reminder(patient, appointment)

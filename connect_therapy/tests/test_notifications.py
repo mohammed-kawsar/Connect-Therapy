@@ -46,8 +46,7 @@ class TestNotifications(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         appointment_booked(appointment)
@@ -88,8 +87,7 @@ class TestNotifications(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment1.save()
         appointment2 = Appointment(practitioner=practitioner,
@@ -98,8 +96,7 @@ class TestNotifications(TestCase):
                                                                month=4,
                                                                day=19,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment2.save()
         multiple_appointments_booked((appointment1, appointment2))
@@ -183,8 +180,7 @@ class TestNotifications(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         appointment_cancelled_by_patient(patient, appointment, False)
@@ -227,8 +223,7 @@ class TestNotifications(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         appointment_cancelled_by_practitioner(appointment)
@@ -256,8 +251,7 @@ class TestNotifications(TestCase):
                                                                month=4,
                                                                day=17,
                                                                hour=15,
-                                                               minute=10,
-                                                               tzinfo=pytz.utc),
+                                                               minute=10),
                                   length=timedelta(hours=1))
         appointment.save()
         appointment_cancelled_by_practitioner(appointment)
