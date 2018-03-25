@@ -45,6 +45,7 @@ class PatientSignUpTest(TestCase):
         view = PatientSignUpView()
         view.request = request
         form = PatientSignUpForm(data=data)
+        form.is_valid()
         response = view.form_valid(form)
         try:
             user = User.objects.get(username='test@example.com')
@@ -155,7 +156,7 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                           mobile="+447476666555",
                           date_of_birth=date(year=1995, month=1, day=1))
         patient.save()
-        appointment = Appointment(patient=patient,
+        self.appointment = Appointment(patient=patient,
                                   start_date_and_time=datetime(year=2018,
                                                                month=4,
                                                                day=17,
@@ -163,23 +164,29 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                                                                minute=10,
                                                                tzinfo=pytz.utc),
                                   length=timedelta(hours=1))
-        appointment.save()
+        self.appointment.save()
 
     def test_patient_make_notes_before_appointment(self):
-        login = self.client.login(username="testuser1", password="12345")
-        response_get = self.client.get(
-            reverse_lazy('connect_therapy:patient-make-notes',
-                         kwargs={'pk': 1}))
+        data = {
+            'patient_notes_before_meeting': 'Test make notes.'
+        }
+        form = PatientNotesBeforeForm(data=data)
+        form.is_valid()
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': 1}))
+        view = PatientNotesBeforeView()
+        view.request = request
+        view.object = self.appointment
+        view.form_valid(form)
+        self.assertEqual(self.appointment.patient_notes_before_meeting,
+                         'Test make notes.')
 
-        self.assertEqual(response_get.status_code, 302)
-        data = urlencode({
-            'notes before appointment': 'Test make notes.'
-        })
 
-        response_post = self.client.post(reverse_lazy('connect_therapy:patient-make-notes',
-                                                      kwargs={'pk': 1}), data,
-                                         content_type="application/x-www-form-urlencoded")
-        self.assertEqual(response_post.status_code, 302)
+        # response_post = self.client.post(reverse_lazy('connect_therapy:patient-make-notes',
+        #                                               kwargs={'pk': 1}), data,
+        #                                  content_type="application/x-www-form-urlencoded")
+        # self.assertEqual(response_post.status_code, 302)
 
 
 class TestPatientCancel(TestCase):
