@@ -16,23 +16,23 @@ class AppointmentBookingViewTest(TestCase):
         test_user_1.set_password('12345')
         test_user_1.save()
 
-        test_pat_1 = Patient(user=test_user_1,
+        self.test_pat_1 = Patient(user=test_user_1,
                              email_confirmed=True,
                              gender='M',
                              mobile="+447476666555",
                              date_of_birth=date(year=1995, month=1, day=1))
-        test_pat_1.save()
+        self.test_pat_1.save()
 
         test_user_2 = User.objects.create_user(username='testuser2')
         test_user_2.set_password('12345')
         test_user_2.save()
 
-        test_pat_2 = Patient(user=test_user_2,
+        self.test_pat_2 = Patient(user=test_user_2,
                              email_confirmed=True,
                              gender='M',
                              mobile="+447476666555",
                              date_of_birth=date(year=1995, month=1, day=1))
-        test_pat_2.save()
+        self.test_pat_2.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
         test_user_3.set_password('12345')
@@ -112,6 +112,13 @@ class AppointmentBookingViewTest(TestCase):
             length=timedelta(hours=1)
         )
         test_appointment_6.save()
+
+        test_appointment_7 = Appointment(
+            practitioner=test_prac_1,
+            start_date_and_time=timezone.now() + timedelta(days=28),
+            length=timedelta(hours=1)
+        )
+        test_appointment_7.save()
 
     def test_redirect_if_not_logged_in_init_booking_page(self):
         resp = self.client.get(reverse_lazy('connect_therapy:patient-book-appointment', kwargs={'pk': 1}))
@@ -363,6 +370,59 @@ class AppointmentBookingViewTest(TestCase):
             "checkout": "checkout"
         })
         self.assertEquals(resp_get_checkout.status_code, 200)
+
+    def test_checkout_page_booking_booked_appointment(self):
+        # some repetition to start with as we need to add some stuff to our checkout and I want this test to work
+        # in isolation to all other tests - as it should - i think...
+
+        login = self.client.login(username="testuser1", password="12345")
+        resp_get_review = self.client.get(
+            reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}))
+
+        self.assertEquals(resp_get_review.status_code, 200)
+
+        # the app_is's below belong to valid appointments defined in the setUp(...) method
+        resp_post_review = self.client.post(
+            reverse_lazy('connect_therapy:patient-book-appointment-review', kwargs={'pk': 1}),
+            {
+                'app_id': [7]
+            })
+
+        # check that the appointments have been added to the basket
+        apps = self.client.session['bookable_appointments']
+        apps_list = Appointment.convert_dictionaries_to_appointments(apps)
+        self.assertEquals(len(apps_list), 1)  # 1 appointment should be in the basket
+
+        # check that the appointments are unbooked
+        for app in apps_list:
+            self.assertEquals(app.patient, None)
+
+        self.assertEquals(resp_post_review.status_code, 200)
+
+        resp_get_checkout = self.client.get(reverse_lazy('connect_therapy:patient-checkout'))
+
+        self.assertEquals(resp_get_checkout.status_code, 200)
+        self.assertTemplateUsed("connect_therapy/patient/booking/checkout.html")
+        app = Appointment.objects.get(pk=7)
+        app.patient = self.test_pat_2
+        app.save()
+
+        # checkout - book appointments with post request below
+        resp_post_checkout = self.client.post(reverse_lazy("connect_therapy:patient-checkout"), {
+            "checkout": "checkout"
+        })
+
+        # the basket (and contents) should have been deleted
+        try:
+            self.client.session['bookable_appointments']
+            self.assertTrue(False)
+        except KeyError:  # KeyError means we cant find the basket key
+            self.assertTrue(True)
+
+        # finally check that the appointment we booked has indeed been booked.
+        # only one appointment should belong to the user with username "testuser1"
+        appointments = Appointment.objects.all().filter(patient__user__username="testuser1")
+        self.assertEquals(len(appointments), 0)
 
     def test_checkout_page_booking_unmergeable_appointments(self):
         # some repetition to start with as we need to add some stuff to our checkout and I want this test to work

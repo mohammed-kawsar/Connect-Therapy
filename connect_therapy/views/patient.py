@@ -346,10 +346,7 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             # first delete the appointments we merged, if any
             merged_dictionary = request.session['merged_appointments']
             del request.session['merged_appointments']  # delete the merged appointments
-            if merged_dictionary is None:
-                # no merges where made so we don't need to do anything with them
-                pass
-            else:
+            if merged_dictionary is not None:
                 merged_appointment_list = Appointment.convert_dictionaries_to_appointments(merged_dictionary)
                 Appointment.delete_appointments(merged_appointment_list)
 
