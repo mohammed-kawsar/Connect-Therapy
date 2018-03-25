@@ -44,8 +44,8 @@ class PractitionerSignUpTest(TestCase):
             'email': 'chris@yahoo.com',
             'mobile': '07893839383',
             'date_of_birth': date(year=1971, month=1, day=1),
-            'address1': '1 Fetter Lane',
-            'address2': '',
+            'address_line_1': '1 Fetter Lane',
+            'address_line_2': '',
             'postcode': 'E1 WCX',
             'bio': 'Here to serve',
             'password1': 'makapaka!',
@@ -448,19 +448,23 @@ class PractitionerMyAppointmentsViewTest(TestCase):
                                date_of_birth=date(year=1995, month=1, day=1))
         self.patient.save()
 
-        test_pat_1 = Patient(user=test_user_1,
-                             gender='M',
-                             mobile="+447476666555",
-                             date_of_birth=date(year=1995, month=1, day=1),
-                             email_confirmed=True)
-        test_pat_1.save()
-
         test_user_2 = User.objects.create_user(username='testuser3')
         test_user_2.set_password('12345')
 
         test_user_2.save()
 
+        test_prac_1 = Practitioner(user=test_user_2,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   email_confirmed=True,
+                                   is_approved=True)
+
+        test_prac_1.save()
+
         self.appointment = Appointment(patient=self.patient,
+                                       practitioner=test_prac_1,
                                        start_date_and_time=datetime.datetime(year=2018,
                                                                     month=4,
                                                                     day=17,
@@ -470,52 +474,8 @@ class PractitionerMyAppointmentsViewTest(TestCase):
                                        length=timedelta(hours=1))
         self.appointment.save()
 
-    def test_test_func_when_appointment_has_no_patient(self):
-        test_user_1 = User.objects.create_user(username='testuser1')
-        test_user_1.set_password('12345')
-        test_user_1.save()
-
-        test_pat_1 = Patient(user=test_user_1,
-                             gender='M',
-                             mobile="+447476666555",
-                             date_of_birth=date(year=1995, month=1, day=1),
-                             email_confirmed=True, )
-        test_pat_1.save()
-
-        test_user_3 = User.objects.create_user(username='testuser3')
-        test_user_3.set_password('12345')
-
-        test_user_3.save()
-
-        test_prac_1 = Practitioner(user=test_user_3,
-                                   address_line_1="My home",
-                                   postcode="EC12 1CV",
-                                   mobile="+447577293232",
-                                   bio="Hello",
-                                   email_confirmed=True,
-                                   is_approved=True)
-        test_prac_1.save()
-
-        appointment = Appointment(patient=None,
-                                  start_date_and_time=datetime.datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
-                                                              length=timedelta(hours=1))
-        appointment.save()
-
-        factory = RequestFactory()
-        request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
-                                            kwargs={'pk': appointment.pk}))
-        request.user = self.user.practitioner
-        view = PractitionerNotesView()
-        view.request = request
-        view.get_object = lambda queryset=None: appointment
-        self.assertFalse(view.test_func())
-
     def test_test_func_when_email_not_confirmed(self):
-        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1 = User.objects.create_user(username='testuserasdassa1')
         test_user_1.set_password('12345')
         test_user_1.save()
 
@@ -526,7 +486,7 @@ class PractitionerMyAppointmentsViewTest(TestCase):
                              email_confirmed=True, )
         test_pat_1.save()
 
-        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3 = User.objects.create_user(username='testuserddfddfddfd3')
         test_user_3.set_password('12345')
 
         test_user_3.save()
@@ -540,21 +500,23 @@ class PractitionerMyAppointmentsViewTest(TestCase):
                                    is_approved=True)
         test_prac_1.save()
 
-        self.practitioner.email_confirmed = False
-        self.practitioner.is_approved = True
-        self.practitioner.save()
+        test_prac_1.email_confirmed = False
+        test_prac_1.is_approved = True
+        test_prac_1.save()
 
         factory = RequestFactory()
         request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
                                             kwargs={'pk': self.appointment.pk}))
-        request.user = self.practitioner.user
+        request.user = test_prac_1.user
+        self.appointment.practitioner = test_prac_1
+        self.appointment.save()
         view = PractitionerNotesView()
         view.request = request
         view.get_object = lambda queryset=None: self.appointment
         self.assertFalse(view.test_func())
 
     def test_test_func_when_email_confirmed(self):
-        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1 = User.objects.create_user(username='testusera1')
         test_user_1.set_password('12345')
         test_user_1.save()
 
@@ -565,7 +527,7 @@ class PractitionerMyAppointmentsViewTest(TestCase):
                              email_confirmed=True, )
         test_pat_1.save()
 
-        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3 = User.objects.create_user(username='testuserasdasd3')
         test_user_3.set_password('12345')
 
         test_user_3.save()
@@ -578,14 +540,16 @@ class PractitionerMyAppointmentsViewTest(TestCase):
                                    email_confirmed=True,
                                    is_approved=True)
         test_prac_1.save()
-        self.practitioner.email_confirmed = True
-        self.practitioner.is_approved = True
-        self.practitioner.save()
+        test_prac_1.email_confirmed = True
+        test_prac_1.is_approved = True
+        test_prac_1.save()
 
         factory = RequestFactory()
         request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
                                             kwargs={'pk': self.appointment.pk}))
-        request.user = self.practitioner.user
+        request.user = test_prac_1.user
+        self.appointment.practitioner = test_prac_1
+        self.appointment.save()
         view = PractitionerNotesView()
         view.request = request
         view.get_object = lambda queryset=None: self.appointment
@@ -593,7 +557,8 @@ class PractitionerMyAppointmentsViewTest(TestCase):
 
     def test_practitioner_make_notes_before_appointment(self):
         data = {
-            'practitioner_notes': 'Test make notes.'
+            'practitioner_notes': 'Test make notes.',
+            'patient_notes_by_practitioner': 'XXX',
         }
         form = PractitionerNotesForm(data=data)
         form.is_valid()
@@ -604,12 +569,15 @@ class PractitionerMyAppointmentsViewTest(TestCase):
         view.request = request
         view.object = self.appointment
         view.form_valid(form)
-        self.assertEqual(self.appointment.patient_notes_before_meeting,
+        self.assertEqual(self.appointment.practitioner_notes,
                          'Test make notes.')
+        self.assertEqual(self.appointment.patient_notes_by_practitioner,
+                         'XXX')
 
     def test_post_when_form_valid(self):
         data = {
-            'practitioner_notes': 'Test make notes.'
+            'patient_notes_by_practitioner': 'Test make notes.',
+            'practitioner_notes': 'XXX'
         }
         form = PractitionerNotesForm(data=data)
         factory = RequestFactory()
@@ -619,9 +587,11 @@ class PractitionerMyAppointmentsViewTest(TestCase):
         view.request = request
         view.get_object = lambda queryset=None: self.appointment
         view.get_form = lambda form_class=None: form
-        view.post(request, 1)
-        self.assertEqual(self.appointment.patient_notes_before_meeting,
+        view.post()
+        self.assertEqual(self.appointment.patient_notes_by_practitioner,
                          'Test make notes.')
+        self.assertEqual(self.appointment.practitioner_notes,
+                         'XXX')
 
     def test_post_when_form_invalid(self):
         data = {
@@ -636,7 +606,7 @@ class PractitionerMyAppointmentsViewTest(TestCase):
         view.request = request
         view.get_object = lambda queryset=None: self.appointment
         view.get_form = lambda form_class=None: form
-        response = view.post(request, 1)
+        response = view.post()
         self.assertEqual(response.status_code, 200)
 
     def test_get_context_data(self):
@@ -647,5 +617,5 @@ class PractitionerMyAppointmentsViewTest(TestCase):
         view.request = request
         view.object = self.appointment
         context = view.get_context_data()
-        self.assertEqual(len(context), 5)
+        self.assertEqual(len(context), 4)
         
