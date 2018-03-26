@@ -126,7 +126,7 @@
 
         lengthField.setAttribute('placeholder', 'Select the number of hours');
         lengthField.setAttribute('onkeydown', 'return false');
-        console.log(lengthField.value);
+        lengthField.setAttribute('onclick', 'removePlaceholderAndSetValue()');
 
         minuteField.className = 'form-control';
         minuteField.style.width = '30%';
@@ -136,6 +136,12 @@
             lengthField.removeAttribute('placeholder');
             lengthField.setAttribute('value', '0');
         }
-
+    </script>
+    <script>
+        var lengthField = document.getElementById('id_length_0');
+        function removePlaceholderAndSetValue() {
+            lengthField.removeAttribute('placeholder');
+            lengthField.setAttribute('value', '0');
+        }
     </script>
 {% endblock %}
