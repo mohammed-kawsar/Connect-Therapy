@@ -927,3 +927,195 @@ class PractitionerAppointmentsViewTest(TestCase):
             reverse_lazy('connect_therapy:practitioner-my-appointments'))
         self.assertEqual(resp.status_code, 302)
         self.assertRedirects(resp, '/practitioner/login')
+
+
+class PractitionerHomepageViewTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
+        test_pat_1.save()
+
+        test_user_2 = User.objects.create_user(username='testuser3')
+        test_user_2.set_password('12345')
+
+        test_user_2.save()
+
+        test_prac_1 = Practitioner(user=test_user_2,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   is_approved=True,
+                                   email_confirmed=True)
+        test_prac_1.save()
+
+        test_user_3 = User.objects.create_user(username='testuser2')
+        test_user_3.set_password('12345')
+        test_user_3.save()
+
+        test_pat_2 = Patient(user=test_user_3,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1))
+        test_pat_2.save()
+
+    def test_logged_in_practitioner_view_homepage(self):
+        login = self.client.login(username="testuser3", password="12345")
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:practitioner-homepage'))
+
+        self.assertEqual(str(response.context['user']), 'testuser3')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, 'connect_therapy/practitioner/homepage.html')
+
+    def test_patient_cannot_view_practitioner_homepage(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:practitioner-homepage'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/practitioner/login')
+
+    def test_if_not_logged_in_cannot_view_practitioner_homepage(self):
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:practitioner-homepage'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/practitioner/login')
+
+    def test_logged_in_practitioner_without_email_confirmed(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:practitioner-homepage'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/practitioner/login')
+
+
+class PractitionerProfileTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
+        test_pat_1.save()
+
+        test_user_2 = User.objects.create_user(username='testuser3')
+        test_user_2.set_password('12345')
+
+        test_user_2.save()
+
+        test_prac_1 = Practitioner(user=test_user_2,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   is_approved=True,
+                                   email_confirmed=True)
+        test_prac_1.save()
+
+    def test_practitioner_can_view_their_profile(self):
+        login = self.client.login(username="testuser3", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'connect_therapy/practitioner/profile.html')
+
+    def test_redirect_patient_cannot_view_practitioner_profile(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile'))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_practitioner_profile_if_not_logged_in(self):
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile'))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_redirect_practitioner_edit_profile(self):
+        login = self.client.login(username="testuser3", password="12345")
+        response = self.client.post(
+            reverse_lazy('connect_therapy:practitioner-profile-edit',
+                         kwargs={'pk': 1}), {
+
+            'first_name': 'Chris',
+            'last_name': 'Harris',
+            'email': 'chris@yahoo.com',
+            'mobile': '07893839383',
+            'date_of_birth': date(year=1971, month=1, day=1),
+            'address_line_1': '1 Fetter Lane',
+            'address_line_2': '',
+            'postcode': 'E1 WCX',
+            'bio': 'Here to serve',
+            'password1': 'makapaka!',
+            'password2': 'makapaka!'
+
+            })
+
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile-edit',
+                         kwargs={'pk': 1}))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_redirect_patient_cannot_view_practitioner_profile_edit(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile-edit',
+                         kwargs={'pk': 1}))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/practitioner/login')
+
+    def test_redirect_practitioner_edit_if_not_logged_in(self):
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-profile-edit',
+                         kwargs={'pk': 1}))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/practitioner/login')
+
+    def test_practitioner_change_password(self):
+        login = self.client.login(username="testuser3", password="12345")
+        response = self.client.post(
+            reverse_lazy('connect_therapy:practitioner-change-password'), {
+                'new_password1': 'newpassword',
+                'new_password2': 'newpassword',
+            })
+        self.assertEqual(response.status_code, 302)
+
+    def test_patient_cannot_change_practitioner_password(self):
+        login = self.client.login(username="testuser1", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-change-password'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_if_not_logged_in_cannot_change_practitioner_password(self):
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-change-password'))
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_logged_in_practitioner_view_change_password_page(self):
+        login = self.client.login(username="testuser3", password="12345")
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-change-password')
+        )
+        self.assertEqual(response.status_code, 200)
