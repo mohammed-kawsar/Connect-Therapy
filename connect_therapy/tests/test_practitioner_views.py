@@ -2,7 +2,7 @@ from datetime import datetime, time, date
 
 import pytz
 from django.contrib.auth.models import User
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
 
 from connect_therapy.forms.practitioner.practitioner import PractitionerNotesForm
 from connect_therapy.models import Practitioner, Appointment, Patient
@@ -17,8 +17,8 @@ class PractitionerSignUpTest(TestCase):
             'email': 'chris@yahoo.com',
             'mobile': '07893839383',
             'date_of_birth': date(year=1971, month=1, day=1),
-            'address1': '1 Fetter Lane',
-            'address2': '',
+            'address_line_1': '1 Fetter Lane',
+            'address_line_2': '',
             'postcode': 'E1 WCX',
             'bio': 'Here to serve',
             'password1': 'makapaka!',
@@ -28,6 +28,37 @@ class PractitionerSignUpTest(TestCase):
         response = self.client.get(reverse_lazy('connect_therapy:practitioner-homepage'))
 
         self.assertEqual(response.status_code, 302)
+
+    def test_form_valid(self):
+        response_get = self.client.get(reverse_lazy('connect_therapy:practitioner-signup'))
+        self.assertEqual(response_get.status_code, 200)
+
+        data = {
+            'first_name': 'Chris',
+            'last_name': 'Harris',
+            'email': 'chris@yahoo.com',
+            'mobile': '07893839383',
+            'date_of_birth': date(year=1971, month=1, day=1),
+            'address_line_1': '1 Fetter Lane',
+            'address_line_2': '',
+            'postcode': 'E1 WCX',
+            'bio': 'Here to serve',
+            'password1': 'makapaka!',
+            'password2': 'makapaka!'
+        }
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-signup'))
+        view = PractitionerSignUpView()
+        view.request = request
+        form = PractitionerSignUpForm(data=data)
+        form.is_valid()
+        response = view.form_valid(form)
+        try:
+            user = User.objects.get(username='chris@yahoo.com')
+            self.assertEqual(user.first_name, 'Chris')
+        except User.DoesNotExist:
+            self.assertTrue(False, 'This should not have been reached')
 
 
 class PractitionerLoginTest(TestCase):
@@ -56,6 +87,10 @@ class PractitionerLoginTest(TestCase):
                                    email_confirmed=True,
                                    is_approved=True)
         test_prac_1.save()
+
+    def test_get_success_url(self):
+        view = PractitionerLoginView()
+        self.assertEqual(view.get_success_url(), reverse_lazy('connect_therapy:practitioner-homepage'))
 
     def test_practitioner_login_success_redirect(self):
         login = self.client.login(username="testuser1", password="12345")
