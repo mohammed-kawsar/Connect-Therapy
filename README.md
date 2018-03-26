@@ -189,7 +189,7 @@ Now return back to the previous tab.
 
 - Store the ***Access key ID*** and ***Secret access key*** in a ***secure*** location. You will need these later
 
-> Note: ***Ensure the keys are kept secret and secure otherwise you're AWS S3 may be abused and you may incur unwanted expenses on your account***
+> Note: ***Ensure the keys are kept secret and secure otherwise your AWS S3 may be abused and you may incur unwanted expenses on your account***
 - Press 'Close'
 
 - Click on the user you just created.
