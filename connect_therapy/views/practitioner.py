@@ -60,11 +60,9 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
     model = Appointment
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
@@ -93,12 +91,10 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
     model = Appointment
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             practitioner = Practitioner.objects.get(user=self.request.user)
             return practitioner.email_confirmed and practitioner.is_approved
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
     def get_context_data(self, *args, **kwargs):
@@ -136,11 +132,9 @@ class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     template_name = 'connect_therapy/practitioner/appointment-notes.html'
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
@@ -155,11 +149,9 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
     template_name = 'connect_therapy/practitioner/before-meeting-notes.html'
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
@@ -174,12 +166,10 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             practitioner = self.request.user.practitioner
             return practitioner.email_confirmed and practitioner.is_approved
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
     def get_context_data(self, **kwargs):
@@ -204,12 +194,10 @@ class PractitionerProfile(UserPassesTestMixin, generic.TemplateView):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             practitioner = self.request.user.practitioner
             return practitioner.email_confirmed and practitioner.is_approved
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
 
@@ -222,11 +210,9 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().user.id and \
@@ -235,6 +221,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
+        self.object.user.save()
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
@@ -242,7 +229,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
         form = self.get_form()
         try:
             user = User.objects.get(username=form.cleaned_data['user']['email'])
-            if user == self.object.user:
+            if user == self.object.user and form.is_valid():
                 return self.form_valid(form)
         except User.DoesNotExist:
             if form.is_valid():
@@ -285,12 +272,10 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
     model = Practitioner
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             practitioner = self.request.user.practitioner
             return practitioner.email_confirmed and practitioner.is_approved
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
     def form_valid(self, form):
@@ -330,11 +315,9 @@ class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError):
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
@@ -357,10 +340,8 @@ class PractitionerHomepageView(UserPassesTestMixin, generic.TemplateView):
     model = Appointment
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             practitioner = Practitioner.objects.get(user=self.request.user)
             return practitioner.email_confirmed and practitioner.is_approved
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False

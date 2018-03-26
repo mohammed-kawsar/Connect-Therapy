@@ -3,12 +3,13 @@ from datetime import date
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import TestCase, RequestFactory
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
 from connect_therapy.models import Practitioner, Patient
 from connect_therapy.tokens import account_activation_token
-from connect_therapy.views.views import activate
+from connect_therapy.views.views import activate, HelpView
 
 
 class TestActivate(TestCase):
@@ -90,3 +91,18 @@ class TestActivate(TestCase):
         request.user = AnonymousUser()
         response = activate(request, uidb64, token)
         self.assertEqual(request.user, user)
+
+
+class TestHelpView(TestCase):
+    def test_get_context_data(self):
+        factory = RequestFactory()
+        request = factory.get(reverse_lazy('connect_therapy:help'))
+        view = HelpView()
+        view.request = request
+        self.assertEqual(len(view.get_context_data()), 2)
+
+
+class TestSendEmailConfirmationView(TestCase):
+    def test_get(self):
+        resp = self.client.get(reverse_lazy('connect_therapy:send-email-confirmation'))
+        self.assertRedirects(resp, reverse_lazy('connect_therapy:help'))
