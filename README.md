@@ -196,7 +196,7 @@ Now return back to the previous tab.
 
 - Make a note of the User ***ARN*** (from here onwards refered to as just ***ARN***)
  - It looks something like this: arn:aws:iam::933262614869:user/THE-NAME-YOU-GAVE (Your one will be different but will look similar)
- 
+
 ###### 3.3.2.3 Complete AWS S3 setup
 
 - Return back to the S3 dashboard via the 'Services' menu then 'S3'
@@ -268,6 +268,12 @@ Then create this file in `~/.aws/credentials`
 aws_access_key_id = INSERT KEY
 aws_secret_access_key = INSERT KEY
 ```
+
+Then in `mysite/settings.py`, you should find the line
+```
+S3_BUCKET_NAME = 'segwyn'
+```
+update this with the name of your bucket
 
 Congratulations! If you followed these steps, you should have successfully set up your AWS S3 server with a custom access policy ***and*** should now be able to use the S3 as we intended.
 
