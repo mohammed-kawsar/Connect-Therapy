@@ -533,6 +533,126 @@ class TestPractitionerPreviousNotesView(TestCase):
         self.assertTrue(view.test_func())
 
 
+class TestPractitionerCurrentNotesView(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+        self.patient = Patient(user=test_user_1,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+        self.patient.save()
+
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        self.practitioner = Practitioner(user=test_user_3,
+                                         address_line_1="My home",
+                                         postcode="EC12 1CV",
+                                         mobile="+447577293232",
+                                         bio="Hello",
+                                         email_confirmed=True,
+                                         is_approved=True)
+        self.practitioner.save()
+
+        self.appointment = Appointment(patient=self.patient,
+                                       practitioner=self.practitioner,
+                                  start_date_and_time=timezone.now() + relativedelta(weeks=1),
+                                  length=timedelta(hours=1),
+                                       patient_notes_before_meeting='XXX')
+        self.appointment.save()
+
+    def test_test_func_when_user_has_no_practitioner(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-future-notes',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = AnonymousUser()
+        view = PractitionerCurrentNotesView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_get_object_is_None(self):
+        factory = RequestFactory()
+        request = factory.post(
+            reverse_lazy(
+                'connect_therapy:practitioner-future-notes',
+                kwargs={'pk': self.appointment.pk}
+            )
+        )
+        request.user = self.practitioner.user
+        view = PractitionerCurrentNotesView()
+        view.request = request
+        view.get_object = lambda queryset=None: None
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_different_practitioner(self):
+        user = User(username='robert@greener.com', password='meowmeow12')
+        user.save()
+        practitioner = Practitioner(
+            user=user,
+            address_line_1='XXX',
+            postcode='SG19 2UN',
+            bio='XXX',
+            is_approved=True,
+            email_confirmed=True
+        )
+        practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-future-notes',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = practitioner.user
+        view = PractitionerCurrentNotesView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_not_confirmed(self):
+        self.practitioner.email_confirmed = False
+        self.practitioner.is_approved = True
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-future-notes',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = self.practitioner.user
+        view = PractitionerCurrentNotesView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_not_approved(self):
+        self.practitioner.email_confirmed = True
+        self.practitioner.is_approved = False
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-future-notes',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = self.practitioner.user
+        view = PractitionerCurrentNotesView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_confirmed_and_is_approved(self):
+        self.practitioner.email_confirmed = True
+        self.practitioner.is_approved = True
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-future-notes',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = self.practitioner.user
+        view = PractitionerCurrentNotesView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertTrue(view.test_func())
+
+
 class TestPractitionerAllPatientsView(TestCase):
     def test_unique_patient(self):
         john = User(username='john', first_name="John", last_name="Smith")
