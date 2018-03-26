@@ -124,6 +124,8 @@ TWILIO_ACC_SID = 'AC35eaf3d5ea24c3665fb0062caad70274'
 
 TWILIO_AUTH_TOKEN = '13af9344123ac994e18e922379fd260b'
 
+S3_BUCKET_NAME = 'segwyn'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
