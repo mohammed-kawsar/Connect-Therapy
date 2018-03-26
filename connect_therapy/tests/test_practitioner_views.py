@@ -1324,6 +1324,67 @@ class TestPractitionerAppointmentDelete(TestCase):
         self.assertFalse(appointment.is_live())
 
 
+class TestPractitionerHomepageView(TestCase):
+    def setUp(self):
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        self.practitioner = Practitioner(user=test_user_3,
+                                         address_line_1="My home",
+                                         postcode="EC12 1CV",
+                                         mobile="+447577293232",
+                                         bio="Hello",
+                                         email_confirmed=True,
+                                         is_approved=True)
+        self.practitioner.save()
+
+    def test_test_func_when_user_has_no_practitioner(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-homepage'))
+        request.user = AnonymousUser()
+        view = PractitionerHomepageView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_not_confirmed(self):
+        self.practitioner.email_confirmed = False
+        self.practitioner.is_approved = True
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-homepage'))
+        request.user = self.practitioner.user
+        view = PractitionerHomepageView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_not_approved(self):
+        self.practitioner.email_confirmed = True
+        self.practitioner.is_approved = False
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-homepage'))
+        request.user = self.practitioner.user
+        view = PractitionerHomepageView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_confirmed_and_is_approved(self):
+        self.practitioner.email_confirmed = True
+        self.practitioner.is_approved = True
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-homepage'))
+        request.user = self.practitioner.user
+        view = PractitionerHomepageView()
+        view.request = request
+        self.assertTrue(view.test_func())
+
+
 class PractitionerLogoutTest(TestCase):
     def setUp(self):
         test_user_1 = User.objects.create_user(username='testuser1')
@@ -1352,7 +1413,7 @@ class PractitionerLogoutTest(TestCase):
         test_prac_1.save()
 
     def test_practitioner_logout_success_redirect(self):
-        login = self.client.login(username="testuser2", password="12345")
+        login = self.client.login(username="testuser1", password="12345")
 
         logout = self.client.logout()
 
