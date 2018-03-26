@@ -21,6 +21,7 @@ from connect_therapy.forms.forms import FileForm
 from connect_therapy.forms.patient import ResendConfirmationEmailForm
 from connect_therapy.models import Appointment, Patient, Practitioner
 from connect_therapy.tokens import account_activation_token
+from mysite.settings import S3_BUCKET_NAME
 
 
 class ChatView(UserPassesTestMixin, DetailView):
@@ -92,12 +93,12 @@ class FileUploadView(LoginRequiredMixin, generic.DetailView):
             # push to S3
             key = str(self.object.id) + "/" + str(file.name)
             s3.meta.client.put_object(Body=file,
-                                      Bucket='segwyn',
+                                      Bucket=S3_BUCKET_NAME,
                                       Key=key, ContentType=file.content_type)
 
             # add tags to file in s3
             s3.meta.client.put_object_tagging(
-                Bucket='segwyn',
+                Bucket=S3_BUCKET_NAME,
                 Key=str(self.object.id) + "/" + str(file.name),
                 Tagging={
                     'TagSet': [
@@ -137,7 +138,7 @@ class FileDownloadView(DetailView):
     @staticmethod
     def get_files_from_folder(folder_name):
         s3 = boto3.resource("s3")
-        bucket = s3.Bucket("segwyn")
+        bucket = s3.Bucket(S3_BUCKET_NAME)
         files = []
         prefix = folder_name + "/"
         file_not_found = True
@@ -165,7 +166,7 @@ class FileDownloadView(DetailView):
                                                              region_name='eu-west-2')).generate_presigned_url(
             ClientMethod='get_object',
             Params={
-                'Bucket': 'segwyn',
+                'Bucket': S3_BUCKET_NAME,
                 'Key': key
             },
             ExpiresIn=1800
@@ -175,7 +176,7 @@ class FileDownloadView(DetailView):
     @staticmethod
     def get_objects_with_tag(uploader_user_id, appointment_id):
         s3 = boto3.resource("s3")
-        bucket = s3.Bucket("segwyn")
+        bucket = s3.Bucket(S3_BUCKET_NAME)
         files = []
         if len(uploader_user_id) > 0:
             files.append(FileDownloadView._get_objects_with_key_value(
@@ -192,7 +193,7 @@ class FileDownloadView(DetailView):
 
         files = []
         for obj in objects:
-            tag_set = s3.meta.client.get_object_tagging(Bucket="segwyn",
+            tag_set = s3.meta.client.get_object_tagging(Bucket=S3_BUCKET_NAME,
                                                         Key=obj.key)['TagSet']
 
             if len(tag_set) > 0:

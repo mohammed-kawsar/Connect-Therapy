@@ -283,7 +283,7 @@ class TestPractitionerNotes(TestCase):
         view.request = request
         view.get_object = lambda queryset=None: self.appointment
         view.get_form = lambda form_class=None: form
-        view.post()
+        view.post(request)
         self.assertEqual(self.appointment.practitioner_notes,
                          'Test make notes.')
         self.assertEqual(self.appointment.patient_notes_by_practitioner,
@@ -302,7 +302,7 @@ class TestPractitionerNotes(TestCase):
         view.request = request
         view.get_object = lambda queryset=None: self.appointment
         view.get_form = lambda form_class=None: form
-        response = view.post()
+        response = view.post(request)
         self.assertEqual(response.status_code, 200)
 
 
