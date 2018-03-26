@@ -3,6 +3,7 @@ from datetime import datetime, time, date
 import pytz
 from django.contrib.auth.models import User, AnonymousUser
 from django.test import TestCase, Client, RequestFactory
+from django.utils.http import urlencode
 
 from connect_therapy.forms.practitioner.practitioner import PractitionerNotesForm
 from connect_therapy.models import Practitioner, Appointment, Patient
@@ -1057,6 +1058,65 @@ class TestPractitionerEditDetailsView(TestCase):
                              'user': self.practitioner.user,
                              'practitioner': self.practitioner
                          })
+
+
+class TestChangePassword(TestCase):
+    def setUp(self):
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        self.practitioner = Practitioner(user=test_user_3,
+                                         address_line_1="My home",
+                                         postcode="EC12 1CV",
+                                         mobile="+447577293232",
+                                         bio="Hello",
+                                         email_confirmed=True,
+                                         is_approved=True)
+        self.practitioner.save()
+
+    def test_when_method_is_get(self):
+        self.client.force_login(self.practitioner.user)
+        response = self.client.get(
+            reverse_lazy('connect_therapy:practitioner-change-password')
+        )
+        self.assertTemplateUsed(response, 'connect_therapy/practitioner/change-password.html')
+        self.assertEqual(response.status_code, 200)
+
+    def test_when_form_is_not_valid(self):
+        self.client.force_login(self.practitioner.user)
+        response = self.client.post(
+            reverse_lazy('connect_therapy:practitioner-change-password'),
+            data=urlencode({
+                'old_password': '12345',
+                'new_password1': 'woofwoof7',
+                'new_password2': 'woofwoof8'
+            }),
+            content_type="application/x-www-form-urlencoded"
+        )
+        self.assertRedirects(
+            response,
+            reverse_lazy('connect_therapy:practitioner-change-password')
+        )
+
+    def test_when_form_is_valid(self):
+        self.client.force_login(self.practitioner.user)
+        response = self.client.post(
+            reverse_lazy('connect_therapy:practitioner-change-password'),
+            data=urlencode({
+                'old_password': '12345',
+                'new_password1': 'woofwoof7',
+                'new_password2': 'woofwoof7'
+            }),
+            content_type="application/x-www-form-urlencoded"
+        )
+        self.assertRedirects(
+            response,
+            reverse_lazy('connect_therapy:practitioner-profile')
+        )
+        self.practitioner.user.refresh_from_db()
+        self.assertTrue(self.practitioner.user.check_password('woofwoof7'))
 
 
 class PractitionerLogoutTest(TestCase):
