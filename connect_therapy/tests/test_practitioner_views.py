@@ -618,4 +618,194 @@ class PractitionerMyAppointmentsViewTest(TestCase):
         view.object = self.appointment
         context = view.get_context_data()
         self.assertEqual(len(context), 4)
-        
+
+
+class TestPractitionerCancel(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+        test_user_2 = User.objects.create_user(username='testuser2')
+        test_user_2.set_password('12345')
+        test_user_2.save()
+        self.patient = Patient(user=test_user_1,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+        self.patient.save()
+        self.practitioner = Practitioner(user=test_user_2,
+                                         address_line_1="My home",
+                                         postcode="EC12 1CV",
+                                         mobile="+447577293232",
+                                         bio="Hello",
+                                         is_approved=True,
+                                         email_confirmed=True)
+        self.practitioner.save()
+        self.appointment = Appointment(patient=self.patient,
+                                       practitioner=self.practitioner,
+                                  start_date_and_time=datetime.datetime(year=2018,
+                                                               month=4,
+                                                               day=17,
+                                                               hour=15,
+                                                               minute=10,
+                                                               tzinfo=pytz.utc),
+                                  length=timedelta(hours=1))
+        self.appointment.save()
+
+    def test_test_func_when_appointment_has_no_patient(self):
+        appointment = Appointment(patient=None,
+                                  start_date_and_time=datetime.datetime(year=2018,
+                                                               month=4,
+                                                               day=17,
+                                                               hour=15,
+                                                               minute=10,
+                                                               tzinfo=pytz.utc),
+                                  length=timedelta(hours=1))
+        appointment.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-cancel-appointment',
+                                            kwargs={'pk': appointment.pk}))
+        request.user = self.practitioner.user
+        view = PractitionerAppointmentDelete()
+        view.request = request
+        view.get_object = lambda queryset=None: appointment
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_different_patient(self):
+        user = User(username='robert@greener.com', password='meowmeow12')
+        user.save()
+        patient = Patient(
+            user=user,
+            gender='M',
+            mobile="+447476666555",
+            date_of_birth=date(year=1995, month=1, day=1)
+        )
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-cancel-appointment',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = self.practitioner.user
+        view = PractitionerAppointmentDelete()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_not_confirmed(self):
+        test_user_1 = User.objects.create_user(username='testuserasdassa1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True, )
+        test_pat_1.save()
+
+        test_user_3 = User.objects.create_user(username='testuserddfddfddfd3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        test_prac_1 = Practitioner(user=test_user_3,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   email_confirmed=True,
+                                   is_approved=True)
+        test_prac_1.save()
+
+        test_prac_1.email_confirmed = False
+        test_prac_1.is_approved = True
+        test_prac_1.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-cancel-appointment',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = test_prac_1.user
+        self.appointment.practitioner = test_prac_1
+        self.appointment.save()
+        view = PractitionerAppointmentDelete()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_confirmed(self):
+        test_user_1 = User.objects.create_user(username='testusera1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True, )
+        test_pat_1.save()
+
+        test_user_3 = User.objects.create_user(username='testuserasdasd3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        test_prac_1 = Practitioner(user=test_user_3,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   email_confirmed=True,
+                                   is_approved=True)
+        test_prac_1.save()
+        test_prac_1.email_confirmed = True
+        test_prac_1.is_approved = True
+        test_prac_1.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-cancel-appointment',
+                                            kwargs={'pk': self.appointment.pk}))
+        request.user = test_prac_1.user
+        self.appointment.practitioner = test_prac_1
+        self.appointment.save()
+        view = PractitionerAppointmentDelete()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        self.assertTrue(view.test_func())
+
+    def test_get_context_data(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-cancel-appointment',
+                                            kwargs={'pk': 1}))
+        view = PractitionerAppointmentDelete()
+        view.request = request
+        view.object = self.appointment
+        context = view.get_context_data()
+        self.assertEqual(len(context), 4)
+
+    def test_post_when_form_valid(self):
+        form = forms.Form()
+        form.is_valid = lambda: True
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-cancel-appointment',
+                                            kwargs={'pk': 1}))
+        view = PractitionerAppointmentDelete()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        view.get_form = lambda form_class=None: form
+        response = view.post(request, 1)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.appointment.practitioner, None)
+
+    def test_post_when_form_invalid(self):
+        form = forms.Form()
+        form.is_valid = lambda: False
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-cancel-appointment',
+                                            kwargs={'pk': 1}))
+        view = PractitionerAppointmentDelete()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        view.get_form = lambda form_class=None: form
+        response = view.post(request, 1)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(self.appointment.practitioner, None)
