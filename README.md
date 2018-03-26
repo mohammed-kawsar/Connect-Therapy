@@ -94,7 +94,7 @@ This should install the requirements
 
 ### 3.3 Configuration
 #### 3.3.1 Database setup
-This is not necessary for a development / test environment
+This **is not** necessary for a development / test environment
 
 The app is configured by default to use SQLite, however this would be unsuitable
 for a deployed environment.
@@ -103,9 +103,162 @@ For instructions on how to change this, see the official
 [Django Tutorial](https://docs.djangoproject.com/en/2.0/intro/tutorial02/#database-setup)
 
 #### 3.3.2 AWS Setup
-This IS necessary for a development / test environment
+This **IS** necessary for a development / test environment
 
-Follow the Amazon S3 Setup part of [this tutorial](https://simpleisbetterthancomplex.com/tutorial/2017/08/01/how-to-setup-amazon-s3-in-a-django-project.html)
+Before proceeding to setup AWS S3 support within the project, ensure that all dependencies have been successfully installed.
+
+Then create an account or login at https://aws.amazon.com/
+
+After signing in to the AWS console, follow these steps:
+
+###### 3.3.2.1 S3 Bucket Setup
+
+- Click on 'Services', then under 'Storage', select 'S3'
+
+- Click on the 'Create Bucket' button
+
+- Enter an appropriate 'Bucket name' and set the 'Region' to 'EU (London)'
+
+- Click 'Create'
+
+###### 3.3.2.2 IAM Policy setup
+
+Now, click on 'Services' again, this time look for 'IAM' under 'Security, Identity & Compliance'
+
+- Go to the 'Users' sub-section and click on 'Add user'
+
+- Give the user an appropriate name
+
+- Select 'Programmatic access' only
+
+- Click 'Next: Permissions"
+
+- Click 'Attach existing policies directly' and then 'Create Policy'
+
+- Another tab may open up, go on to this new tab
+
+- Within the new browser tab, on the page there will be a 'Visual Editor' and 'JSON' tab.
+
+- Click on the 'JSON' tab
+
+- Replace the contents of the 'JSON' tabs text field with the following JSON
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:DeleteObjectTagging",
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:ListBucketByTags",
+                "s3:GetObjectTagging",
+                "s3:PutObjectTagging"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "s3:ListAllMyBuckets",
+            "Resource": "arn:aws:s3:::*"
+        }
+    ]
+}
+
+```
+
+- Then press 'Review Policy'
+
+- Give the policy an appropriate name
+
+- Press 'Create Policy'
+
+Now return back to the previous tab.
+
+- Press the 'Refresh' button next to 'Create Policy'
+
+- Now in the search field, search for the name of the policy you just created above
+
+- Select this policy, scroll down and press 'Next: Review'
+
+- Press 'Create user'
+
+- Store the ***Access key ID*** and ***Secret access key*** in a ***secure*** location. You will need these later
+
+> Note: ***Ensure the keys are kept secret and secure otherwise you're AWS S3 may be abused and you may incur unwanted expenses on your account***
+- Press 'Close'
+
+- Click on the user you just created.
+
+- Make a note of the User ***ARN*** (from here onwards refered to as just ***ARN***)
+ - It looks something like this: arn:aws:iam::933262614869:user/THE-NAME-YOU-GAVE (Your one will be different but will look similar)
+ 
+###### 3.3.2.3 Complete AWS S3 setup
+
+- Return back to the S3 dashboard via the 'Services' menu then 'S3'
+
+- Click on the bucket you created in step 3.3.2.1
+
+- Click on the 'Permissions' tab
+
+- Click on the 'Bucket Policy' button
+
+- Replace the policy with the following, making the correct substitions where specified:
+
+```
+{
+    "Version": "2012-10-17",
+    "Id": "Policy1488494182833",
+    "Statement": [
+        {
+            "Sid": "Stmt1488493308547",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "THE ARN OF THE USER YOU MADE"
+            },
+            "Action": [
+                "s3:ListBucket",
+                "s3:ListBucketVersions",
+                "s3:GetBucketLocation",
+                "s3:Get*",
+                "s3:Put*"
+            ],
+            "Resource": "arn:aws:s3:::YOUR-BUCKET-NAME"
+        }
+    ]
+}
+```
+
+- Press 'Save'
+
+- Now press the 'CORS configuration' button
+
+- Replace the default configuration with this:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+<CORSRule>
+    <AllowedOrigin>*</AllowedOrigin>
+    <AllowedMethod>GET</AllowedMethod>
+    <MaxAgeSeconds>3000</MaxAgeSeconds>
+    <AllowedHeader>Authorization</AllowedHeader>
+</CORSRule>
+</CORSConfiguration>
+```
+- Press 'Save'
+
+Congratulations! If you followed these steps, you should have successfully set up your AWS S3 server with a custom access policy.
+
+###### 3.3.2.4 Final - Set up local credentials
+
+Carry out the follwoing on your computer.
+
+You will need the access key id and secret access key refered to in 3.3.2.2
+
 Create a folder `~/.aws`
 `cd ~`
 `mkdir .aws`
@@ -115,6 +268,8 @@ Then create this file in `~/.aws/credentials`
 aws_access_key_id = INSERT KEY
 aws_secret_access_key = INSERT KEY
 ```
+
+Congratulations! If you followed these steps, you should have successfully set up your AWS S3 server with a custom access policy ***and*** should now be able to use the S3 as we intended.
 
 #### 3.3.3 Twilio Setup
 This is not necessary for a development / test environment
