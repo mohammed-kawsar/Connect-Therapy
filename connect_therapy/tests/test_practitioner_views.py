@@ -939,6 +939,126 @@ class PractitionerProfileTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
 
+class TestPractitionerEditDetailsView(TestCase):
+    def setUp(self):
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        self.practitioner = Practitioner(user=test_user_3,
+                                         address_line_1="My home",
+                                         postcode="EC12 1CV",
+                                         mobile="+447577293232",
+                                         bio="Hello",
+                                         email_confirmed=True,
+                                         is_approved=True)
+        self.practitioner.save()
+
+    def test_test_func_when_user_has_no_practitioner(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-profile-edit',
+                                            kwargs={'pk': self.practitioner.pk}))
+        request.user = AnonymousUser()
+        view = PractitionerEditDetailsView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_get_object_is_None(self):
+        factory = RequestFactory()
+        request = factory.post(
+            reverse_lazy(
+                'connect_therapy:practitioner-profile-edit',
+                kwargs={'pk': self.practitioner.pk}
+            )
+        )
+        request.user = self.practitioner.user
+        view = PractitionerEditDetailsView()
+        view.request = request
+        view.get_object = lambda queryset=None: None
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_different_practitioner(self):
+        user = User(username='robert@greener.com', password='meowmeow12')
+        user.first_name = 'Robert'
+        user.last_name = 'Greener'
+        user.save()
+        practitioner = Practitioner(
+            user=user,
+            address_line_1='XXX',
+            postcode='SG19 2UN',
+            bio='XXX',
+            is_approved=True,
+            email_confirmed=True
+        )
+        practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-profile-edit',
+                                            kwargs={'pk': self.practitioner.pk}))
+        request.user = practitioner.user
+        view = PractitionerEditDetailsView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.practitioner
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_not_confirmed(self):
+        self.practitioner.email_confirmed = False
+        self.practitioner.is_approved = True
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-profile-edit',
+                                            kwargs={'pk': self.practitioner.pk}))
+        request.user = self.practitioner.user
+        view = PractitionerEditDetailsView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.practitioner
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_not_approved(self):
+        self.practitioner.email_confirmed = True
+        self.practitioner.is_approved = False
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-profile-edit',
+                                            kwargs={'pk': self.practitioner.pk}))
+        request.user = self.practitioner.user
+        view = PractitionerEditDetailsView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.practitioner
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_confirmed_and_is_approved(self):
+        self.practitioner.email_confirmed = True
+        self.practitioner.is_approved = True
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-profile-edit',
+                                            kwargs={'pk': self.practitioner.pk}))
+        request.user = self.practitioner.user
+        view = PractitionerEditDetailsView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.practitioner
+        self.assertTrue(view.test_func())
+
+    def test_get_form_kwargs(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-profile-edit',
+                                            kwargs={'pk': self.practitioner.pk}))
+        request.user = self.practitioner.user
+        view = PractitionerEditDetailsView()
+        view.request = request
+        view.object = self.practitioner
+        self.assertEqual(view.get_form_kwargs()['instance'],
+                         {
+                             'user': self.practitioner.user,
+                             'practitioner': self.practitioner
+                         })
+
+
 class PractitionerLogoutTest(TestCase):
     def setUp(self):
         test_user_1 = User.objects.create_user(username='testuser1')
