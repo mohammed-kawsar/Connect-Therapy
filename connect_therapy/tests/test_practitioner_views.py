@@ -390,6 +390,61 @@ class ViewAllPractitionersTest(TestCase):
                              '/patient/login?next=/patient/view-practitioners')
 
 
+class ViewAllPatientsTest(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+
+        test_pat_1 = Patient(user=test_user_1,
+                             gender='M',
+                             mobile="+447476666555",
+                             date_of_birth=date(year=1995, month=1, day=1),
+                             email_confirmed=True)
+        test_pat_1.save()
+
+        test_user_2 = User.objects.create_user(username='testuser3')
+        test_user_2.set_password('12345')
+
+        test_user_2.save()
+
+        test_prac_1 = Practitioner(user=test_user_2,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   is_approved=True,
+                                   email_confirmed=True)
+        test_prac_1.save()
+
+    def test_practitioner_view_all_patients(self):
+        login = self.client.login(username="testuser3", password="12345")
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:practitioner-view-patients'))
+
+        self.assertEqual(str(response.context['user']), 'testuser3')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, 'connect_therapy/practitioner/view-patients.html')
+
+    def test_practitioner_cannot_view_all_practitioners(self):
+        login = self.client.login(username="testuser2", password="12345")
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:patient-view-practitioners'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response,
+                             '/patient/login?next=/patient/view-practitioners')
+
+    def test_if_not_logged_in_cannot_view_all_patients(self):
+        response = self.client.get(reverse_lazy(
+            'connect_therapy:practitioner-view-patients'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response,
+                             '/practitioner/login?next=/practitioner/view-patients')
+
+
 class PractitionerLogoutTest(TestCase):
     def setUp(self):
         test_user_1 = User.objects.create_user(username='testuser1')
