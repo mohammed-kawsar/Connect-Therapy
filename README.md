@@ -11,6 +11,8 @@ https://github.com/blueimp/jQuery-File-Upload
 
 https://github.com/andyet/SimpleWebRTC -- The Web RTC API we used.
 
+https://github.com/xdan/datetimepicker
+
 ## Setup
 You MUST set up `python manage.py reminders` to run at 9am every day using
 `at` on Windows, or `cron` on UNIX-like operating systems
