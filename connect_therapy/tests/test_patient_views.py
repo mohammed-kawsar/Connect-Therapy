@@ -753,11 +753,12 @@ class PatientAppointmentsViewTest(TestCase):
 
 class PatientProfileTest(TestCase):
     def setUp(self):
-        test_user_1 = User.objects.create_user(username='testuser1')
-        test_user_1.set_password('12345')
-        test_user_1.save()
+        self.test_user_1 = User.objects.create_user(username='test1@example.com')
+        self.test_user_1.set_password('12345')
+        self.test_user_1.email = 'test1@example.com'
+        self.test_user_1.save()
 
-        test_pat_1 = Patient(user=test_user_1,
+        test_pat_1 = Patient(user=self.test_user_1,
                              gender='M',
                              mobile="+447476666555",
                              date_of_birth=date(year=1995, month=1, day=1),
@@ -779,10 +780,9 @@ class PatientProfileTest(TestCase):
         test_prac_1.save()
 
     def test_patient_can_view_their_profile(self):
-        login = self.client.login(username="testuser1", password="12345")
+        login = self.client.force_login(self.test_user_1)
         response = self.client.get(
             reverse_lazy('connect_therapy:patient-profile'))
-
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'connect_therapy/patient/profile.html')
 
@@ -800,7 +800,7 @@ class PatientProfileTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_redirect_patient_edit_profile(self):
-        login = self.client.login(username="testuser1", password="12345")
+        login = self.client.force_login(self.test_user_1)
         response = self.client.post(
             reverse_lazy('connect_therapy:patient-profile-edit',
                          kwargs={'pk': 1}), {
@@ -858,7 +858,7 @@ class PatientProfileTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_logged_in_patient_view_change_password_page(self):
-        login = self.client.login(username="testuser1", password="12345")
+        login = self.client.force_login(self.test_user_1)
         response = self.client.get(
             reverse_lazy('connect_therapy:patient-change-password')
         )

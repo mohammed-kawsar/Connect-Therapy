@@ -406,7 +406,8 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
             if user == self.object.user and form.is_valid():
                 return self.form_valid(form)
         except User.DoesNotExist:
-            return self.form_valid(form)
+            if form.is_valid():
+                return self.form_valid(form)
 
         return self.form_invalid(form)
 
