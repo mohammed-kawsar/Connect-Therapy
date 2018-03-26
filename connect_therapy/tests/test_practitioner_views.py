@@ -305,6 +305,113 @@ class TestPractitionerNotes(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class TestPractitionerMyAppointmentsView(TestCase):
+    def setUp(self):
+        test_user_1 = User.objects.create_user(username='testuser1')
+        test_user_1.set_password('12345')
+        test_user_1.save()
+        self.patient = Patient(user=test_user_1,
+                          gender='M',
+                          mobile="+447476666555",
+                          date_of_birth=date(year=1995, month=1, day=1))
+        self.patient.save()
+
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        self.practitioner = Practitioner(user=test_user_3,
+                                         address_line_1="My home",
+                                         postcode="EC12 1CV",
+                                         mobile="+447577293232",
+                                         bio="Hello",
+                                         email_confirmed=True,
+                                         is_approved=True)
+        self.practitioner.save()
+
+        self.appointment_booked = Appointment(patient=self.patient,
+                                                     practitioner=self.practitioner,
+                                                     start_date_and_time=timezone.now() + relativedelta(weeks=1),
+                                                     length=timedelta(hours=1))
+        self.appointment_booked.save()
+
+        self.appointment_unbooked = Appointment(practitioner=self.practitioner,
+                                              start_date_and_time=timezone.now() + relativedelta(weeks=1),
+                                              length=timedelta(hours=1))
+        self.appointment_unbooked.save()
+
+        self.appointment_needing_notes = Appointment(patient=self.patient,
+                                       practitioner=self.practitioner,
+                                  start_date_and_time=timezone.now() - relativedelta(weeks=1),
+                                  length=timedelta(hours=1))
+        self.appointment_needing_notes.save()
+
+        self.appointment_with_notes = Appointment(patient=self.patient,
+                                       practitioner=self.practitioner,
+                                       start_date_and_time=timezone.now() - relativedelta(weeks=1),
+                                       length=timedelta(hours=1),
+                                                  practitioner_notes='x',
+                                                  patient_notes_by_practitioner='y')
+        self.appointment_with_notes.save()
+
+    def test_test_func_when_user_has_no_practitioner(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-my-appointments'))
+        request.user = AnonymousUser()
+        view = PractitionerMyAppointmentsView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_not_confirmed(self):
+        self.practitioner.email_confirmed = False
+        self.practitioner.is_approved = True
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-my-appointments'))
+        request.user = self.practitioner.user
+        view = PractitionerMyAppointmentsView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_not_approved(self):
+        self.practitioner.email_confirmed = True
+        self.practitioner.is_approved = False
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-my-appointments'))
+        request.user = self.practitioner.user
+        view = PractitionerMyAppointmentsView()
+        view.request = request
+        self.assertFalse(view.test_func())
+
+    def test_test_func_when_email_confirmed_and_is_approved(self):
+        self.practitioner.email_confirmed = True
+        self.practitioner.is_approved = True
+        self.practitioner.save()
+
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-my-appointments'))
+        request.user = self.practitioner.user
+        view = PractitionerMyAppointmentsView()
+        view.request = request
+        self.assertTrue(view.test_func())
+
+    def test_get_context_data(self):
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-my-appointments'))
+        request.user = self.practitioner.user
+        view = PractitionerMyAppointmentsView()
+        view.request = request
+        context = view.get_context_data()
+        self.assertEqual(context['booked_appointments'][0], self.appointment_booked)
+        self.assertEqual(context['unbooked_appointments'][0], self.appointment_unbooked)
+        self.assertEqual(context['needing_notes'][0], self.appointment_needing_notes)
+        self.assertEqual(context['past_appointments'][0], self.appointment_with_notes)
+
+
 class TestPractitionerAllPatientsView(TestCase):
     def test_unique_patient(self):
         john = User(username='john', first_name="John", last_name="Smith")

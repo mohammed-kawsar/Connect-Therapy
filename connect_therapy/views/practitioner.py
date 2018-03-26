@@ -94,7 +94,7 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
         try:
             practitioner = Practitioner.objects.get(user=self.request.user)
             return practitioner.email_confirmed and practitioner.is_approved
-        except (Practitioner.DoesNotExist, AttributeError) as e:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
     def get_context_data(self, *args, **kwargs):
