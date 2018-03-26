@@ -50,6 +50,10 @@ urlpatterns = [
          PractitionerPreviousNotesView.as_view(),
          name='practitioner-view-notes'
          ),
+    path('view-upcoming-meeting-notes/<int:pk>',
+         PractitionerCurrentNotesView.as_view(),
+         name='practitioner-future-notes'
+         ),
     path('my-appointments',
          PractitionerMyAppointmentsView.as_view(),
          name='practitioner-my-appointments'
