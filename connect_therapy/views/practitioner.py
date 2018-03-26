@@ -75,7 +75,7 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
         self.object.save()
         return super().form_valid(form)
 
-    def post(self, **kwargs):
+    def post(self, request, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
