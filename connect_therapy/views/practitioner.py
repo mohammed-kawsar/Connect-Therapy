@@ -194,12 +194,10 @@ class PractitionerProfile(UserPassesTestMixin, generic.TemplateView):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             practitioner = self.request.user.practitioner
             return practitioner.email_confirmed and practitioner.is_approved
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError) as e:
             return False
 
 
