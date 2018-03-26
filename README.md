@@ -13,6 +13,9 @@ https://github.com/andyet/SimpleWebRTC -- The Web RTC API we used.
 
 https://github.com/xdan/datetimepicker
 
+The activate function in connect_therapy.views.views is based in part of
+https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef
+
 ### Python packages used
 ```
 amqp==2.2.2
@@ -214,3 +217,10 @@ A HTML report will appear in the htmlcov subdirectory
 `python manage.py runsslserver`
 
 Then go to https://localhost:8000
+
+### 3.7 Admin interface
+First you need to create a superuser
+`python manage.py createsuperuser`
+
+Then when the server is running you can access the admin interface at
+https://localhost:8000/admin
