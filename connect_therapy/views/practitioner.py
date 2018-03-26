@@ -221,6 +221,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
+        self.object.user.save()
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
@@ -228,7 +229,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
         form = self.get_form()
         try:
             user = User.objects.get(username=form.cleaned_data['user']['email'])
-            if user == self.object.user:
+            if user == self.object.user and form.is_valid():
                 return self.form_valid(form)
         except User.DoesNotExist:
             if form.is_valid():

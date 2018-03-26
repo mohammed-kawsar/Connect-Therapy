@@ -395,6 +395,7 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
+        self.object.user.save()
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
@@ -405,7 +406,7 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
             if user == self.object.user and form.is_valid():
                 return self.form_valid(form)
         except User.DoesNotExist:
-            pass
+            return self.form_valid(form)
 
         return self.form_invalid(form)
 
