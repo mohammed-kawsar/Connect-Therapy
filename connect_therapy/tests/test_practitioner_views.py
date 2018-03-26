@@ -157,7 +157,7 @@ class TestPractitionerNotes(TestCase):
 
     def test_test_func_when_user_has_no_practitioner(self):
         factory = RequestFactory()
-        request = factory.post(reverse_lazy('connect_therapy:practitioner-view-notes',
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
                                             kwargs={'pk': self.appointment.pk}))
         request.user = AnonymousUser()
         view = PractitionerNotesView()
@@ -168,7 +168,7 @@ class TestPractitionerNotes(TestCase):
         factory = RequestFactory()
         request = factory.post(
             reverse_lazy(
-                'connect_therapy:practitioner-view-notes',
+                'connect_therapy:practitioner-make-notes',
                 kwargs={'pk': self.appointment.pk}
             )
         )
@@ -192,7 +192,7 @@ class TestPractitionerNotes(TestCase):
         practitioner.save()
 
         factory = RequestFactory()
-        request = factory.post(reverse_lazy('connect_therapy:practitioner-view-notes',
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
                                             kwargs={'pk': self.appointment.pk}))
         request.user = practitioner.user
         view = PractitionerNotesView()
@@ -206,7 +206,7 @@ class TestPractitionerNotes(TestCase):
         self.practitioner.save()
 
         factory = RequestFactory()
-        request = factory.post(reverse_lazy('connect_therapy:practitioner-view-notes',
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
                                             kwargs={'pk': self.appointment.pk}))
         request.user = self.practitioner.user
         view = PractitionerNotesView()
@@ -220,7 +220,7 @@ class TestPractitionerNotes(TestCase):
         self.practitioner.save()
 
         factory = RequestFactory()
-        request = factory.post(reverse_lazy('connect_therapy:practitioner-view-notes',
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
                                             kwargs={'pk': self.appointment.pk}))
         request.user = self.practitioner.user
         view = PractitionerNotesView()
@@ -234,7 +234,7 @@ class TestPractitionerNotes(TestCase):
         self.practitioner.save()
 
         factory = RequestFactory()
-        request = factory.post(reverse_lazy('connect_therapy:practitioner-view-notes',
+        request = factory.post(reverse_lazy('connect_therapy:practitioner-make-notes',
                                             kwargs={'pk': self.appointment.pk}))
         request.user = self.practitioner.user
         view = PractitionerNotesView()
