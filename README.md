@@ -11,6 +11,8 @@ https://github.com/blueimp/jQuery-File-Upload
 
 https://github.com/andyet/SimpleWebRTC -- The Web RTC API we used.
 
+https://github.com/xdan/datetimepicker
+
 ### Python packages used
 ```
 amqp==2.2.2

@@ -91,7 +91,7 @@ class PractitionerNotesForm(forms.Form):
 
 class PractitionerForm(forms.ModelForm):
     address_line_1 = forms.CharField(max_length=100)
-    address_line_2 = forms.CharField(max_length=100)
+    address_line_2 = forms.CharField(max_length=100, required=False)
     postcode = forms.CharField(max_length=10)
     mobile = forms.CharField(max_length=20)
     bio = forms.Textarea
