@@ -269,6 +269,41 @@ class TestPractitionerNotes(TestCase):
         self.assertEqual(pnv.object.practitioner_notes, 'test')
         self.assertEqual(pnv.object.patient_notes_by_practitioner, 'text')
 
+    def test_post_when_form_valid(self):
+        data = {
+            'practitioner_notes': 'Test make notes.',
+            'patient_notes_by_practitioner': 'THIS IS A TEST'
+        }
+        form = PractitionerNotesForm(data=data)
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': 1}))
+        view = PractitionerNotesView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        view.get_form = lambda form_class=None: form
+        view.post()
+        self.assertEqual(self.appointment.practitioner_notes,
+                         'Test make notes.')
+        self.assertEqual(self.appointment.patient_notes_by_practitioner,
+                         'THIS IS A TEST')
+
+    def test_post_when_form_invalid(self):
+        data = {
+            'patient_notes_before_meeting': 'Test make notes.'
+        }
+        form = PractitionerNotesForm(data=data)
+        form.is_valid = lambda: False
+        factory = RequestFactory()
+        request = factory.post(reverse_lazy('connect_therapy:patient-make-notes',
+                                            kwargs={'pk': 1}))
+        view = PractitionerNotesView()
+        view.request = request
+        view.get_object = lambda queryset=None: self.appointment
+        view.get_form = lambda form_class=None: form
+        response = view.post()
+        self.assertEqual(response.status_code, 200)
+
 
 class TestPractitionerAllPatientsView(TestCase):
     def test_unique_patient(self):
