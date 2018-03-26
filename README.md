@@ -16,6 +16,9 @@ https://github.com/xdan/datetimepicker
 The activate function in connect_therapy.views.views is based in part of
 https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef
 
+Some of the bootstrap code was based in part of the official bootstrap documentation
+https://getbootstrap.com/docs/4.0/getting-started/introduction/
+
 ### Python packages used
 ```
 amqp==2.2.2
