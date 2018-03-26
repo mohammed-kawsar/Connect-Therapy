@@ -3,6 +3,7 @@ from datetime import date, datetime
 import pytz
 from decimal import Decimal
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase, RequestFactory
 
@@ -159,11 +160,7 @@ class PatientNotesBeforeAppointmentTest(TestCase):
                           date_of_birth=date(year=1995, month=1, day=1))
         self.patient.save()
         self.appointment = Appointment(patient=self.patient,
-                                  start_date_and_time=datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
+                                  start_date_and_time=timezone.now() + relativedelta(months=1),
                                   length=timedelta(hours=1))
         self.appointment.save()
 
@@ -178,11 +175,7 @@ class PatientNotesBeforeAppointmentTest(TestCase):
 
     def test_test_func_when_appointment_has_no_patient(self):
         appointment = Appointment(patient=None,
-                                  start_date_and_time=datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
+                                  start_date_and_time=timezone.now() + relativedelta(months=1),
                                   length=timedelta(hours=1))
         appointment.save()
 
@@ -322,11 +315,7 @@ class TestPatientCancel(TestCase):
         self.practitioner.save()
         self.appointment = Appointment(patient=self.patient,
                                        practitioner=self.practitioner,
-                                  start_date_and_time=datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
+                                  start_date_and_time=timezone.now() + relativedelta(months=1),
                                   length=timedelta(hours=1))
         self.appointment.save()
 
@@ -341,11 +330,7 @@ class TestPatientCancel(TestCase):
 
     def test_test_func_when_appointment_has_no_patient(self):
         appointment = Appointment(patient=None,
-                                  start_date_and_time=datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
+                                  start_date_and_time=timezone.now() + relativedelta(months=1),
                                   length=timedelta(hours=1))
         appointment.save()
 
@@ -428,11 +413,7 @@ class TestPatientCancel(TestCase):
         patient.save()
         appointment = Appointment(practitioner=practitioner,
                                   patient=patient,
-                                  start_date_and_time=datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
+                                  start_date_and_time=timezone.now() + relativedelta(months=1),
                                   length=timedelta(hours=1))
         appointment.save()
         pcav = PatientCancelAppointmentView()
@@ -451,11 +432,7 @@ class TestPatientCancel(TestCase):
             date_of_birth=date(year=1995, month=1, day=1)
         )
         patient.save()
-        start_date_and_time = datetime(year=2018,
-                                       month=3,
-                                       day=11,
-                                       hour=12,
-                                       minute=00)
+        start_date_and_time = timezone.now() + relativedelta(months=1)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
                                   length=timedelta(hours=1, minutes=30))
@@ -485,11 +462,7 @@ class TestPatientCancel(TestCase):
             date_of_birth=date(year=1995, month=1, day=1)
         )
         patient.save()
-        start_date_and_time = datetime(year=2018,
-                                       month=3,
-                                       day=11,
-                                       hour=12,
-                                       minute=00)
+        start_date_and_time = timezone.now() + relativedelta(months=1)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
                                   length=timedelta(hours=3))
@@ -519,11 +492,7 @@ class TestPatientCancel(TestCase):
             date_of_birth=date(year=1995, month=1, day=1)
         )
         patient.save()
-        start_date_and_time = datetime(year=2018,
-                                       month=3,
-                                       day=11,
-                                       hour=12,
-                                       minute=00)
+        start_date_and_time = timezone.now() + relativedelta(months=1)
         appointment = Appointment(patient=patient,
                                   start_date_and_time=start_date_and_time,
                                   length=timedelta(minutes=30))
@@ -621,11 +590,7 @@ class PatientPreviousNotesViewTest(TestCase):
 
     def test_test_func_when_appointment_has_no_patient(self):
         appointment = Appointment(patient=None,
-                                  start_date_and_time=datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
+                                  start_date_and_time=timezone.now() + relativedelta(months=1),
                                   length=timedelta(hours=1),
                                   patient_notes_before_meeting='Hola',
                                   patient_notes_by_practitioner='Hello')
@@ -753,11 +718,12 @@ class PatientAppointmentsViewTest(TestCase):
 
 class PatientProfileTest(TestCase):
     def setUp(self):
-        test_user_1 = User.objects.create_user(username='testuser1')
-        test_user_1.set_password('12345')
-        test_user_1.save()
+        self.test_user_1 = User.objects.create_user(username='test1@example.com')
+        self.test_user_1.set_password('12345')
+        self.test_user_1.email = 'test1@example.com'
+        self.test_user_1.save()
 
-        test_pat_1 = Patient(user=test_user_1,
+        test_pat_1 = Patient(user=self.test_user_1,
                              gender='M',
                              mobile="+447476666555",
                              date_of_birth=date(year=1995, month=1, day=1),
@@ -779,10 +745,9 @@ class PatientProfileTest(TestCase):
         test_prac_1.save()
 
     def test_patient_can_view_their_profile(self):
-        login = self.client.login(username="testuser1", password="12345")
+        login = self.client.force_login(self.test_user_1)
         response = self.client.get(
             reverse_lazy('connect_therapy:patient-profile'))
-
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'connect_therapy/patient/profile.html')
 
@@ -800,7 +765,7 @@ class PatientProfileTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_redirect_patient_edit_profile(self):
-        login = self.client.login(username="testuser1", password="12345")
+        login = self.client.force_login(self.test_user_1)
         response = self.client.post(
             reverse_lazy('connect_therapy:patient-profile-edit',
                          kwargs={'pk': 1}), {
@@ -858,7 +823,7 @@ class PatientProfileTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_logged_in_patient_view_change_password_page(self):
-        login = self.client.login(username="testuser1", password="12345")
+        login = self.client.force_login(self.test_user_1)
         response = self.client.get(
             reverse_lazy('connect_therapy:patient-change-password')
         )
@@ -1020,11 +985,7 @@ class PatientNotesBeforeTest(TestCase):
 
         appointment = Appointment(practitioner=test_prac_1,
                                   patient=test_pat_1,
-                                  start_date_and_time=datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
+                                  start_date_and_time=timezone.now() + relativedelta(months=1),
                                   length=timedelta(hours=1),
                                   patient_notes_before_meeting='Test Notes')
         appointment.save()
