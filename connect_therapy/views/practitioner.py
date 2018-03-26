@@ -62,7 +62,7 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
     def test_func(self):
         try:
             self.request.user.practitioner
-        except (Practitioner.DoesNotExist, AttributeError) as e:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
@@ -134,7 +134,7 @@ class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     def test_func(self):
         try:
             self.request.user.practitioner
-        except (Practitioner.DoesNotExist, AttributeError) as e:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
@@ -151,7 +151,7 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
     def test_func(self):
         try:
             self.request.user.practitioner
-        except (Practitioner.DoesNotExist, AttributeError) as e:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
@@ -169,7 +169,7 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
         try:
             practitioner = self.request.user.practitioner
             return practitioner.email_confirmed and practitioner.is_approved
-        except (Practitioner.DoesNotExist, AttributeError) as e:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
     def get_context_data(self, **kwargs):
@@ -197,7 +197,7 @@ class PractitionerProfile(UserPassesTestMixin, generic.TemplateView):
         try:
             practitioner = self.request.user.practitioner
             return practitioner.email_confirmed and practitioner.is_approved
-        except (Practitioner.DoesNotExist, AttributeError) as e:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
 
@@ -212,7 +212,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
     def test_func(self):
         try:
             self.request.user.practitioner
-        except (Practitioner.DoesNotExist, AttributeError) as e:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().user.id and \
@@ -275,7 +275,7 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         try:
             practitioner = self.request.user.practitioner
             return practitioner.email_confirmed and practitioner.is_approved
-        except (Practitioner.DoesNotExist, AttributeError) as e:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
     def form_valid(self, form):
@@ -317,7 +317,7 @@ class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
     def test_func(self):
         try:
             self.request.user.practitioner
-        except (Practitioner.DoesNotExist, AttributeError):
+        except (Practitioner.DoesNotExist, AttributeError, TypeError):
             return False
         return self.get_object() is not None and \
                self.request.user.id == self.get_object().practitioner.user.id and \
@@ -340,10 +340,8 @@ class PractitionerHomepageView(UserPassesTestMixin, generic.TemplateView):
     model = Appointment
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             practitioner = Practitioner.objects.get(user=self.request.user)
             return practitioner.email_confirmed and practitioner.is_approved
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
