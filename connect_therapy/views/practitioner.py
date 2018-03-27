@@ -1,4 +1,3 @@
-import re
 from datetime import timedelta
 
 from django.contrib.auth import update_session_auth_hash, views as auth_views
@@ -9,14 +8,12 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views import generic
 from django.views.generic import FormView, UpdateView, DeleteView, DetailView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
 from connect_therapy.emails import send_practitioner_confirm_email
-from connect_therapy.forms.practitioner.custom_duration_field import decompress_duration
 from connect_therapy.forms.practitioner.practitioner import *
 from connect_therapy.models import Practitioner, Appointment
 
@@ -278,31 +275,34 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
-    def form_valid(self, form):
+    def post(self, request, **kwargs):
         hour = 0
         minute = (Appointment._meta.get_field('length').get_default().seconds % 3600) // 60
-
-        if form.cleaned_data['length'] is not None:
-            duration = decompress_duration(str(form.cleaned_data['length']))
+        form = PractitionerDefineAppointmentForm(request.POST)
+        if form.is_valid():
+            duration = decompress_duration(form.cleaned_data['length'])
             hour = duration[0]
             minute = duration[1]
 
-        appointment = Appointment(
-            patient=None,
-            practitioner=self.request.user.practitioner,
-            start_date_and_time=form.cleaned_data['start_date_and_time'],
-            length=timedelta(hours=hour, minutes=minute)
-        )
+            print(str(type(minute)))
 
-        over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
-                                                                                      self.request.user.practitioner)
-        if not over_lap_free:
-            clashes = over_laps
-            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html', context={"clashes": clashes})
-        else:
-            Appointment.split_merged_appointment(
-                appointment)  # This method will split if needed and then save the appointment
-            return super().form_valid(form)
+            appointment = Appointment(
+                patient=None,
+                practitioner=self.request.user.practitioner,
+                start_date_and_time=form.cleaned_data['start_date_and_time'],
+                length=timedelta(hours=hour, minutes=minute)
+            )
+
+            over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
+                                                                                          self.request.user.practitioner)
+            if not over_lap_free:
+                clashes = over_laps
+                return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html',
+                              context={"clashes": clashes})
+            else:
+                Appointment.split_merged_appointment(
+                    appointment)  # This method will split if needed and then save the appointment
+                return super().post(request)
 
 
 class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
