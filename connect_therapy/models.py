@@ -208,7 +208,8 @@ class Appointment(models.Model):
 
         selected_date_converted = datetime(date.year, date.month, date.day)
         # TODO: Need to add a filter for appointment cut off times which may vary per practitioner
-        if selected_date_converted < datetime.now():
+        if selected_date_converted.date() < datetime.now().date() - timedelta(days=1) and \
+                selected_date_converted.time() < datetime.now().time():
             print("Date is less than current date")
             return []
 
