@@ -279,12 +279,11 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
         hour = 0
         minute = (Appointment._meta.get_field('length').get_default().seconds % 3600) // 60
         form = PractitionerDefineAppointmentForm(request.POST)
+        print(form.is_valid())
         if form.is_valid():
             duration = decompress_duration(form.cleaned_data['length'])
             hour = duration[0]
             minute = duration[1]
-
-            print(str(type(minute)))
 
             appointment = Appointment(
                 patient=None,
@@ -303,6 +302,10 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
                 Appointment.split_merged_appointment(
                     appointment)  # This method will split if needed and then save the appointment
                 return super().post(request)
+
+        context = self.get_context_data()
+        context['form_was_valid'] = False
+        return render(request, self.get_template_names(), context=context)
 
 
 class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):

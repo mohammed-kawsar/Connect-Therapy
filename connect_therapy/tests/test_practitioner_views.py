@@ -1,12 +1,10 @@
-from datetime import datetime, time, date
+from datetime import datetime, date
+from urllib.parse import urlencode
 
-import pytz
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase, Client, RequestFactory
-from django.utils.http import urlencode
 
-from connect_therapy.forms.practitioner.practitioner import PractitionerNotesForm
-from connect_therapy.models import Practitioner, Appointment, Patient
+from connect_therapy.models import Patient
 from connect_therapy.views.practitioner import *
 
 
@@ -127,9 +125,9 @@ class TestPractitionerNotes(TestCase):
         test_user_1.set_password('12345')
         test_user_1.save()
         self.patient = Patient(user=test_user_1,
-                          gender='M',
-                          mobile="+447476666555",
-                          date_of_birth=date(year=1995, month=1, day=1))
+                               gender='M',
+                               mobile="+447476666555",
+                               date_of_birth=date(year=1995, month=1, day=1))
         self.patient.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
@@ -148,12 +146,12 @@ class TestPractitionerNotes(TestCase):
 
         self.appointment = Appointment(patient=self.patient,
                                        practitioner=self.practitioner,
-                                  start_date_and_time=datetime.datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
-                                  length=timedelta(hours=1))
+                                       start_date_and_time=datetime.datetime(year=2018,
+                                                                             month=4,
+                                                                             day=17,
+                                                                             hour=15,
+                                                                             minute=10),
+                                       length=timedelta(hours=1))
         self.appointment.save()
 
     def test_test_func_when_user_has_no_practitioner(self):
@@ -312,9 +310,9 @@ class TestPractitionerMyAppointmentsView(TestCase):
         test_user_1.set_password('12345')
         test_user_1.save()
         self.patient = Patient(user=test_user_1,
-                          gender='M',
-                          mobile="+447476666555",
-                          date_of_birth=date(year=1995, month=1, day=1))
+                               gender='M',
+                               mobile="+447476666555",
+                               date_of_birth=date(year=1995, month=1, day=1))
         self.patient.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
@@ -332,26 +330,26 @@ class TestPractitionerMyAppointmentsView(TestCase):
         self.practitioner.save()
 
         self.appointment_booked = Appointment(patient=self.patient,
-                                                     practitioner=self.practitioner,
-                                                     start_date_and_time=timezone.now() + relativedelta(weeks=1),
-                                                     length=timedelta(hours=1))
+                                              practitioner=self.practitioner,
+                                              start_date_and_time=timezone.now() + relativedelta(weeks=1),
+                                              length=timedelta(hours=1))
         self.appointment_booked.save()
 
         self.appointment_unbooked = Appointment(practitioner=self.practitioner,
-                                              start_date_and_time=timezone.now() + relativedelta(weeks=1),
-                                              length=timedelta(hours=1))
+                                                start_date_and_time=timezone.now() + relativedelta(weeks=1),
+                                                length=timedelta(hours=1))
         self.appointment_unbooked.save()
 
         self.appointment_needing_notes = Appointment(patient=self.patient,
-                                       practitioner=self.practitioner,
-                                  start_date_and_time=timezone.now() - relativedelta(weeks=1),
-                                  length=timedelta(hours=1))
+                                                     practitioner=self.practitioner,
+                                                     start_date_and_time=timezone.now() - relativedelta(weeks=1),
+                                                     length=timedelta(hours=1))
         self.appointment_needing_notes.save()
 
         self.appointment_with_notes = Appointment(patient=self.patient,
-                                       practitioner=self.practitioner,
-                                       start_date_and_time=timezone.now() - relativedelta(weeks=1),
-                                       length=timedelta(hours=1),
+                                                  practitioner=self.practitioner,
+                                                  start_date_and_time=timezone.now() - relativedelta(weeks=1),
+                                                  length=timedelta(hours=1),
                                                   practitioner_notes='x',
                                                   patient_notes_by_practitioner='y')
         self.appointment_with_notes.save()
@@ -419,9 +417,9 @@ class TestPractitionerPreviousNotesView(TestCase):
         test_user_1.set_password('12345')
         test_user_1.save()
         self.patient = Patient(user=test_user_1,
-                          gender='M',
-                          mobile="+447476666555",
-                          date_of_birth=date(year=1995, month=1, day=1))
+                               gender='M',
+                               mobile="+447476666555",
+                               date_of_birth=date(year=1995, month=1, day=1))
         self.patient.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
@@ -440,8 +438,8 @@ class TestPractitionerPreviousNotesView(TestCase):
 
         self.appointment = Appointment(patient=self.patient,
                                        practitioner=self.practitioner,
-                                  start_date_and_time=timezone.now() - relativedelta(weeks=1),
-                                  length=timedelta(hours=1),
+                                       start_date_and_time=timezone.now() - relativedelta(weeks=1),
+                                       length=timedelta(hours=1),
                                        patient_notes_by_practitioner='XX',
                                        practitioner_notes='YY')
         self.appointment.save()
@@ -540,9 +538,9 @@ class TestPractitionerCurrentNotesView(TestCase):
         test_user_1.set_password('12345')
         test_user_1.save()
         self.patient = Patient(user=test_user_1,
-                          gender='M',
-                          mobile="+447476666555",
-                          date_of_birth=date(year=1995, month=1, day=1))
+                               gender='M',
+                               mobile="+447476666555",
+                               date_of_birth=date(year=1995, month=1, day=1))
         self.patient.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
@@ -561,8 +559,8 @@ class TestPractitionerCurrentNotesView(TestCase):
 
         self.appointment = Appointment(patient=self.patient,
                                        practitioner=self.practitioner,
-                                  start_date_and_time=timezone.now() + relativedelta(weeks=1),
-                                  length=timedelta(hours=1),
+                                       start_date_and_time=timezone.now() + relativedelta(weeks=1),
+                                       length=timedelta(hours=1),
                                        patient_notes_before_meeting='XXX')
         self.appointment.save()
 
@@ -1186,9 +1184,9 @@ class TestPractitionerAppointmentDelete(TestCase):
         test_user_1.set_password('12345')
         test_user_1.save()
         self.patient = Patient(user=test_user_1,
-                          gender='M',
-                          mobile="+447476666555",
-                          date_of_birth=date(year=1995, month=1, day=1))
+                               gender='M',
+                               mobile="+447476666555",
+                               date_of_birth=date(year=1995, month=1, day=1))
         self.patient.save()
 
         test_user_3 = User.objects.create_user(username='testuser3')
@@ -1207,12 +1205,12 @@ class TestPractitionerAppointmentDelete(TestCase):
 
         self.appointment = Appointment(patient=self.patient,
                                        practitioner=self.practitioner,
-                                  start_date_and_time=datetime.datetime(year=2018,
-                                                               month=4,
-                                                               day=17,
-                                                               hour=15,
-                                                               minute=10),
-                                  length=timedelta(hours=1))
+                                       start_date_and_time=datetime.datetime(year=2018,
+                                                                             month=4,
+                                                                             day=17,
+                                                                             hour=15,
+                                                                             minute=10),
+                                       length=timedelta(hours=1))
         self.appointment.save()
 
     def test_test_func_when_user_has_no_practitioner(self):
@@ -1304,13 +1302,13 @@ class TestPractitionerAppointmentDelete(TestCase):
 
     def test_delete(self):
         appointment = Appointment(patient=self.patient,
-                                       practitioner=self.practitioner,
-                                       start_date_and_time=datetime.datetime(year=2019,
-                                                                             month=4,
-                                                                             day=17,
-                                                                             hour=15,
-                                                                             minute=10),
-                                       length=timedelta(hours=1))
+                                  practitioner=self.practitioner,
+                                  start_date_and_time=datetime.datetime(year=2019,
+                                                                        month=4,
+                                                                        day=17,
+                                                                        hour=15,
+                                                                        minute=10),
+                                  length=timedelta(hours=1))
         appointment.save()
         factory = RequestFactory()
         request = factory.post(
@@ -1420,3 +1418,22 @@ class PractitionerLogoutTest(TestCase):
         response = self.client.get(reverse_lazy('connect_therapy:practitioner-homepage'))
 
         self.assertEqual(response.status_code, 302)
+
+
+class PractitonerSetAppointments(TestCase):
+
+
+    def setUp(self):
+        test_user_3 = User.objects.create_user(username='testuser3')
+        test_user_3.set_password('12345')
+
+        test_user_3.save()
+
+        test_prac_1 = Practitioner(user=test_user_3,
+                                   address_line_1="My home",
+                                   postcode="EC12 1CV",
+                                   mobile="+447577293232",
+                                   bio="Hello",
+                                   email_confirmed=True,
+                                   is_approved=True)
+        test_prac_1.save()
