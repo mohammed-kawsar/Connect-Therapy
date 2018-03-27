@@ -1418,22 +1418,3 @@ class PractitionerLogoutTest(TestCase):
         response = self.client.get(reverse_lazy('connect_therapy:practitioner-homepage'))
 
         self.assertEqual(response.status_code, 302)
-
-
-class PractitonerSetAppointments(TestCase):
-
-
-    def setUp(self):
-        test_user_3 = User.objects.create_user(username='testuser3')
-        test_user_3.set_password('12345')
-
-        test_user_3.save()
-
-        test_prac_1 = Practitioner(user=test_user_3,
-                                   address_line_1="My home",
-                                   postcode="EC12 1CV",
-                                   mobile="+447577293232",
-                                   bio="Hello",
-                                   email_confirmed=True,
-                                   is_approved=True)
-        test_prac_1.save()
