@@ -259,7 +259,7 @@
 
 <div class="alert alert-warning alert-dismissible fade show" id="id_alert" role="alert" style="display: none;">
     <h4 class="alert-heading">Browser Warning</h4>
-    <p class="alert-paragraph">You are using <b>Safari</b> to browse this website, please use <b>Chrome</b> for the best
+    <p class="alert-paragraph">You are using <b>Safari Version <b id="versionNumber"></b></b> to browse this website, please use <b>Safari Version 11 or above, or Chrome</b> for the best
         experience.</p>
     <hr class="my-2">
     <p class="alert-paragraph final-message"><b>Sorry for any inconvenience caused.</b></p>
@@ -269,20 +269,33 @@
 </div>
 
 <script>
-        $(document).ready( function () {
-            var warning_alert = document.getElementById('id_alert');
-            var isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
-            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                if (isSafari && iOS) {
-                    warning_alert.style.display = 'block';
-                    $(".alert").alert();
-                } else if(isSafari) {
-                    warning_alert.style.display = 'block';
-                    $(".alert").alert();
-                } else {
-                    $('.alert').alert('close');
-                }
-        })
+    function get_browser_details() {
+        var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+        if(/trident/i.test(M[1])){
+            tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
+            return {name:'IE',version:(tem[1]||'')};
+            }
+        if(M[1]==='Chrome'){
+            tem=ua.match(/\bOPR|Edge\/(\d+)/)
+            if(tem!=null)   {return {name:'Opera', version:tem[1]};}
+            }
+        M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+        if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+        return {
+          name: M[0],
+          version: M[1]
+        };
+ }
+    var browser_details=get_browser_details();
+    var warning_alert = document.getElementById('id_alert');
+    var elementToInsertText = document.getElementById('versionNumber');
+        if (browser_details.name=='Safari' && browser_details.version<=10) {
+            elementToInsertText.innerHTML = browser_details.version;
+            warning_alert.style.display = 'block';
+            $(".alert").alert();
+        } else {
+            $('.alert').alert('close');
+        }
 </script>
 
 <div class="container">
