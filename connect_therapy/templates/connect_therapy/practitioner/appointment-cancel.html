@@ -21,7 +21,7 @@
             <hr class="my-4">
         <p>Click <em>Confirm</em> to Cancel Appointment</p>
         <label for="cancel-message"> Enter a message (Optional):</label>
-        <input type="text" name="cancel-message"><br>
+        <input type="text" class="form-control" name="cancel-message"><br>
         <input type="submit" value="Confirm" class="btn btn-warning"/>
         <a href="{% url 'connect_therapy:practitioner-my-appointments'%}" class="btn btn-primary">Back</a>
             </div>
@@ -64,6 +64,10 @@
 
             p {
                 font-size: 15px;
+            }
+
+            footer {
+                position: relative !important;
             }
         }
     </style>

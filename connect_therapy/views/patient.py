@@ -1,14 +1,14 @@
-from datetime import timedelta, time
-from decimal import Decimal
+from datetime import timedelta
 
 from django import forms
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, views as auth_views, \
+from django.contrib.auth import views as auth_views, \
     update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -19,6 +19,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
+from connect_therapy.emails import send_patient_confirm_email
 from connect_therapy.forms.patient import AppointmentDateSelectForm
 from connect_therapy.forms.patient import PatientSignUpForm, PatientLoginForm, \
     PatientNotesBeforeForm, PatientEditMultiForm
@@ -29,7 +30,7 @@ from connect_therapy.views.views import FileDownloadView
 class PatientSignUpView(FormView):
     form_class = PatientSignUpForm
     template_name = 'connect_therapy/patient/signup.html'
-    success_url = reverse_lazy('connect_therapy:patient-login')
+    success_url = reverse_lazy('connect_therapy:index')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -41,10 +42,7 @@ class PatientSignUpView(FormView):
                           mobile=form.cleaned_data['mobile']
                           )
         patient.save()
-        user = authenticate(username=form.cleaned_data['email'],
-                            password=form.cleaned_data['password1']
-                            )
-        login(request=self.request, user=user)
+        send_patient_confirm_email(patient, get_current_site(self.request))
         return super().form_valid(form)
 
 
@@ -67,8 +65,8 @@ class PatientMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             patient = Patient.objects.get(user=self.request.user)
-            return True
-        except Patient.DoesNotExist:
+            return patient.email_confirmed
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     def get_context_data(self, *args, **kwargs):
@@ -88,38 +86,39 @@ class PatientNotesBeforeView(FormMixin, UserPassesTestMixin, DetailView):
     form_class = PatientNotesBeforeForm
     template_name = 'connect_therapy/patient/notes-before-appointment.html'
     success_url = reverse_lazy('connect_therapy:patient-my-appointments')
-    login_url = reverse_lazy('connect_therapy:patient-my-appointments')
+    login_url = reverse_lazy('connect_therapy:patient-login')
     redirect_field_name = None
     model = Appointment
 
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id and \
+               self.get_object().patient.email_confirmed
 
     def form_valid(self, form):
-        self.appointment.patient_notes_before_meeting = \
+        self.object.patient_notes_before_meeting = \
             form.cleaned_data['patient_notes_before_meeting']
-        self.appointment.save()
+        self.object.save()
         return super().form_valid(form)
 
-    def post(self, **kwargs):
+    def post(self, request, pk):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
-            return self.form_valid()
+            return self.form_valid(form)
         else:
-            return self.form_invalid()
+            return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
-        context = super.get_context_data(**kwargs)
-
-        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.appointment.id))
-        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
+        context = super().get_context_data(**kwargs)
+        files_for_appointment = FileDownloadView.get_files_from_folder(str(self.object.id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
         context['downloadable_files'] = downloadable_file_list
+        return context
 
 
 class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
@@ -132,10 +131,11 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id and \
+               self.get_object().patient.email_confirmed
 
     def get_success_url(self):
         return reverse_lazy('connect_therapy:patient-my-appointments')
@@ -155,7 +155,7 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         )
         self.object.patient = None
         self.object.save()
-        self.split_merged_appointment()
+        Appointment.split_merged_appointment(self.object)
 
         return super(PatientCancelAppointmentView, self).form_valid(form)
 
@@ -167,33 +167,6 @@ class PatientCancelAppointmentView(UserPassesTestMixin, FormMixin, DetailView):
         else:
             return self.form_invalid(form)
 
-    def split_merged_appointment(self):
-        original_length = self.object.length
-        if original_length.hour * 60 + original_length.minute == 30:
-            return
-
-        self.object.length = time(minute=30)
-        self.object.patient = None
-
-        # set the price to the default price set in the model
-        default_price = Decimal(Appointment._meta.get_field('price').get_default())
-        self.object.price = default_price
-
-        number_of_appointments = \
-            (original_length.hour * 60 + original_length.minute) // 30
-
-        for i in range(1, number_of_appointments):
-            appointment = Appointment(
-                practitioner=self.object.practitioner,
-                patient=None,
-                length=time(minute=30),
-                start_date_and_time=self.object.start_date_and_time
-                                    + timedelta(minutes=30 * i),
-                price=default_price
-            )
-            appointment.save()
-            self.object.save()
-
 
 class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     login_url = reverse_lazy('connect_therapy:patient-my-appointments')
@@ -204,16 +177,17 @@ class PatientPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     def test_func(self):
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object().patient is not None and \
-               self.request.user.id == self.get_object().patient.user.id
+               self.request.user.id == self.get_object().patient.user.id and \
+               self.get_object().patient.email_confirmed
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        files_for_appointment = FileDownloadView.get_files_from_folder(self, str(self.object.id))
-        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(self, files_for_appointment)
+        files_for_appointment = FileDownloadView.get_files_from_folder(str(self.object.id))
+        downloadable_file_list = FileDownloadView.generate_pre_signed_url_for_each(files_for_appointment)
 
         context['downloadable_files'] = downloadable_file_list
 
@@ -230,11 +204,11 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
             return False
         try:
             patient = Patient.objects.get(user=self.request.user)
-            return True
-        except Patient.DoesNotExist:
+            return patient.email_confirmed
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
-    def get(self, request, pk):
+    def get(self, request, **kwargs):
         # define the object for the detail view
         self.object = self.get_object()
         form = AppointmentDateSelectForm
@@ -243,9 +217,8 @@ class ViewBookableAppointmentsView(UserPassesTestMixin, DetailView):
                       context={"form": form,
                                "object": self.object})
 
-    def post(self, request, pk):
+    def post(self, request, pk, **kwargs):
         self.object = self.get_object()
-        practitioner = Practitioner.objects.filter(pk=pk)
         form = AppointmentDateSelectForm(request.POST)
         if form.is_valid():
             date = form.cleaned_data['date']
@@ -271,9 +244,15 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
             return False
         try:
             self.patient = Patient.objects.get(user=self.request.user)
-            return True
-        except Patient.DoesNotExist:
+            return self.patient.email_confirmed
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
+
+    """
+        TODO: To help fix the 'update basket content issue' you might wanna do this:
+            - Add to the post method below to load the contents of the basket to the deal with appointments part.
+            - In deal with appointments, add to the basket rather than overriding the session variable
+    """
 
     def post(self, request, *args, **kwargs):
         app_ids = request.POST.getlist('app_id')
@@ -281,8 +260,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
 
         if len(app_ids) == 0:
             messages.warning(request, "You haven't selected any appointments")
-            return ViewBookableAppointmentsView.get(self, request, practitioner_id)
-
+            return redirect('connect_therapy:patient-book-appointment', pk=practitioner_id)
         return self._deal_with_appointments(request=request, app_ids=app_ids, practitioner_id=practitioner_id)
 
     def _deal_with_appointments(self, request, app_ids, practitioner_id):
@@ -300,10 +278,7 @@ class ReviewSelectedAppointmentsView(UserPassesTestMixin, TemplateView):
                 # all valid
                 bookable_appointments, merged_appointments = Appointment.merge_appointments(appointments_to_book)
 
-                # show user message about merged appointments
-                if len(merged_appointments) == 1:
-                    messages.success(request, str(len(merged_appointments)) + " appointment was merged")
-                elif len(merged_appointments) > 1:
+                if len(merged_appointments) > 1:
                     messages.success(request, str(len(merged_appointments)) + " appointments were merged")
 
                 # add to session data - used by the checkout
@@ -331,8 +306,8 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             return False
         try:
             self.patient = Patient.objects.get(user=self.request.user)
-            return True
-        except Patient.DoesNotExist:
+            return self.patient.email_confirmed
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
 
     def get(self, request, *args, **kwargs):
@@ -341,40 +316,43 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
             appointment_dictionary = request.session['bookable_appointments']
         except KeyError:
             return render(request, self.get_template_names(), {"appointments": appointments_to_book})
-        if appointment_dictionary is None:
-            return render(request, self.get_template_names(), {"appointments": appointments_to_book})
         appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
         return render(request, self.get_template_names(), {"appointments": appointments_to_book})
 
     def post(self, request, *args, **kwargs):
-        # session_id would only be passed in to identify an appointment to delete
-        if 'session_id' in request.POST:
-            list_of_appointments = request.session['bookable_appointments']
-            if list_of_appointments is None:
-                return self.get(request, *args, **kwargs)
-            for app in list_of_appointments:
-                if app['session_id'] == request.POST['session_id']:
-                    request.session['bookable_appointments'] = list_of_appointments.remove(app)
-                    return self.get(request, *args, *kwargs)
+
+        if 'delete' in request.POST:
+            apps = request.session['bookable_appointments']
+            app_list = Appointment.convert_dictionaries_to_appointments(apps)
+
+            for app in app_list:
+                if app.session_id == request.POST['delete']:
+                    app_list.remove(app)
+                    # delete the appointment and update the session data
+                    request.session['bookable_appointments'] = Appointment.appointments_to_dictionary_list(app_list)
+                    return self.get(request, args, kwargs)
+
+            return self.get(request, args, kwargs)
         elif 'checkout' in request.POST:
             # TODO: Add payment gateway stuff here...probably
-
-            appointment_dictionary = request.session['bookable_appointments']
-            if appointment_dictionary is None:
+            try:
+                appointment_dictionary = request.session['bookable_appointments']
+            except KeyError:
                 return self.get(request, *args, **kwargs)
+            del request.session['bookable_appointments']  # empty the shopping basket
+
             appointments_to_book = Appointment.convert_dictionaries_to_appointments(appointment_dictionary)
 
             # first delete the appointments we merged, if any
             merged_dictionary = request.session['merged_appointments']
-            if merged_dictionary is None:
-                # no merges where made so we dont need to do anything with them
-                pass
-            else:
+            del request.session['merged_appointments']  # delete the merged appointments
+            if merged_dictionary is not None:
                 merged_appointment_list = Appointment.convert_dictionaries_to_appointments(merged_dictionary)
                 Appointment.delete_appointments(merged_appointment_list)
 
             # go ahead and book those appointments
             if Appointment.book_appointments(appointments_to_book, self.patient):
+
                 notifications.multiple_appointments_booked(appointments_to_book)  # call method from notifications.py
                 return render(request, "connect_therapy/patient/bookings/booking-success.html", {
                     'appointment': appointments_to_book})
@@ -382,14 +360,20 @@ class CheckoutView(UserPassesTestMixin, TemplateView):
                 return HttpResponse("Failed to book. Patient object doesnt exist.")
 
 
-class PatientProfileView(LoginRequiredMixin, generic.TemplateView):
+class PatientProfileView(LoginRequiredMixin, UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/patient/profile.html'
+    model = Patient
+    login_url = reverse_lazy('connect_therapy:patient-login')
+    redirect_field_name = None
 
-    @login_required
-    def view_profile(self, request):
-        user = request.user
-        args = {'user': user}
-        return render(request, args)
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        try:
+            patient = Patient.objects.get(user=self.request.user)
+            return patient.email_confirmed
+        except Patient.DoesNotExist:
+            return False
 
 
 class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
@@ -401,17 +385,17 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.patient
-        except Patient.DoesNotExist:
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
         return self.get_object() is not None and \
-               self.request.user.id == self.get_object().user.id
+               self.request.user.id == self.get_object().user.id and \
+               self.get_object().email_confirmed
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
+        self.object.user.save()
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
@@ -419,11 +403,9 @@ class PatientEditDetailsView(UserPassesTestMixin, UpdateView):
         form = self.get_form()
         try:
             user = User.objects.get(username=form.cleaned_data['user']['email'])
-            if user == self.object.user:
+            if user == self.object.user and form.is_valid():
                 return self.form_valid(form)
         except User.DoesNotExist:
-            # if User.objects.get(email=user.email) == user.email:
-            #     return self.form_valid(form)
             if form.is_valid():
                 return self.form_valid(form)
 
@@ -457,7 +439,8 @@ class ViewAllPractitionersView(UserPassesTestMixin, generic.ListView):
         except ObjectDoesNotExist:
             not_practitioner = True
 
-        return not_practitioner and logged_in;
+        return not_practitioner and logged_in and \
+               self.request.user.patient.email_confirmed
 
     def get_queryset(self):
         return Practitioner.objects.all()
@@ -493,6 +476,12 @@ class PatientHomepageView(UserPassesTestMixin, generic.TemplateView):
             return False
         try:
             patient = Patient.objects.get(user=self.request.user)
-            return True
-        except Patient.DoesNotExist:
+            return patient.email_confirmed
+        except (Patient.DoesNotExist, AttributeError) as e:
             return False
+
+
+class PractitionerProfileView(LoginRequiredMixin, DetailView):
+    model = Practitioner
+    login_url = reverse_lazy("connect_therapy:patient-login")
+    template_name = "connect_therapy/patient/practitioner-profile.html"

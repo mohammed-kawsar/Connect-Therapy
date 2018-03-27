@@ -1,6 +1,5 @@
-from django.urls import path, reverse_lazy, include
+from django.urls import path, include
 from django.views.generic import TemplateView
-from django.contrib.auth import views as auth_views
 
 from connect_therapy.views.views import *
 
@@ -30,5 +29,17 @@ urlpatterns = [
              template_name='connect_therapy/index.html'
          ),
          name='index'
+         ),
+    path('activate/<uidb64>/<token>',
+         activate,
+         name='activate'
+         ),
+    path('help',
+         HelpView.as_view(),
+         name="help"
+         ),
+    path('send-email-confirmation',
+         SendEmailConfirmationView.as_view(),
+         name="send-email-confirmation"
          ),
 ]

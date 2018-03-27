@@ -9,11 +9,11 @@
 
 
 {% block content %}
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p}}
-    <input type="submit" value="Update" class="btn btn-primary"/>
-</form>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update" class="btn btn-primary"/>
+    </form>
 {% endblock %}
 
 {% block styles %}
@@ -30,6 +30,10 @@
         textarea {
             resize: none;
         }
+
+        footer {
+            position: relative !important;
+        }
     </style>
 
 {% endblock %}
@@ -45,4 +49,9 @@
         document.getElementById('id_practitioner-mobile').className = 'form-control';
         document.getElementById('id_practitioner-bio').className = 'form-control';
     </script>
+
+    <script>
+
+    </script>
+
 {% endblock %}

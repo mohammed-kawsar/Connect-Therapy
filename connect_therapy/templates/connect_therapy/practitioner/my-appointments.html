@@ -21,14 +21,11 @@
                     <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
                         <div class="card-block">
 
-                            <h4 class="card-title"
-                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
-
-                            <h4 class="card-title" style="white-space: nowrap">
+                            <h4 class="card-title" style="white-space: normal">
                                 {% if appointment.is_live %}
                                     <a href="{% url 'connect_therapy:chat' appointment.id %}">
                                 {% endif %}
-                                    {{ appointment.start_date_and_time }}
+                                {{ appointment.start_date_and_time }}
                                 {% if appointment.is_live %}
                                     </a>
                                 {% endif %}
@@ -37,10 +34,10 @@
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
                             <p class="card-text"><b>Price:</b> £{{ appointment.price }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-before-meeting-notes' appointment.id %}"
-                               class="btn btn-info">View Notes</a>
+                            <a href="{% url 'connect_therapy:practitioner-future-notes' appointment.id %}"
+                               class="btn btn-info" style="margin-bottom: 5px;">View Notes</a>
                             <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"
-                               class="btn btn-info">Cancel Appointment</a>
+                               class="btn btn-warning" style="margin-bottom: 5px;">Cancel Appointment</a>
                         </div>
                     </div>
                 </div>
@@ -58,11 +55,11 @@
                     <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
                         <div class="card-block">
                             <h4 class="card-title"
-                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                                style="white-space: normal">{{ appointment.start_date_and_time }}</h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Price:</b> £{{ appointment.price }}</p>
                             <a href="{% url 'connect_therapy:practitioner-cancel-appointment' appointment.id %}"
-                               class="btn btn-info">Cancel Appointment</a>
+                               class="btn btn-warning">Cancel Appointment</a>
                         </div>
                     </div>
                 </div>
@@ -80,11 +77,11 @@
                     <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
                         <div class="card-block">
                             <h4 class="card-title"
-                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                                style="white-space: normal">{{ appointment.start_date_and_time }}</h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-notes' appointment.id %}"
-                               class="btn btn-info">Add Notes</a><br>
+                            <a href="{% url 'connect_therapy:practitioner-make-notes' appointment.id %}"
+                               class="btn btn-info" style="margin-bottom: 5px;">Add Notes</a>
                         </div>
                     </div>
                 </div>
@@ -103,10 +100,10 @@
                     <div class="card card-deck mt-3 mr-1" style="padding: 10px 10px;">
                         <div class="card-block">
                             <h4 class="card-title"
-                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
+                                style="white-space: normal">{{ appointment.start_date_and_time }}</h4>
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Patient:</b> {{ appointment.patient }}</p>
-                            <a href="{% url 'connect_therapy:practitioner-appointment-notes' appointment.id %}"
+                            <a href="{% url 'connect_therapy:practitioner-view-notes' appointment.id %}"
                                class="btn btn-info">View Notes</a><br>
                         </div>
                     </div>
@@ -115,6 +112,7 @@
                 <p class="lead"> No past appointments. </p>
             {% endfor %}
         </div>
+        <a href="{% url 'connect_therapy:practitioner-view-patients' %}" class="btn btn-info view-patient">View My Patients</a><br>
     </div>
 
 {% endblock %}
@@ -125,12 +123,20 @@
         @media (max-width: 600px) {
             h1 {
                 font-size: 30px;
-                padding-top: 15px;
             }
 
-            h2 {
+           h2 {
                 font-size: 25px;
-            }
+                text-align: center;
+                text-transform: capitalize;
+                letter-spacing: 1px;
+                font-weight: 500;
+                padding-top: 20px;
+                margin-bottom: 0px;
+             }
+           .btn.btn-info.view-patient {
+               width: 100%;
+        }
 
             .lead {
                 font-size: 20px;
@@ -147,6 +153,16 @@
             padding-right: 0%;
             display: block;
         }
+
+        h1.text-center {
+                padding-top: 10px;
+                letter-spacing: 1px;
+                text-transform: capitalize;
+            }
+
+            .btn {
+                text-transform: capitalize;
+            }
 
     </style>
 

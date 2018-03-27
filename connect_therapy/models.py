@@ -8,8 +8,6 @@ from dateutil import parser
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-
-from django.db.models.signals import post_save
 from django.utils import timezone
 
 
@@ -45,13 +43,6 @@ class Practitioner(models.Model):
         return "{} {}".format(self.user.first_name, self.user.last_name)
 
 
-def generate_session_id(salt, practitioner, patient, date_time):
-    byte_string = str.encode(str(salt) + str(practitioner) + str(patient) + str(date_time))
-    to_hash = hashlib.sha3_256(byte_string)
-    hash_digest = to_hash.hexdigest()
-    return hash_digest
-
-
 class Appointment(models.Model):
     practitioner = models.ForeignKey(Practitioner,
                                      on_delete=models.SET_NULL,
@@ -61,7 +52,7 @@ class Appointment(models.Model):
                                 null=True,
                                 blank=True)
     start_date_and_time = models.DateTimeField()
-    length = models.TimeField()
+    length = models.DurationField(default=timedelta(minutes=30))
     """This is how long the appointment lasts"""
     practitioner_notes = models.TextField(blank=True)
     """These are notes left by the practitioner at the end of the appointment,
@@ -74,28 +65,56 @@ class Appointment(models.Model):
     """These are notes left before the appointment by the patient,
     for the benefit of the practitioner
     """
-    """session salt is used to ensure that the session id is less likely to collide.
-    make_random_password is considered 'cryptographically secure' by Django
-    """
-    session_salt = models.CharField(max_length=255,
-                                    default=partial(User.objects.make_random_password, 10), editable=False)
+
     """This is used to associate an appointment to a specific chat session.
     This id can then be used to join that chat session
     """
     session_id = models.CharField(max_length=255,
-                                  default=partial(generate_session_id,
-                                                  salt=session_salt,
-                                                  practitioner=practitioner,
-                                                  patient=patient,
-                                                  date_time=start_date_and_time)
+                                  default=partial(User.objects.make_random_password, 50)
                                   , editable=False)
-
 
     """
     The price of the appointment in GBP.
     Max price is £999.
     """
     price = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal(50))
+
+    @classmethod
+    def split_merged_appointment(cls, appointment):
+        """
+        This method will take an appointment and split it into 30 minute blocks. They will then be saved.
+        If the appointment cannot be split, it will just be saved
+        :param appointment: Take an appointment object to split and save
+        :return:
+        """
+        original_length = appointment.length
+        original_length_hour, original_length_minute, original_length_seconds = \
+            Appointment.get_hour_minute_seconds(original_length)
+
+        if original_length_hour * 60 + original_length_minute == 30:
+            appointment.save()
+            return
+
+        appointment.length = timedelta(minutes=30)
+        appointment.patient = None
+
+        # set the price to the default price set in the model
+        default_price = Decimal(Appointment._meta.get_field('price').get_default())
+        appointment.price = default_price
+
+        number_of_appointments = \
+            (original_length_hour * 60 + original_length_minute) // 30
+
+        for i in range(1, number_of_appointments):
+            split_appointment = Appointment(
+                practitioner=appointment.practitioner,
+                patient=None,
+                length=timedelta(minutes=30),
+                start_date_and_time=appointment.start_date_and_time + timedelta(minutes=(30 * i)),
+                price=default_price
+            )
+            split_appointment.save()
+            appointment.save()
 
     def is_live(self):
         """
@@ -106,7 +125,7 @@ class Appointment(models.Model):
         """
         return self.start_date_and_time - timedelta(minutes=5) < \
                timezone.now() < self.start_date_and_time + \
-               timedelta(hours=self.length.hour, minutes=self.length.minute)
+               Appointment._get_timedelta(self.length)
 
     def __str__(self):
         """Return a string representation of Appointment"""
@@ -120,6 +139,9 @@ class Appointment(models.Model):
         :param appointments: An iterable of appointments to be booked
         :param patient: The patient booking the appointment
         """
+        for appointment in appointments:
+            if appointment.patient is not None:
+                return False
 
         for app in appointments:
             app.patient = patient
@@ -146,15 +168,18 @@ class Appointment(models.Model):
             if app_dict['id'] is None:
                 appointment = Appointment(practitioner_id=app_dict['practitioner_id'],
                                           start_date_and_time=parser.parse(app_dict['start_date_and_time']),
-                                          length=parser.parse(app_dict['length']),
+                                          length=cls._get_timedelta_from_datetime(parser.parse(app_dict['length'])),
                                           session_id=app_dict['session_id'],
-                                          session_salt=app_dict['session_salt'],
                                           price=Decimal(app_dict['price']))
                 appointments.append(appointment)
             else:
                 appointments.append(Appointment.objects.get(pk=app_dict['id']))
 
         return appointments
+
+    @classmethod
+    def _get_timedelta_from_datetime(cls, datetime):
+        return timedelta(hours=datetime.hour, minutes=datetime.minute, seconds=datetime.second)
 
     def appointments_to_dictionary_list(appointments):
         """
@@ -166,7 +191,7 @@ class Appointment(models.Model):
         for app in appointments:
             appointment_dict = {'id': app.id, 'practitioner_id': app.practitioner.id,
                                 'start_date_and_time': str(app.start_date_and_time), 'length': str(app.length),
-                                'session_id': str(app.session_id), 'session_salt': str(app.session_salt),
+                                'session_id': str(app.session_id),
                                 'price': str(app.price)}
             dict_list.append(appointment_dict)
         return dict_list
@@ -176,7 +201,8 @@ class Appointment(models.Model):
 
         selected_date_converted = datetime(date.year, date.month, date.day)
         # TODO: Need to add a filter for appointment cut off times which may vary per practitioner
-        if selected_date_converted < datetime.now():
+        if selected_date_converted.date() < datetime.now().date() - timedelta(days=1) and \
+                selected_date_converted.time() < datetime.now().time():
             print("Date is less than current date")
             return []
 
@@ -193,28 +219,36 @@ class Appointment(models.Model):
 
     @classmethod
     def _add_datetime_time(cls, date_time, time):
-        """This method expects the first arg to be a datetime object and the second to be a time object
-        It will then add the time to the date time object and return it
         """
-        return date_time + timedelta(hours=time.hour, minutes=time.minute,
-                                     seconds=time.second)
+        This method expects the first arg to be a datetime object and the second to be a time object
+        It will then add the time to the date time object and return it
+        :param date_time: Expects datetime object
+        :param time: Expects the time object to come in the form of the timedelta
+        used to model a DurationField. will not work as expected in any other case.
+        :return:
+        """
+        other_date_time = date_time
+        end_date_time = other_date_time + cls._get_timedelta(time)
+        return end_date_time
 
     @classmethod
-    def _add_time(cls, start_date_and_time, time_1, time_2):
-        time_1 = timedelta(hours=time_1.hour, minutes=time_1.minute,
-                           seconds=time_1.second)
-        time_2 = timedelta(hours=time_2.hour, minutes=time_2.minute,
-                           seconds=time_2.second)
+    def _get_timedelta(cls, time):
+        """
+        :param time: Expects the time object from a duration field
+        :return:
+        """
+        other_hours, other_minutes, other_seconds = cls.get_hour_minute_seconds(time)
 
-        total = time_1 + time_2
-        seconds = total.total_seconds()
-        hour = seconds / 3600
-        minute = (seconds % 3600) / 60
-        datetime_format = datetime(year=start_date_and_time.year, month=start_date_and_time.month,
-                                   day=start_date_and_time.day,
-                                   hour=int(hour), minute=int(minute))
+        return timedelta(hours=other_hours, minutes=other_minutes, seconds=other_seconds)
 
-        return datetime_format.time()
+    @classmethod
+    def get_hour_minute_seconds(cls, time):
+        o_days, o_seconds = time.days, time.seconds
+        other_hours = o_days * 24 + o_seconds // 3600
+        other_minutes = (o_seconds % 3600) // 60
+        other_seconds = o_seconds % 60
+
+        return other_hours, other_minutes, other_seconds
 
     @classmethod
     def check_validity(cls, selected_appointments_id, selected_practitioner):
@@ -227,7 +261,7 @@ class Appointment(models.Model):
         for _id in selected_appointments_id:
             try:
                 appointment = Appointment.objects.get(pk=_id)
-                if appointment.start_date_and_time >= datetime.now(pytz.UTC) and \
+                if appointment.start_date_and_time >= datetime.now() and \
                         appointment.practitioner == selected_practitioner and \
                         appointment.patient is None:
                     appointments_to_book.append(Appointment.objects.get(pk=_id))
@@ -306,7 +340,7 @@ class Appointment(models.Model):
             if cur_start_time.date() == next_end_time.date():
                 # first 2 clauses check for partial overlaps
                 # next 2 check for complete overlaps i.e. 1 app. covers another completely
-                if next_start_time < cur_end_time < next_end_time or \
+                if next_start_time < cur_end_time <= next_end_time or \
                         cur_start_time < next_end_time < cur_end_time or \
                         next_start_time >= cur_start_time and next_end_time < cur_end_time or \
                         cur_start_time >= next_start_time and cur_end_time < next_end_time or \
@@ -339,15 +373,13 @@ class Appointment(models.Model):
                     i_from_s = stack.pop()
 
                     i_end_time = cls._add_datetime_time(i_from_s.start_date_and_time, i_from_s.length)
-
                     if i_end_time == app.start_date_and_time:
 
                         merged = Appointment(practitioner=app.practitioner,
                                              # take start time of the earlier one
                                              start_date_and_time=i_from_s.start_date_and_time,
-                                             length=cls._add_time(i_from_s.start_date_and_time, i_from_s.length,
-                                                                  app.length),  # add the length
-                                             price=i_from_s.price + app.price)  # add the prices of the two apps together
+                                             length=i_from_s.length + app.length,
+                                             price=i_from_s.price + app.price)
 
                         stack.append(merged)
                         merged_apps.append(i_from_s)

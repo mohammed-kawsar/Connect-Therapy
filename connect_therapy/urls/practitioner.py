@@ -42,21 +42,21 @@ urlpatterns = [
          PractitionerHomepageView.as_view(),
          name='practitioner-homepage'
          ),
-    path('notes/<int:pk>',
+    path('make-notes/<int:pk>',
          PractitionerNotesView.as_view(),
-         name='practitioner-notes'
+         name='practitioner-make-notes'
+         ),
+    path('view-notes/<int:pk>',
+         PractitionerPreviousNotesView.as_view(),
+         name='practitioner-view-notes'
+         ),
+    path('view-upcoming-meeting-notes/<int:pk>',
+         PractitionerCurrentNotesView.as_view(),
+         name='practitioner-future-notes'
          ),
     path('my-appointments',
          PractitionerMyAppointmentsView.as_view(),
          name='practitioner-my-appointments'
-         ),
-    path('view-previous-notes/<int:pk>',
-         PractitionerPreviousNotesView.as_view(),
-         name='practitioner-appointment-notes'
-         ),
-    path('view-current-notes/<int:pk>',
-         PractitionerPreviousNotesView.as_view(),
-         name='practitioner-before-meeting-notes'
          ),
     path('view-patients',
          PractitionerAllPatientsView.as_view(),

@@ -41,9 +41,9 @@ urlpatterns = [
          PatientMyAppointmentsView.as_view(),
          name='patient-my-appointments'
          ),
-    path('notes-before-appointment/<int:pk>',
+    path('make-notes/<int:pk>',
          PatientNotesBeforeView.as_view(),
-         name='patient-notes-before'
+         name='patient-make-notes'
          ),
     path('',
          PatientHomepageView.as_view(),
@@ -53,9 +53,9 @@ urlpatterns = [
          PatientCancelAppointmentView.as_view(),
          name='patient-cancel-appointment'
          ),
-    path('view-previous-notes/<int:pk>',
+    path('view-notes/<int:pk>',
          PatientPreviousNotesView.as_view(),
-         name='patient-appointment-notes',
+         name='patient-view-notes',
          ),
     path('cancel-appointment/<int:pk>',
          PatientCancelAppointmentView.as_view(),
@@ -63,14 +63,14 @@ urlpatterns = [
          ),
     path('book-appointment/<int:pk>',
          ViewBookableAppointmentsView.as_view(),
-         name='book-appointment'
+         name='patient-book-appointment'
          ),
     path('book-appointment/<int:pk>/review',
          ReviewSelectedAppointmentsView.as_view(),
-         name='book-appointment-review'),
+         name='patient-book-appointment-review'),
     path('checkout',
          CheckoutView.as_view(),
-         name='checkout'),
+         name='patient-checkout'),
     path('profile',
          PatientProfileView.as_view(),
          name='patient-profile'
@@ -81,10 +81,14 @@ urlpatterns = [
          ),
     path('profile/change-password',
          change_password,
-         name='patient-change-password'),
+         name='patient-change-password'
+         ),
     path('view-practitioners',
          ViewAllPractitionersView.as_view(),
-         name='view-practitioners'
+         name='patient-view-practitioners'
          ),
-
+    path('practitioner-profile/<int:pk>',
+         PractitionerProfileView.as_view(),
+         name='patient-practitioner-profile'
+         ),
 ]

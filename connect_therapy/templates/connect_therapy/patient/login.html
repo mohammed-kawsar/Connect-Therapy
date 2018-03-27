@@ -11,22 +11,30 @@
 {% endblock %}
 
 {% block content %}
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="alert alert-info">
 
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" class="btn btn-primary" value="Login" />
-    <input type="" class="btn btn-warning" value="Reset Password" />
-</form>
+            {% for message in messages %}
+                <p class="lead info-alert">  {% if message.tags %} {{ message }} {% endif %} </p>
+            {% endfor %}
+
+        </div>
+    {% endif %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-primary" value="Login"/>
+        <a class="btn btn-warning" href="{% url 'password_reset' %}">Reset Password</a>
+    </form>
+
 {% endblock %}
 
 {% block scripts %}
     <script>
         document.getElementById("id_password").className = "form-control";
 
-        if ($(document).height() <= $(window).height()) {
-            document.getElementById('stickyFooter').className = 'fixed-bottom';
-        }
+
 
     </script>
 {% endblock %}
@@ -36,5 +44,28 @@
         .container-fluid {
             padding-top: 20px !important;
         }
+
+        ul.errorlist.nonfield {
+            padding-left: 0px;
+        }
+
+        li {
+            font-size: 16px;
+            text-transform: capitalize;
+            font-weight: 500;
+            line-height: 22px;
+            list-style: none;
+            color: crimson;
+        }
+
+    @media (max-width: 600px) {
+        ul.errorlist.nonfield > li {
+            font-size: 15px;
+            line-height: 28px;
+            text-align: center;
+            font-weight: 400;
+        }
+
+    }
     </style>
 {% endblock %}

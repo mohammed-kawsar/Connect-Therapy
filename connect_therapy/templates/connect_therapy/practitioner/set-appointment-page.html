@@ -27,16 +27,36 @@
         h1 {
             text-align: center;
             padding-bottom: 15px;
+            text-transform: capitalize;
         }
 
         .btn {
             margin-top: 15px;
         }
 
+        li {
+            list-style: none;
+            font-size: 15px;
+            color: crimson;
+            text-transform: capitalize;
+            padding: 0px;
+        }
+
+        ul {
+            padding-left: 3px;
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 30px;
                 padding-bottom: 10px;
+                line-height: 45px;;
+            }
+
+            ul.errorlist > li {
+                font-size: 15px;
+                text-align: center;
+                font-weight: 500;
             }
         }
     </style>
@@ -51,6 +71,18 @@
     <script src="{% static 'connect_therapy/scripts/date-time-picker/jquery.datetimepicker.full.min.js' %}"></script>
 
     <script>
+
+        var hour = new Date().getHours();
+        var minute = new Date().getMinutes();
+
+        if (minute == 00 || minute==30) {
+            minute=+30;
+        } else if (minute==15 || minute==45) {
+            minute=+15;
+        }
+
+        var ceilingTime = (Math.ceil(minute/15)*15)%60;
+
         jQuery('#datetimepicker').datetimepicker({
             format: 'd/m/Y H:i',
             step: 30,
@@ -61,9 +93,10 @@
             defaultSelect: true,
             maxTime: false,
             minTime: false,
-            closeOnDateSelect: true,
-
+            closeOnDateSelect: false,
+            defaultTime: hour+':'+ceilingTime,
         });
+
     </script>
 
     <script>
@@ -79,5 +112,36 @@
     <script>
         document.getElementById('datetimepicker').readOnly = true;
         document.getElementById('timepicker').readOnly = true;
+    </script>
+
+    <script>
+        var lengthField = document.getElementById('id_length_0');
+        var minuteField = document.getElementById('id_length_1');
+
+        lengthField.className = 'form-control';
+        lengthField.style.width = '30%';
+        lengthField.style.display = 'inline';
+        lengthField.style.marginRight = '5px';
+        lengthField.setAttribute('min', '0');
+
+        lengthField.setAttribute('placeholder', 'Select the number of hours');
+        lengthField.setAttribute('onkeydown', 'return false');
+        lengthField.setAttribute('onclick', 'removePlaceholderAndSetValue()');
+
+        minuteField.className = 'form-control';
+        minuteField.style.width = '30%';
+        minuteField.style.display = 'inline';
+
+        if ($(window).width() <= 600) {
+            lengthField.removeAttribute('placeholder');
+            lengthField.setAttribute('value', '0');
+        }
+    </script>
+    <script>
+        var lengthField = document.getElementById('id_length_0');
+        function removePlaceholderAndSetValue() {
+            lengthField.removeAttribute('placeholder');
+            lengthField.setAttribute('value', '0');
+        }
     </script>
 {% endblock %}

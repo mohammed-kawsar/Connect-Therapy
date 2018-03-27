@@ -36,6 +36,7 @@
 
 
     <link rel="stylesheet" href="{% static 'connect_therapy/chat_view_css/webrtc.css' %}" type="text/css">
+
 {% endblock %}
 
 {% block content %}
@@ -51,17 +52,31 @@
         // need these as we cannot access template data in other .js files
         var session_id = "{{ object.session_id }}";
         var ajax_download_url = "{% url 'connect_therapy:file-download' object.id %}"
+        var practitioner_notes_url = "{% url 'connect_therapy:practitioner-make-notes' object.id %}"
+        var patient_notes_url = "{% url 'connect_therapy:patient-view-notes' object.id %}"
+
     </script>
 
     <div class="jumbotron">
         <h1>Welcome to your appointment</h1>
-        <!-- Trigger the modal with a button -->
-        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+
+        <div class="container">
+            <!-- Trigger the modal with a button -->
             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
                 Upload/Download files
             </button>
-        </nav>
+            {% if is_practitioner %}
+                <button type="button" class="btn btn-danger btn-lg" onclick="closeSessionPractitioner()">
+                    End Appointment Practitioner
+                </button>
+            {% else %}
+                <button type="button" class="btn btn-danger btn-lg" onclick="closeSessionPatient()">
+                    End Appointment Patient
+                </button>
+            {% endif %}
+        </div>
     </div>
+
 
     <div id="loading">
         <div class="loader"></div>
@@ -201,24 +216,27 @@
 
 
     <!--Modal Window for Safari (Only opens if the used browser is Safari)-->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalLabel">Browser Warning</h5>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Browser Warning</h5>
 
-          </div>
-          <div class="modal-body">
-            <p class="">We have detected you using Safari, the Chat feature is not supported in <b>Safari</b></p>
-            <p class="">Please use <b>Chrome</b></p>
-          </div>
-          <div class="modal-footer">
-              <p>Click Close to go to Home</p>
-            <button type="button" class="btn btn-primary" onclick=window.location.href="{% url 'connect_therapy:index' %}" data-dismiss="modal">Close</button>
-          </div>
+                </div>
+                <div class="modal-body">
+                    <p class="">We have detected you using <b>Safari Version <b id="versionNumberModal"></b></b>, the Chat feature is not supported in this <b>Version of Safari</b>
+                    </p>
+                    <p class="">Please use <b>Safari Version 11 or above, or Chrome</b></p>
+                </div>
+                <div class="modal-footer">
+                    <p>Click Close to go to Home</p>
+                    <button type="button" class="btn btn-primary"
+                            onclick=window.location.href="{% url 'connect_therapy:index' %}" data-dismiss="modal">Close
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-</div>
+    </div>
 
 {% endblock %}
 
@@ -230,9 +248,9 @@
         }
 
         div.modal-footer p {
-                vertical-align: middle;
-                margin-bottom: 0px;
-                font-size: 14px;
+            vertical-align: middle;
+            margin-bottom: 0px;
+            font-size: 14px;
         }
 
         @media (max-width: 600px) {
@@ -267,19 +285,35 @@
 
 {% block scripts %}
     <script>
-        if ($(document).height() <= $(window).height()) {
-            document.getElementById('stickyFooter').className = 'fixed-bottom';
-        }
+        $(document).ready( function () {
+            $("#myModal").modal({
+                show: false
+            })
     </script>
 
-    <script>
-
-    $("#myModal").modal({
-        show: false
-    });
-        if ((!!window.safari) == true) {
+<script>
+    function get_browser_details() {
+        var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+        if(/trident/i.test(M[1])){
+            tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
+            return {name:'IE',version:(tem[1]||'')};
+            }
+        if(M[1]==='Chrome'){
+            tem=ua.match(/\bOPR|Edge\/(\d+)/)
+            if(tem!=null)   {return {name:'Opera', version:tem[1]};}
+            }
+        M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+        if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+        return {
+          name: M[0],
+          version: M[1]
+        };
+ }
+    var browser_details=get_browser_details();
+    var elementToInsertText = document.getElementById('versionNumberModal');
+        if (browser_details.name=='Safari' && browser_details.version<=10) {
+            elementToInsertText.innerHTML = browser_details.version;
             $("#myModal").modal('show');
-
         }
-    </script>
+</script>
 {% endblock %}

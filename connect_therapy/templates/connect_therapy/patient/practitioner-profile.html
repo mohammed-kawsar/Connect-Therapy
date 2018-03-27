@@ -1,0 +1,30 @@
+{% extends 'connect_therapy/base.html' %}
+{% block title %}Practitioner Profile{% endblock %}
+
+{% block header %}
+<header>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="jumbotron" style="background-color: #d7efe7">
+        <div class="text-center">
+            <div class="card mx-auto" style="width: 18rem;">
+                {% load static %}
+                <img class="card-img-top img-responsive"
+                src="{% static '/connect_therapy/images/Profile_avatar_placeholder.png' %}">
+                <div class="card-body">
+                    <h1 class="card-title">{{ practitioner.user.get_full_name }}</h1>
+                    <p class="card-text">{{ practitioner.bio }}</p>
+                    <a href="{% url 'connect_therapy:patient-book-appointment' practitioner.id %}"
+                    class="btn btn-primary"> Book an appointment</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

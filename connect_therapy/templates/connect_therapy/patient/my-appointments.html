@@ -22,14 +22,11 @@
                     <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
                         <div class="card-block">
 
-                            <h4 class="card-title"
-                                style="white-space: nowrap">{{ appointment.start_date_and_time }}</h4>
-
-                            <h4 class="card-title" style="white-space: nowrap">
+                            <h4 class="card-title" style="white-space: normal">
                                 {% if appointment.is_live %}
                                     <a href="{% url 'connect_therapy:chat' appointment.id %}">
                                 {% endif %}
-                                    {{ appointment.start_date_and_time }}
+                                {{ appointment.start_date_and_time }}
                                 {% if appointment.is_live %}
                                     </a>
                                 {% endif %}
@@ -37,7 +34,9 @@
                             <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                             <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
                             <a href="{% url 'connect_therapy:patient-cancel-appointment' appointment.id %}"
-                               class="btn btn-info"> Cancel Appointment</a>
+                               class="btn btn-warning" style="margin-bottom: 5px;"> Cancel Appointment</a>
+                            <a href="{% url 'connect_therapy:patient-make-notes' appointment.id %}"
+                               class="btn btn-info" style="margin-bottom: 5px;"> Add message </a>
                         </div>
                     </div>
                 </div>
@@ -54,15 +53,15 @@
         <div class="row">
             {% if past_appointments|length > 0 %}
                 {% for appointment in past_appointments %}
-                    <div class="col col-xs-12 col-lg-4 col-md-4">
+                    <div class="col col-sm-12 col-lg-4 col-md-4">
                         <div class="card card-deck mt-3 mr-1 col-sm-12" style="padding: 10px 10px;">
                             <div class="card-block">
                                 <h4 class="card-title"
-                                    style="white-space: nowrap;">{{ appointment.start_date_and_time }}</h4>
+                                    style="white-space: normal;">{{ appointment.start_date_and_time }}</h4>
                                 <p class="card-text"><b>Duration:</b> {{ appointment.length }}</p>
                                 <p class="card-text"><b>Practitioner:</b> {{ appointment.practitioner }}</p>
-                                <a href="{% url 'connect_therapy:patient-appointment-notes' appointment.id %}"
-                                   class="btn btn-info"> View Notes</a>
+                                <a href="{% url 'connect_therapy:patient-view-notes' appointment.id %}"
+                                   class="btn btn-info" style="margin-bottom: 5px;"> View Notes</a>
 
                             </div>
                         </div>
@@ -78,6 +77,16 @@
 
 {% block styles %}
     <style>
+        h1.text-center {
+            padding-top: 10px;
+            letter-spacing: 1px;
+            text-transform: capitalize;
+        }
+
+        .btn {
+            text-transform: capitalize;
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 30px;
@@ -86,6 +95,10 @@
 
             h2 {
                 font-size: 25px;
+                text-align: center;
+                text-transform: capitalize;
+                letter-spacing: 1px;
+                font-weight: 500;
             }
 
             .lead {
@@ -99,10 +112,3 @@
     </style>
 {% endblock %}
 
-{% block scripts %}
-    <script>
-        if ($(document).height() <= $(window).height()) {
-            document.getElementById('stickyFooter').className = 'fixed-bottom';
-        }
-    </script>
-{% endblock %}

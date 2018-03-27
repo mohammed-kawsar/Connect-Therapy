@@ -11,22 +11,26 @@
     <div class="container-fluid">
         <div class="jumbotron">
             <div class="text-center">
-            <h1>Profile</h1>
-            <p><b>First Name:</b> <r class="lead">{{ user.first_name }}</r></p>
-            <p><b>Last Name:</b> <r class="lead">{{ user.last_name }}</r></p>
-            <p><b>Gender:</b> <r class="lead">{{ user.patient.gender }}</r></p>
-            <p><b>Date of Birth:</b> <r class="lead">{{ user.patient.date_of_birth }}</r></p>
-            <p><b>Email:</b> <r class="lead">{{ user.email }}</r></p>
-            <p><b>Mobile:</b> <r class="lead">{{ user.patient.mobile }}</r></p>
+                <h1>Profile</h1>
+                <p><b>First Name:</b> <r class="lead">{{ user.first_name }}</r></p>
+                <p><b>Last Name:</b> <r class="lead">{{ user.last_name }}</r></p>
+                <p><b>Gender:</b> <r class="lead">{{ user.patient.gender }}</r></p>
+                <p><b>Date of Birth:</b> <r class="lead">{{ user.patient.date_of_birth }}</r></p>
+                <p><b>Email:</b> <r class="lead">{{ user.email }}</r></p>
+                <p><b>Mobile:</b> <r class="lead">{{ user.patient.mobile }}</r></p>
         </div>
-        <a class='btn btn-primary'
-           href={% url 'connect_therapy:patient-profile-edit' user.patient.id %}>Edit</a>
+                <a class='btn btn-primary'
+               href={% url 'connect_therapy:patient-profile-edit' user.patient.id %}>Edit</a>
+
         <a class='btn btn-primary'
            href={% url 'connect_therapy:patient-change-password'%}>
             Change Password
         </a>
         </div>
     </div>
+<div class="container-fluid">
+
+</div>
 {% endblock %}
 
 {% block styles %}
@@ -37,6 +41,7 @@
 
         .jumbotron {
             padding-bottom: 30px;
+            padding-top: 20px;
         }
 
         h1 {
@@ -78,4 +83,10 @@
 
     }
     </style>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+    </script>
 {% endblock %}

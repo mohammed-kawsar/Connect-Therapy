@@ -31,13 +31,14 @@ ALLOWED_HOSTS = ['*'] # should be [] unless doing test on local network (then it
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
+    'connect_therapy.apps.ConnectTherapyConfig',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'connect_therapy.apps.ConnectTherapyConfig',
+    'django.contrib.auth',
+    'password_reset',
+    'django.contrib.admin',
     "sslserver", # used to test video chat
 ]
 
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['connect_therapy/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -115,7 +116,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 TWILIO_PHONE_NUMBER = '+15005550006'
 
@@ -123,8 +124,11 @@ TWILIO_ACC_SID = 'AC35eaf3d5ea24c3665fb0062caad70274'
 
 TWILIO_AUTH_TOKEN = '13af9344123ac994e18e922379fd260b'
 
+S3_BUCKET_NAME = 'segwyn'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+

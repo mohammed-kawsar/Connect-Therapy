@@ -6,8 +6,9 @@ celery==4.1.0
 certifi==2018.1.18
 chardet==3.0.4
 coverage==4.5.1
-Django==2.0.2
+Django==2.0.3
 django-betterforms==1.1.4
+django-password-reset==1.0
 django-sslserver==0.20
 django-storages==1.6.5
 docutils==0.14

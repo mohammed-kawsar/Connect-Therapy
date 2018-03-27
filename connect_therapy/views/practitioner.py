@@ -1,28 +1,27 @@
-import re
+from datetime import timedelta
 
-from django.contrib.auth import authenticate, login, update_session_auth_hash, views as auth_views
+from django.contrib.auth import update_session_auth_hash, views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.views import generic
 from django.views.generic import FormView, UpdateView, DeleteView, DetailView
 from django.views.generic.edit import FormMixin
 
 from connect_therapy import notifications
-from connect_therapy.forms.practitioner import PractitionerSignUpForm, PractitionerLoginForm, \
-    PractitionerNotesForm, PractitionerEditMultiForm, PractitionerDefineAppointmentForm
+from connect_therapy.emails import send_practitioner_confirm_email
+from connect_therapy.forms.practitioner.practitioner import *
 from connect_therapy.models import Practitioner, Appointment
 
 
 class PractitionerSignUpView(FormView):
     form_class = PractitionerSignUpForm
     template_name = 'connect_therapy/practitioner/signup.html'
-    success_url = reverse_lazy('connect_therapy:practitioner-login')
+    success_url = reverse_lazy('connect_therapy:index')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -37,10 +36,7 @@ class PractitionerSignUpView(FormView):
             bio=form.cleaned_data['bio']
         )
         practitioner.save()
-        user = authenticate(username=form.cleaned_data['email'],
-                            password=form.cleaned_data['password1']
-                            )
-        login(request=self.request, user=user)
+        send_practitioner_confirm_email(practitioner, get_current_site(self.request))
         return super().form_valid(form)
 
 
@@ -61,14 +57,14 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
     model = Appointment
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
-               self.request.user.id == self.get_object().practitioner.user.id
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
     def form_valid(self, form):
         self.object.practitioner_notes = form.cleaned_data['practitioner_notes']
@@ -76,13 +72,13 @@ class PractitionerNotesView(FormMixin, UserPassesTestMixin, DetailView):
         self.object.save()
         return super().form_valid(form)
 
-    def post(self, **kwargs):
+    def post(self, request, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
-            return self.form_valid()
+            return self.form_valid(form)
         else:
-            return self.form_invalid()
+            return self.form_invalid(form)
 
 
 class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
@@ -92,12 +88,10 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
     model = Appointment
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
-            patient = Practitioner.objects.get(user=self.request.user)
-            return True
-        except Practitioner.DoesNotExist:
+            practitioner = Practitioner.objects.get(user=self.request.user)
+            return practitioner.email_confirmed and practitioner.is_approved
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
 
     def get_context_data(self, *args, **kwargs):
@@ -116,7 +110,8 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
         context['needing_notes'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
             patient_notes_by_practitioner="",
-            practitioner=self.request.user.practitioner
+            practitioner=self.request.user.practitioner,
+            patient__isnull=False
         ).order_by('-start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
             start_date_and_time__lt=timezone.now(),
@@ -134,14 +129,14 @@ class PractitionerPreviousNotesView(UserPassesTestMixin, generic.DetailView):
     template_name = 'connect_therapy/practitioner/appointment-notes.html'
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
-               self.request.user.id == self.get_object().practitioner.user.id
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
 
 class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
@@ -151,14 +146,14 @@ class PractitionerCurrentNotesView(UserPassesTestMixin, generic.DetailView):
     template_name = 'connect_therapy/practitioner/before-meeting-notes.html'
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
-               self.request.user.id == self.get_object().practitioner.user.id
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
 
 class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
@@ -168,13 +163,11 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
-            self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+            practitioner = self.request.user.practitioner
+            return practitioner.email_confirmed and practitioner.is_approved
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
-        return True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -191,14 +184,18 @@ class PractitionerAllPatientsView(UserPassesTestMixin, generic.TemplateView):
         return context
 
 
-class PractitionerProfile(LoginRequiredMixin, generic.TemplateView):
+class PractitionerProfile(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/profile.html'
+    model = Practitioner
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
+    redirect_field_name = None
 
-    @login_required
-    def view_profile(self, request):
-        user = request.user
-        args = {'user': user}
-        return render(request, args)
+    def test_func(self):
+        try:
+            practitioner = self.request.user.practitioner
+            return practitioner.email_confirmed and practitioner.is_approved
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
+            return False
 
 
 class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
@@ -210,17 +207,18 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
         return self.get_object() is not None and \
-               self.request.user.id == self.get_object().user.id
+               self.request.user.id == self.get_object().user.id and \
+               self.get_object().email_confirmed and \
+               self.get_object().is_approved
 
     def form_valid(self, form):
         self.object.user.username = form.cleaned_data['user']['email']
+        self.object.user.save()
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
@@ -228,7 +226,7 @@ class PractitionerEditDetailsView(UserPassesTestMixin, UpdateView):
         form = self.get_form()
         try:
             user = User.objects.get(username=form.cleaned_data['user']['email'])
-            if user == self.object.user:
+            if user == self.object.user and form.is_valid():
                 return self.form_valid(form)
         except User.DoesNotExist:
             if form.is_valid():
@@ -272,29 +270,42 @@ class PractitionerSetAppointmentView(UserPassesTestMixin, LoginRequiredMixin, Fo
 
     def test_func(self):
         try:
-            self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+            practitioner = self.request.user.practitioner
+            return practitioner.email_confirmed and practitioner.is_approved
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False
-        return True is not None
 
-    def form_valid(self, form):
-        appointment = Appointment(
-            patient=None,
-            practitioner=self.request.user.practitioner,
-            start_date_and_time=form.cleaned_data['start_date_and_time'],
-            length=form.cleaned_data['length']
-        )
+    def post(self, request, **kwargs):
+        hour = 0
+        minute = (Appointment._meta.get_field('length').get_default().seconds % 3600) // 60
+        form = PractitionerDefineAppointmentForm(request.POST)
+        print(form.is_valid())
+        if form.is_valid():
+            duration = decompress_duration(form.cleaned_data['length'])
+            hour = duration[0]
+            minute = duration[1]
 
-        over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
-                                                                                      self.request.user.practitioner)
-        if not over_lap_free:
-            over_laps_str = re.sub("<|>|\[\[|\]\]", "", str(over_laps))
-            over_laps_str = over_laps_str.replace(",", " and ")
-            return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html',
-                          context={"overlaps": over_laps_str})
-        else:
-            appointment.save()
-            return super().form_valid(form)
+            appointment = Appointment(
+                patient=None,
+                practitioner=self.request.user.practitioner,
+                start_date_and_time=form.cleaned_data['start_date_and_time'],
+                length=timedelta(hours=hour, minutes=minute)
+            )
+
+            over_lap_free, over_laps = Appointment.get_appointment__practitioner_overlaps(appointment,
+                                                                                          self.request.user.practitioner)
+            if not over_lap_free:
+                clashes = over_laps
+                return render(self.request, 'connect_therapy/practitioner/appointment-overlap.html',
+                              context={"clashes": clashes})
+            else:
+                Appointment.split_merged_appointment(
+                    appointment)  # This method will split if needed and then save the appointment
+                return super().post(request)
+
+        context = self.get_context_data()
+        context['form_was_valid'] = False
+        return render(request, self.get_template_names(), context=context)
 
 
 class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
@@ -307,14 +318,14 @@ class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
     redirect_field_name = None
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             self.request.user.practitioner
-        except Practitioner.DoesNotExist:
+        except (Practitioner.DoesNotExist, AttributeError, TypeError):
             return False
         return self.get_object() is not None and \
-               self.request.user.id == self.get_object().practitioner.user.id
+               self.request.user.id == self.get_object().practitioner.user.id and \
+               self.get_object().practitioner.email_confirmed and \
+               self.get_object().practitioner.is_approved
 
     def delete(self, request, *args, **kwargs):
         message = request.POST['cancel-message']
@@ -327,15 +338,13 @@ class PractitionerAppointmentDelete(DeleteView, UserPassesTestMixin):
 
 class PractitionerHomepageView(UserPassesTestMixin, generic.TemplateView):
     template_name = 'connect_therapy/practitioner/homepage.html'
-    login_url = reverse_lazy('connect_therapy:patient-login')
+    login_url = reverse_lazy('connect_therapy:practitioner-login')
     redirect_field_name = None
     model = Appointment
 
     def test_func(self):
-        if self.request.user.is_anonymous:
-            return False
         try:
             practitioner = Practitioner.objects.get(user=self.request.user)
-            return True
-        except Practitioner.DoesNotExist:
+            return practitioner.email_confirmed and practitioner.is_approved
+        except (Practitioner.DoesNotExist, AttributeError, TypeError) as e:
             return False

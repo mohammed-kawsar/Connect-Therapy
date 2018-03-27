@@ -18,7 +18,7 @@
         <div class="alert alert-info">
 
             {% for message in messages %}
-                <p class="lead">  {% if message.tags %} {{ message }} {% endif %} </p>
+                <p class="lead info-alert">  {% if message.tags %} {{ message }} {% endif %} </p>
             {% endfor %}
 
         </div>
@@ -41,10 +41,10 @@
                             <tr>
                                 {% if i.patient is None %}
                                     <td>Dr. {{ i.practitioner.user.get_full_name }}
-                                        on {{ i.start_date_and_time }}</td>
+                                        on {{ i.start_date_and_time }} for {{ i.length }}</td>
                                 {% else %}
                                     <td bgcolor="#ccd4e2">Dr. {{ i.practitioner.user.get_full_name }}
-                                        on {{ i.start_date_and_time }}</td>
+                                        on {{ i.start_date_and_time }} for {{ i.length }}</td>
                                 {% endif %}
 
 
@@ -52,10 +52,10 @@
 
                                 {% if j.patient is None %}
                                     <td>Dr. {{ j.practitioner.user.get_full_name }}
-                                        on {{ j.start_date_and_time }}</td>
+                                        on {{ j.start_date_and_time }} for {{ i.length }}</td>
                                 {% else %}
                                     <td bgcolor="#ccd4e2">Dr. {{ j.practitioner.user.get_full_name }}
-                                        on {{ j.start_date_and_time }}</td>
+                                        on {{ j.start_date_and_time }} for {{ i.length }}</td>
                                 {% endif %}
                             </tr>
                         {% endfor %}
@@ -106,7 +106,7 @@
             </table>
 
 
-            <form action="{% url 'connect_therapy:checkout' %}"
+            <form action="{% url 'connect_therapy:patient-checkout' %}"
                   method="get">
                 <input type="submit" class="btn btn-success" value="Continue">
             </form>
@@ -195,6 +195,22 @@
             font-size: 17px;
         }
 
+        .btn.btn-info {
+            margin-bottom: 20px;
+        }
+
+        .alert.alert-info {
+            border-radius: 0px;
+        }
+
+        p.lead.info-alert {
+            vertical-align: middle;
+            margin-bottom: 0px !important;
+            text-transform: capitalize;
+            font-weight: 500;
+            font-size: 25px;
+        }
+
         @media (max-width: 600px) {
             h3.panel-title {
                 font-size: 30px;
@@ -250,6 +266,17 @@
                 letter-spacing: 1px;
                 margin-left: 20px;
                 font-weight: 300;
+            }
+
+            p.lead.info-alert {
+                vertical-align: middle;
+                margin-bottom: 0px;
+                text-transform: uppercase;
+                font-weight: 500;
+                font-size: 18px;
+                padding-top: 0px;
+                letter-spacing: 1px;
+
             }
 
         }

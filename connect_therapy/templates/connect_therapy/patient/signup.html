@@ -19,6 +19,7 @@
     </div>
     <input type="submit" class="btn btn-success" value="Sign up" />
 </form>
+    <p>Just to let you know, you won't be able to login until your email is confirmed</p>
     </div>
 {% endblock %}
 
@@ -69,9 +70,7 @@
         document.getElementById("id_password2").className="form-control";
         document.getElementById("id_date_of_birth").className="form-control";
 
-        if ($(document).height() <= $(window).height()) {
-            document.getElementById('stickyFooter').className = 'fixed-bottom';
-        }
+
     </script>
 
 {% endblock %}

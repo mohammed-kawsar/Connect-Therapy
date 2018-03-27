@@ -2,8 +2,11 @@ from datetime import timedelta
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.core.mail import send_mail
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from connect_therapy.models import Appointment
+from connect_therapy.tokens import account_activation_token
 
 from_email = 'support@connecttherapy.com'
 
@@ -136,10 +139,12 @@ def send_patient_cancelled_under_24_hours(patient, appointment):
     )
 
 
-def send_patient_confirm_email(patient, link):
+def send_patient_confirm_email(patient, domain):
     context = {
         'user': patient.user,
-        'link': link
+        'domain': domain,
+        'uid': urlsafe_base64_encode(force_bytes(patient.user.pk)).decode('UTF-8'),
+        'token': account_activation_token.make_token(patient.user),
     }
     plain_text_message = render_to_string(
         'connect_therapy/emails/plain-text/patient-confirm-email.txt',
@@ -308,10 +313,12 @@ def send_practitioner_cancelled(appointment):
     )
 
 
-def send_practitioner_confirm_email(practitioner, link):
+def send_practitioner_confirm_email(practitioner, domain):
     context = {
         'user': practitioner.user,
-        'link': link
+        'domain': domain,
+        'uid': urlsafe_base64_encode(force_bytes(practitioner.user.pk)).decode('UTF-8'),
+        'token': account_activation_token.make_token(practitioner.user),
     }
     plain_text_message = render_to_string(
         'connect_therapy/emails/plain-text/'

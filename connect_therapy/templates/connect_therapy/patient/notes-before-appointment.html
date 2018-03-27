@@ -44,11 +44,11 @@
         </div>
     </noscript>
 
-    <div class="jumbotron" style="margin-top:10px ">
-        <h3>Use the form below to tell your therapist something before the meeting starts</h3>
-        <h4>This could be anything such as something that's on your mind or any other issues.</h4>
+    <div class="jumbotron">
+        <h3 class="jumbotron-heading3">Use the form below to tell your therapist something before the meeting starts</h3>
+        <h4 class="jumbotron-heading4">This could be anything such as something that's on your mind or any other issues.</h4>
         <hr>
-        <p>You can also upload any files you want to share, or check if your therapist has shared anything
+        <p class="lead">You can also upload any files you want to share, or check if your therapist has shared anything
             with you.</p>
         <hr>
 
@@ -141,19 +141,118 @@
 
     </div>
     <!-- Modal end -->
-
+<div class="container-fluid">
     <form action="" method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" class="btn" value="submit"/>
+        <input type="submit" class="btn btn-primary" value="submit"/>
     </form>
+</div>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        p > label {
+            text-transform: capitalize;
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        #id_patient_notes_before_meeting {
+            resize: none;
+        }
+
+        input[type=submit].btn.btn-primary {
+            font-size: 17px;
+            text-transform: capitalize;
+            letter-spacing: 1px;
+        }
+
+        .jumbotron {
+            min-width: 100%;
+            padding-bottom: 30px;
+            padding-top: 30px;
+            border-radius: 0px;
+        }
+
+        div.content.container-fluid {
+            padding-right: 0px;
+            padding-left: 0px;
+        }
+
+        button.btn.btn-primary.btn-lg {
+            font-size: 16px;
+            text-transform: capitalize;
+        }
+
+        .jumbotron-heading3 {
+            text-transform: capitalize;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .jumbotron-heading4 {
+             text-transform: capitalize;
+             line-height: 36px;
+             text-align: center;
+             letter-spacing: 1px;
+        }
+
+        p.lead {
+            text-transform: capitalize;
+            font-weight: 400;
+            text-align: center;
+            font-size: 18px;
+            letter-spacing: 0px;
+        }
+
+    @media (max-width: 600px) {
+        .jumbotron-heading3 {
+                font-size: 20px;
+                font-weight: 500;
+                line-height: 30px;
+        }
+
+        .jumbotron-heading4 {
+            font-size: 17px;
+            line-height: 27px;
+            font-weight: 500;
+            padding-top: 10px;
+        }
+
+        p.lead {
+            font-size: 15px;
+            line-height: 25px;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        button.btn.btn-primary.btn-lg {
+            width: 100%;
+            font-size: 17px;
+            letter-spacing: 0px;
+            font-weight: 300;
+        }
+
+        p > label {
+            font-size: 17px;
+            letter-spacing: 0px;
+            font-weight: 400;
+        }
+
+        input[type=submit].btn.btn-primary {
+            font-size: 15px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+    }
+    </style>
 {% endblock %}
 
 {% block scripts %}
     <script>
-        if ($(document).height() <= $(window).height()) {
-            document.getElementById('stickyFooter').className = 'fixed-bottom';
-        }
+        document.getElementById('id_patient_notes_before_meeting').setAttribute('class', 'form-control');
     </script>
 {% endblock %}
 
