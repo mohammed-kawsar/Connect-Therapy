@@ -43,13 +43,6 @@ class Practitioner(models.Model):
         return "{} {}".format(self.user.first_name, self.user.last_name)
 
 
-def generate_session_id(salt, practitioner, patient, date_time):
-    byte_string = str.encode(str(salt) + str(practitioner) + str(patient) + str(date_time))
-    to_hash = hashlib.sha3_256(byte_string)
-    hash_digest = to_hash.hexdigest()
-    return hash_digest
-
-
 class Appointment(models.Model):
     practitioner = models.ForeignKey(Practitioner,
                                      on_delete=models.SET_NULL,
