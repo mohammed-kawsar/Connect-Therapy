@@ -380,7 +380,7 @@ A HTML report will appear in the htmlcov subdirectory
 
 ### 3.6 Running the server
 
-`python manage.py runsslserver`
+`python manage.py runsslserver 0.0.0.0:8000`
 
 Then go to https://localhost:8000
 
