@@ -60,6 +60,8 @@ if it is Python 2.x and you are sure you have installed Python 3.6+, then attemp
 to run `python3 --version` if this displays Python 3.6+ then replace the commands
 `python` with `python3` and `pip` with `pip3` in the following instructions.
 
+***This software will not work on versions of Python < 3.6***
+
 NOTE: it appears that Python 3.6.x does not have virtualenv installed, and it
 is not possible to install it on the ACE of KCL, to run the server, either run
 the server on another computer, or attempt to install a portable distribution
