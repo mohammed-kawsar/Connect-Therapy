@@ -97,7 +97,7 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context['booked_appointments'] = Appointment.objects.filter(
-            start_date_and_time__gte=timezone.now(),
+            start_date_and_time__gte=timezone.now() - timedelta(minutes=30),
             patient__isnull=False,
             practitioner=self.request.user.practitioner
 
@@ -108,13 +108,13 @@ class PractitionerMyAppointmentsView(UserPassesTestMixin, generic.TemplateView):
             practitioner=self.request.user.practitioner
         ).order_by('-start_date_and_time')
         context['needing_notes'] = Appointment.objects.filter(
-            start_date_and_time__lt=timezone.now(),
+            start_date_and_time__lt=timezone.now() - timedelta(minutes=30),
             patient_notes_by_practitioner="",
             practitioner=self.request.user.practitioner,
             patient__isnull=False
         ).order_by('-start_date_and_time')
         context['past_appointments'] = Appointment.objects.filter(
-            start_date_and_time__lt=timezone.now(),
+            start_date_and_time__lt=timezone.now() - timedelta(minutes=30),
             practitioner=self.request.user.practitioner
         ).exclude(
             patient_notes_by_practitioner="").order_by('-start_date_and_time')
